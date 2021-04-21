@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OliveToast", "OliveToast\OliveToast.csproj", "{7707D6E1-1E85-4A84-831B-C3E8AD32D692}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7707D6E1-1E85-4A84-831B-C3E8AD32D692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7707D6E1-1E85-4A84-831B-C3E8AD32D692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7707D6E1-1E85-4A84-831B-C3E8AD32D692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7707D6E1-1E85-4A84-831B-C3E8AD32D692}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C1F8CE5F-CD55-4778-9D87-7993B78F5510}
+	EndGlobalSection
+EndGlobal
