@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 
 namespace OliveToast
 {
@@ -6,7 +7,10 @@ namespace OliveToast
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+
+            var config = builder.Build();
+            Console.WriteLine(config.GetSection("TOKEN").Value);
         }
     }
 }
