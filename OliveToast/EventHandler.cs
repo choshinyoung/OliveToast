@@ -45,7 +45,8 @@ namespace OliveToast
         {
             if (!result.IsSuccess)
             {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
+                var ctx = context as SocketCommandContext;
+                await ctx.MsgReplyEmbedAsync(result.ErrorReason);
             }
         }
     }
