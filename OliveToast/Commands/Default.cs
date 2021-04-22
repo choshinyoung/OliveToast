@@ -4,7 +4,6 @@ using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OliveToast.Commands
@@ -46,26 +45,26 @@ namespace OliveToast.Commands
                     param += $"`{paramInfo.Summary ?? paramInfo.Name}";
 
                     Type t = paramInfo.Type;
-                    if (typeof(IUser).IsAssignableFrom(t))
-                    {
-                        param += "<유저>";
-                    }
-                    else if (typeof(IChannel).IsAssignableFrom(t))
-                    {
-                        param += "<채널>";
-                    }
-                    else if (typeof(IRole).IsAssignableFrom(t))
-                    {
-                        param += "<역할>";
-                    }
-                    else if (t == typeof(short) || t == typeof(int) || t == typeof(long) || t == typeof(ushort) || t == typeof(uint) || t == typeof(ulong) || t == typeof(float) || t == typeof(double) || t == typeof(decimal))
-                    {
+                    if (t == typeof(bool))
+                        param += "<bool>";
+                    else if (t == typeof(char))
+                        param += "<문자>";
+                    else if (t == typeof(byte) || t == typeof(sbyte) || t == typeof(short) || t == typeof(int) || t == typeof(long) || t == typeof(ushort) || t == typeof(uint) || t == typeof(ulong) || t == typeof(float) || t == typeof(double) || t == typeof(decimal))
                         param += "<숫자>";
-                    }
                     else if (t == typeof(string))
-                    {
                         param += "<텍스트>";
-                    }
+                    else if (t == typeof(DateTime) || t == typeof(DateTimeOffset) || t == typeof(TimeSpan))
+                        param += "<시간>";
+                    else if (typeof(Enum).IsAssignableFrom(t))
+                        param += "<enum>";
+                    else if (typeof(IUser).IsAssignableFrom(t))
+                        param += "<유저>";
+                    else if (typeof(IChannel).IsAssignableFrom(t))
+                        param += "<채널>";
+                    else if (typeof(IRole).IsAssignableFrom(t))
+                        param += "<역할>";
+                    else if (typeof(IMessage).IsAssignableFrom(t))
+                        param += "<메시지>";
 
                     param += "` ";
                 }
