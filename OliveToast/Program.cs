@@ -44,9 +44,9 @@ namespace OliveToast
             await Client.LoginAsync(TokenType.Bot, token);
 
             Client.Log += OnLog;
-            Client.MessageReceived += OnMessageReceived;
-
             Command.Log += OnCommandLog;
+
+            Client.MessageReceived += OnMessageReceived;
             Command.CommandExecuted += OnCommandExecuted;
 
             await Client.StartAsync();

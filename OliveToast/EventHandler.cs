@@ -18,6 +18,13 @@ namespace OliveToast
             await Task.CompletedTask;
         }
 
+        public static async Task OnCommandLog(LogMessage msg)
+        {
+            Console.WriteLine(msg);
+
+            await Task.CompletedTask;
+        }
+
         public static async Task OnMessageReceived(SocketMessage msg)
         {
             SocketUserMessage userMsg = msg as SocketUserMessage;
@@ -40,13 +47,6 @@ namespace OliveToast
             {
                 await context.Channel.SendMessageAsync(result.ErrorReason);
             }
-        }
-
-        public static async Task OnCommandLog(LogMessage msg)
-        {
-            Console.WriteLine(msg);
-
-            await Task.CompletedTask;
         }
     }
 }
