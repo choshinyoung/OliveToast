@@ -7,13 +7,15 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using static OliveToast.EventHandler;
+
 namespace OliveToast
 {
     class Program
     {
         public static DiscordSocketClient Client;
         public static CommandService Command;
-        private static IServiceProvider Service;
+        public static IServiceProvider Service;
 
         private readonly DiscordSocketConfig clientConfig = new DiscordSocketConfig
         {
@@ -23,8 +25,6 @@ namespace OliveToast
         {
             LogLevel = LogSeverity.Debug,
         };
-
-        private readonly string prefix = ConfigManager.Get("PREFIX");
 
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
@@ -53,44 +53,6 @@ namespace OliveToast
             await Client.SetGameAsync("+도움", null, ActivityType.Playing);
 
             await Task.Delay(-1);
-        }
-
-        private async Task OnLog(LogMessage msg)
-        {
-            Console.WriteLine(msg);
-
-            await Task.CompletedTask;
-        }
-
-        private async Task OnMessageReceived(SocketMessage msg)
-        {
-            SocketUserMessage userMsg = msg as SocketUserMessage;
-
-            if (userMsg == null || userMsg.Content == null ||
-                userMsg.Author.Id == Client.CurrentUser.Id || userMsg.Author.IsBot) return;
-
-            int argPos = 0;
-            if (userMsg.HasStringPrefix(prefix, ref argPos) || userMsg.HasMentionPrefix(Client.CurrentUser, ref argPos))
-            {
-                SocketCommandContext context = new SocketCommandContext(Client, userMsg);
-
-                await Command.ExecuteAsync(context, argPos, Service);
-            }
-        }
-
-        private async Task OnCommandExecuted(Optional<CommandInfo> command, ICommandContext context, IResult result)
-        {
-            if (!result.IsSuccess)
-            {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
-            }
-        }
-
-        private async Task OnCommandLog(LogMessage msg)
-        {
-            Console.WriteLine(msg);
-
-            await Task.CompletedTask;
         }
     }
 }
