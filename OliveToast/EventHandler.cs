@@ -9,7 +9,7 @@ namespace OliveToast
 {
     class EventHandler
     {
-        private static readonly string prefix = ConfigManager.Get("PREFIX");
+        public static readonly string prefix = ConfigManager.Get("PREFIX");
 
         public static async Task OnLog(LogMessage msg)
         {
