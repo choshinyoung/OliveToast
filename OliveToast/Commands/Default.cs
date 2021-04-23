@@ -8,15 +8,29 @@ using System.Threading.Tasks;
 
 namespace OliveToast.Commands
 {
+    [Name("일반")]
     public class Default : ModuleBase<SocketCommandContext>
     {
         [Command("도움"), Alias("도움말")]
         [Summary("커맨드 목록을 볼 수 있습니다.")]
         public async Task Help()
         {
-            EmbedBuilder emb = Context.CreateEmbed(title: "도움말")
-                .AddField("+일반", "`+도움` `+안녕` `+핑`")
-                .AddField("+정보", "`+서버 정보` `+채널 정보` `+역할 정보` `+유저 정보` `+봇 정보`");
+            EmbedBuilder emb = Context.CreateEmbed(title: "도움말");
+            
+            foreach(ModuleInfo module in Program.Command.Modules)
+            {
+                if (!module.HaveAttribute<HideInHelp>())
+                {
+                    List<CommandInfo> cmds = new();
+                    foreach(CommandInfo cmd in module.Commands)
+                    {
+                        if (!cmd.HaveAttribute<HideInHelp>() && !cmds.Where(c => c.Name == cmd.Name).Any())
+                            cmds.Add(cmd);
+                    }
+
+                    emb.AddField(EventHandler.prefix + module.Name, string.Join(' ', cmds.Select(c => $"`{EventHandler.prefix}{c.Name}`")));
+                }
+            }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
@@ -25,7 +39,7 @@ namespace OliveToast.Commands
         [Summary("특정 커맨드의 자세한 정보를 확인힙니다.")]
         public async Task Help([Name("커맨드"), Remainder]string cmdName)
         {
-            List<CommandInfo> infos = Program.Command.Commands.Where(cmd => (cmd.Name == cmdName || cmd.Aliases.Contains(cmdName)) && cmd.Summary != null).ToList();
+            List<CommandInfo> infos = Program.Command.Commands.Where(c => (c.Name == cmdName || c.Aliases.Contains(cmdName)) && c.Summary != null && !c.HaveAttribute<HideInHelp>()).ToList();
 
             if (infos.Count == 0)
             {
@@ -37,12 +51,12 @@ namespace OliveToast.Commands
 
             foreach (CommandInfo info in infos)
             {
-                string name = info.Aliases.Count > 1 ? $"[{string.Join(", ", info.Aliases)}]" : info.Name;
+                string name = info.Aliases.Count > 1 ? string.Join("/", info.Aliases) : info.Name;
 
                 string param = "";
                 foreach (ParameterInfo paramInfo in info.Parameters)
                 {
-                    param += $"`{paramInfo.Summary ?? paramInfo.Name}";
+                    param += $"`{paramInfo.Name}";
 
                     Type t = paramInfo.Type;
                     if (t == typeof(bool))
@@ -87,13 +101,6 @@ namespace OliveToast.Commands
         public async Task Ping()
         {
             await Context.MsgReplyEmbedAsync(Program.Client.Latency);
-        }
-
-        [Command("hellothisisverification")]
-        [Summary("Koreanbots 확인용 커맨드")]
-        public async Task Verification()
-        {
-            await Context.MsgReplyEmbedAsync("choshinyoung#1795");
         }
     }
 }

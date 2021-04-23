@@ -10,19 +10,19 @@ namespace OliveToast.Managements
 {
     public static class CommandExtension
     {
-        public static async Task<IUserMessage> MsgReplyAsync(this SocketCommandContext context, object content)
+        public static async Task<IUserMessage> MsgReplyAsync(this SocketCommandContext context, object content, bool disalbeMention = true)
         {
-            return await context.Message.ReplyAsync(text: content.ToString(), allowedMentions: AllowedMentions.None);
+            return await context.Message.ReplyAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null);
         }
 
-        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, object content)
+        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, object content, bool disalbeMention = true)
         {
-            return await context.Message.ReplyAsync(embed: context.CreateEmbed(content.ToString()).Build(), allowedMentions: AllowedMentions.None);
+            return await context.Message.ReplyAsync(embed: context.CreateEmbed(content.ToString()).Build(), allowedMentions: disalbeMention ? AllowedMentions.None : null);
         }
 
-        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, Embed emb)
+        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, Embed emb, bool disalbeMention = true)
         {
-            return await context.Message.ReplyAsync(embed: emb, allowedMentions: AllowedMentions.None);
+            return await context.Message.ReplyAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null);
         }
 
         public static EmbedBuilder CreateEmbed(this SocketCommandContext context, object description = null, string title = null, string imgUrl = null, string url = null, string thumbnailUrl = null)
