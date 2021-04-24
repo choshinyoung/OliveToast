@@ -18,10 +18,10 @@ namespace OliveToast.Managements
     {
         public enum PermissionType
         {
-            UseBot, ManageCommand, ChangeAnnouncementChannel, ManageBotSetting, CreateVote, SpeakByBot
+            UseBot, ManageCommand, ChangeAnnouncementChannel, ManageBotSetting, CreateVote, SpeakByBot, BotAdmin
         }
 
-        private PermissionType Permission;
+        public readonly PermissionType Permission;
 
         public RequirePermission(PermissionType permission)
         {
@@ -42,7 +42,7 @@ namespace OliveToast.Managements
             Default, Info, Math, Search, Clock, Game, String, Emoji, Image, Vote, Command, Level, Log, Management, Setting
         }
 
-        private CategoryType Category;
+        public readonly CategoryType Category;
 
         public RequireCategoryEnable(CategoryType category)
         {
@@ -61,9 +61,20 @@ namespace OliveToast.Managements
         {
             return info.Attributes.Where(a => a.GetType() == typeof(T)).Any();
         }
+
         public static bool HaveAttribute<T>(this ModuleInfo info)
         {
             return info.Attributes.Where(a => a.GetType() == typeof(T)).Any();
+        }
+
+        public static bool HavePrecondition<T>(this CommandInfo info)
+        {
+            return info.Preconditions.Where(p => p.GetType() == typeof(T)).Any();
+        }
+
+        public static bool HavePrecondition<T>(this ModuleInfo info)
+        {
+            return info.Attributes.Where(p => p.GetType() == typeof(T)).Any();
         }
     }
 }

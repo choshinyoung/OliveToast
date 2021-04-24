@@ -63,7 +63,7 @@ namespace OliveToast.Commands
             }
             else
             {
-                List<CommandInfo> commandInfos = Program.Command.Commands.Where(c => c.Aliases.Contains(name) && !c.HaveAttribute<HideInHelp>()).ToList();
+                List<CommandInfo> commandInfos = Program.Command.Commands.Where(c => c.Aliases.Contains(name) && c.Summary != null && !c.HaveAttribute<HideInHelp>()).ToList();
                 if (commandInfos.Any())
                 {
                     EmbedBuilder emb = Context.CreateEmbed();
@@ -102,7 +102,24 @@ namespace OliveToast.Commands
                             param += "` ";
                         }
 
-                        emb.AddField($"{EventHandler.prefix}{cmdName} {param}", info.Summary);
+                        string permission = null;
+
+                        if (info.HavePrecondition<RequirePermission>())
+                        {
+                            permission = ((RequirePermission)info.Preconditions.Where(p => p.GetType() == typeof(RequirePermission)).FirstOrDefault()).Permission switch
+                            {
+                                PermissionType.ManageCommand => "커맨드 관리",
+                                PermissionType.ChangeAnnouncementChannel => "공지 채널 변경",
+                                PermissionType.ManageBotSetting => "봇 설정 변경",
+                                PermissionType.CreateVote => "투표",
+                                PermissionType.SpeakByBot => "봇으로 말하기",
+                                PermissionType.BotAdmin => "봇 어드민",
+                                _ => null
+                            };
+                        }
+                        permission = permission != null ? $"\n    `<{permission}>` 권한이 필요합니다" : "";
+
+                        emb.AddField($"{EventHandler.prefix}{cmdName} {param}", $"{info.Summary}{permission}");
                     }
 
                     await Context.MsgReplyEmbedAsync(emb.Build());
