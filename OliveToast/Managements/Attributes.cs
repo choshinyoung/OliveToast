@@ -7,9 +7,52 @@ using System.Threading.Tasks;
 
 namespace OliveToast.Managements
 {
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     class HideInHelp : Attribute
     {
 
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    class RequirePermission : PreconditionAttribute
+    {
+        public enum PermissionType
+        {
+            UseBot, ManageCommand, ChangeAnnouncementChannel, ManageBotSetting, CreateVote, SpeakByBot
+        }
+
+        private PermissionType Permission;
+
+        public RequirePermission(PermissionType permission)
+        {
+            Permission = permission;
+        }
+
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+        {
+            return Task.FromResult(PreconditionResult.FromSuccess());
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    class RequireCategoryEnable : PreconditionAttribute
+    {
+        public enum CategoryType
+        {
+            Default, Info, Math, Search, Clock, Game, String, Emoji, Image, Vote, Command, Level, Log, Management, Setting
+        }
+
+        private CategoryType Category;
+
+        public RequireCategoryEnable(CategoryType category)
+        {
+            Category = category;
+        }
+
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+        {
+            return Task.FromResult(PreconditionResult.FromSuccess());
+        }
     }
 
     public static class InfoExtension
