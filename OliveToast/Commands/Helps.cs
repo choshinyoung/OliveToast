@@ -26,7 +26,7 @@ namespace OliveToast.Commands
                     List<CommandInfo> cmds = new();
                     foreach (CommandInfo cmd in module.Commands)
                     {
-                        if (!cmd.HaveAttribute<HideInHelp>() && !cmds.Where(c => c.Name == cmd.Name).Any())
+                        if (!cmd.HaveAttribute<HideInHelp>() && cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
                             cmds.Add(cmd);
                     }
 
@@ -48,7 +48,7 @@ namespace OliveToast.Commands
                 List<CommandInfo> cmds = new();
                 foreach (CommandInfo cmd in moduleInfos.FirstOrDefault().Commands)
                 {
-                    if (!cmd.HaveAttribute<HideInHelp>() && !cmds.Where(c => c.Name == cmd.Name).Any())
+                    if (!cmd.HaveAttribute<HideInHelp>() && cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
                         cmds.Add(cmd);
                 }
 
@@ -117,7 +117,7 @@ namespace OliveToast.Commands
                                 _ => null
                             };
                         }
-                        permission = permission != null ? $"\n    `<{permission}>` 권한이 필요합니다" : "";
+                        permission = permission != null ? $"\n - `<{permission}>` 권한이 필요합니다" : "";
 
                         emb.AddField($"{EventHandler.prefix}{cmdName} {param}", $"{info.Summary}{permission}");
                     }
@@ -126,7 +126,7 @@ namespace OliveToast.Commands
                 }
                 else
                 {
-                    await Context.MsgReplyEmbedAsync("해당 커맨드 또는 카테고리는 존재하지 않습니다.");
+                    await Context.MsgReplyEmbedAsync("해당 커맨드 또는 카테고리는 존재하지 않습니다");
                 }
             }
         }

@@ -29,5 +29,13 @@ namespace OliveToast.Commands
         {
             await Context.MsgReplyEmbedAsync(Program.Client.Latency);
         }
+        
+        [Command("봇 초대 링크"), Alias("초대 링크", "초대", "봇 초대")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("올리브토스트를 초대할 수 있는 초대 링크입니다")]
+        public async Task BotInvite()
+        {
+            await Context.MsgReplyEmbedAsync($"[올리브토스트 초대 링크](https://discord.com/oauth2/authorize?client_id={Program.Client.CurrentUser.Id}&scope=bot&permissions=2416241734)");
+        }
     }
 }
