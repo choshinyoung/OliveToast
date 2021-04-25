@@ -113,6 +113,7 @@ namespace OliveToast.Commands
                                 PermissionType.ManageBotSetting => "봇 설정 변경",
                                 PermissionType.CreateVote => "투표",
                                 PermissionType.SpeakByBot => "봇으로 말하기",
+                                PermissionType.ServerAdmin => "서버 어드민",
                                 PermissionType.BotAdmin => "봇 어드민",
                                 _ => null
                             };

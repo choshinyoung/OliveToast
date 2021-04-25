@@ -18,7 +18,7 @@ namespace OliveToast.Managements
     {
         public enum PermissionType
         {
-            UseBot, ManageCommand, ChangeAnnouncementChannel, ManageBotSetting, CreateVote, SpeakByBot, BotAdmin
+            UseBot, ManageCommand, ChangeAnnouncementChannel, ManageBotSetting, CreateVote, SpeakByBot, ServerAdmin, BotAdmin
         }
 
         public readonly PermissionType Permission;
