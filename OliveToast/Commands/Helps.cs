@@ -56,7 +56,7 @@ namespace OliveToast.Commands
 
                 foreach (CommandInfo info in cmds)
                 {
-                    emb.AddField($"{EventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Select(p => $"`{p.Name}`"))}", info.Summary);
+                    emb.AddField($"{EventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
                 }
 
                 await Context.MsgReplyEmbedAsync(emb.Build());
