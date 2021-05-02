@@ -95,5 +95,24 @@ namespace OliveToast.Commands
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
+
+        [Command("역할 정보"), Alias("역할정보", "역할")]
+        [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
+        [Summary("역할의 정보를 확인합니다.")]
+        public async Task RoleInfo([Name("역할")] SocketRole r)
+        {
+
+        }
+
+        [Command("유저 정보"), Alias("역할정보", "역할")]
+        [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
+        [Summary("역할의 정보를 확인합니다.")]
+        public async Task UserInfo([Name("유저(생략가능)")] SocketUser u = null)
+        {
+            if (u == null)
+            {
+                u = Context.User;
+            }
+        }
     }
 }
