@@ -109,10 +109,7 @@ namespace OliveToast.Commands
         [Summary("역할의 정보를 확인합니다.")]
         public async Task UserInfo([Name("유저(생략가능)")] SocketUser u = null)
         {
-            if (u == null)
-            {
-                u = Context.User;
-            }
+
         }
     }
 }
