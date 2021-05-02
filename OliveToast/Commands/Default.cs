@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Numerics;
 using System.Threading.Tasks;
 using static OliveToast.Managements.RequireCategoryEnable;
 using static OliveToast.Managements.RequirePermission;
@@ -96,6 +97,26 @@ namespace OliveToast.Commands
             }
 
             await Context.MsgReplyEmbedAsync(exp.Evaluate());
+        }
+
+        [Command("팩토리얼"), Alias("팩")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("주어진 수의 팩토리얼을 계산합니다.")]
+        public async Task Factorial(int n)
+        {
+            if (n > 807 || n < 0)
+            {
+                await Context.MsgReplyEmbedAsync("0 이상, 807 이하의 정수만 입력할 수 있습니다");
+                return;
+            }
+
+            BigInteger a = 1;
+            for (int i = n; i > 0; i--)
+            {
+                a *= i;
+            }
+
+            await Context.MsgReplyEmbedAsync($"{n}! = **{a}**");
         }
     }
 }
