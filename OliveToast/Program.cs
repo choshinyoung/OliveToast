@@ -19,6 +19,7 @@ namespace OliveToast
 
         private readonly DiscordSocketConfig clientConfig = new DiscordSocketConfig
         {
+            AlwaysDownloadUsers = true,
             LogLevel = LogSeverity.Debug,
         };
         private readonly CommandServiceConfig commandConfig = new CommandServiceConfig
@@ -28,7 +29,7 @@ namespace OliveToast
 
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
-
+        
         public async Task MainAsync()
         {
             Client = new DiscordSocketClient(clientConfig);

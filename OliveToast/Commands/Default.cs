@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using NCalc;
 using Newtonsoft.Json;
 using OliveToast.Managements;
 using System;
@@ -30,7 +31,7 @@ namespace OliveToast.Commands
         [Summary("봇의 응답 속도를 확인합니다")]
         public async Task Ping()
         {
-            await Context.MsgReplyEmbedAsync(Program.Client.Latency);
+            await Context.MsgReplyEmbedAsync($"{Program.Client.Latency}ms");
         }
         
         [Command("봇 초대 링크"), Alias("초대 링크", "초대", "봇 초대")]
@@ -77,36 +78,24 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync(Context.CreateEmbed(description: resTxt, imgUrl: resImg).Build());
         }
 
-        public class PingPongResult
+        [Command("계산"), Alias("계산기")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("주어진 수식을 계산합니다\n[이곳](https://github.com/ncalc/ncalc/wiki)에서 사용방법을 확인할 수 있습니다")]
+        public async Task Calc([Remainder, Name("수식")] string input)
         {
-            public Response response { get; set; }
-            public string version { get; set; }
+            Expression exp = new Expression(input, EvaluateOptions.IgnoreCase);
 
-            public class Response
+            if (exp.HasErrors())
             {
-                public List<Reply> replies { get; set; }
+                EmbedBuilder emb = Context.CreateEmbed();
+                emb.AddField("오류 발생!", $"{exp.Error}\n\n[사용방법 보기](https://github.com/ncalc/ncalc/wiki)");
 
-                public class Reply
-                {
-                    public From from { get; set; }
-                    public string type { get; set; }
-                    public string text { get; set; }
-                    public Image image { get; set; }
+                await Context.MsgReplyEmbedAsync(emb.Build());
 
-                    public class From
-                    {
-                        public double score { get; set; }
-                        public string name { get; set; }
-                        public string link { get; set; }
-                        public string from { get; set; }
-                    }
-
-                    public class Image
-                    {
-                        public string url { get; set; }
-                    }
-                }
+                return;
             }
+
+            await Context.MsgReplyEmbedAsync(exp.Evaluate());
         }
     }
 }
