@@ -44,5 +44,10 @@ namespace OliveToast.Managements
 
             return emb;
         }
+        
+        public static EmbedBuilder AddEmptyField(this EmbedBuilder emb)
+        {
+            return emb.AddField("**  **", "** **", true);
+        }
     }
 }
