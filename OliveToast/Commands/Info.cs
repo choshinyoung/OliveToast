@@ -22,7 +22,7 @@ namespace OliveToast.Commands
         public async Task ServerInfo()
         {
             SocketGuild g = Context.Guild;
-            EmbedBuilder emb = Context.CreateEmbed(title: $"{g.Name} 정보", thumbnailUrl: g.IconUrl);
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{g.Name}의 정보", thumbnailUrl: g.IconUrl);
 
             emb.AddField("ID", g.Id, true);
             emb.AddField("생성일", g.CreatedAt.ToUniversalTime().AddHours(9).ToString("yyyy년 MM월 dd일 HH시 mm분 ss초"), true);
@@ -67,6 +67,31 @@ namespace OliveToast.Commands
                 _ => "-"
             }, true);
             emb.AddField("2단계 인증", g.MfaLevel == MfaLevel.Disabled ? "비활성화" : "활성화", true);
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("채널 정보"), Alias("채널정보", "채널")]
+        [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
+        [Summary("채널의 정보를 확인합니다.")]
+        public async Task ChannerInfo([Name("채널(생략가능)")] SocketTextChannel c = null)
+        {
+            if (c == null)
+            {
+                c = Context.Channel as SocketTextChannel;
+            }
+
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{c.Name}의 정보");
+
+            emb.AddField("ID", c.Id, true);
+            emb.AddField("생성일", c.CreatedAt.ToUniversalTime().AddHours(9).ToString("yyyy년 MM월 dd일 HH시 mm분 ss초"), true);
+            emb.AddEmptyField();
+
+            emb.AddField("카테고리", c.Category != null ? c.Category.Name : "-", true);
+            emb.AddField("연령 제한 채널", c.IsNsfw ? "활성화" : "비활성화", true);
+            emb.AddField("슬로우 모드", c.SlowModeInterval < 60 ? $"{c.SlowModeInterval}초" : c.SlowModeInterval < 3600 ? $"{c.SlowModeInterval / 60}분" : $"{c.SlowModeInterval / 3600}시간", true);
+
+            emb.AddField("채널 주제", c.Topic ?? "** **");
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
