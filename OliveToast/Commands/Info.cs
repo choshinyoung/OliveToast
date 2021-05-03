@@ -112,46 +112,47 @@ namespace OliveToast.Commands
             emb.AddField("맨션 허용", r.IsMentionable.ToEmoji(), true);
 
             emb.AddField("서버 일반 권한", @$"
-                        관리자: {r.Permissions.Administrator.ToEmoji()}
-                        채널 보기: {r.Permissions.ViewChannel.ToEmoji()}
-                        채널 관리하기: {r.Permissions.ManageChannels.ToEmoji()}
-                        역할 관리하기: {r.Permissions.ManageRoles.ToEmoji()}
-                        이모티콘 관리: {r.Permissions.ManageEmojis.ToEmoji()}
-                        감사 로그 보기: {r.Permissions.ViewAuditLog.ToEmoji()}
-                        서버 인사이트 보기: {r.Permissions.ViewGuildInsights.ToEmoji()}
-                        웹후크 관리하기: {r.Permissions.ManageWebhooks.ToEmoji()}
-                        서버 관리하기: {r.Permissions.ManageGuild.ToEmoji()}
+관리자: {r.Permissions.Administrator.ToEmoji()}
+채널 보기: {r.Permissions.ViewChannel.ToEmoji()}
+채널 관리하기: {r.Permissions.ManageChannels.ToEmoji()}
+역할 관리하기: {r.Permissions.ManageRoles.ToEmoji()}
+이모티콘 관리: {r.Permissions.ManageEmojis.ToEmoji()}
+감사 로그 보기: {r.Permissions.ViewAuditLog.ToEmoji()}
+서버 인사이트 보기: {r.Permissions.ViewGuildInsights.ToEmoji()}
+웹후크 관리하기: {r.Permissions.ManageWebhooks.ToEmoji()}
+서버 관리하기: {r.Permissions.ManageGuild.ToEmoji()}
             ", true);
             emb.AddField("맴버십 권한", @$"
-                        초대 코드 만들기: {r.Permissions.CreateInstantInvite.ToEmoji()}
-                        별명 변경하기: {r.Permissions.ChangeNickname.ToEmoji()}
-                        별명 관리하기: {r.Permissions.ManageNicknames.ToEmoji()}
-                        맴버 추방하기: {r.Permissions.KickMembers.ToEmoji()}
-                        맴버 차단하기: {r.Permissions.BanMembers.ToEmoji()}
+초대 코드 만들기: {r.Permissions.CreateInstantInvite.ToEmoji()}
+별명 변경하기: {r.Permissions.ChangeNickname.ToEmoji()}
+별명 관리하기: {r.Permissions.ManageNicknames.ToEmoji()}
+맴버 추방하기: {r.Permissions.KickMembers.ToEmoji()}
+맴버 차단하기: {r.Permissions.BanMembers.ToEmoji()}
             ", true);
             emb.AddEmptyField();
 
             emb.AddField("채팅 채널 권한", @$"
-                        메시지 보내기: {r.Permissions.SendMessages.ToEmoji()}
-                        링크 첨부: {r.Permissions.EmbedLinks.ToEmoji()}
-                        파일 첨부: {r.Permissions.AttachFiles.ToEmoji()}
-                        반응 추가하기: {r.Permissions.AddReactions.ToEmoji()}
-                        외부 이모티콘 사용: {r.Permissions.UseExternalEmojis.ToEmoji()}
-                        모든 역할 맨션하기: {r.Permissions.MentionEveryone.ToEmoji()}
-                        메시지 관리: {r.Permissions.ManageMessages.ToEmoji()}
-                        메시지 기록 보기: {r.Permissions.ReadMessageHistory.ToEmoji()}
-                        TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
+메시지 보내기: {r.Permissions.SendMessages.ToEmoji()}
+링크 첨부: {r.Permissions.EmbedLinks.ToEmoji()}
+파일 첨부: {r.Permissions.AttachFiles.ToEmoji()}
+반응 추가하기: {r.Permissions.AddReactions.ToEmoji()}
+외부 이모티콘 사용: {r.Permissions.UseExternalEmojis.ToEmoji()}
+모든 역할 맨션하기: {r.Permissions.MentionEveryone.ToEmoji()}
+메시지 관리: {r.Permissions.ManageMessages.ToEmoji()}
+메시지 기록 보기: {r.Permissions.ReadMessageHistory.ToEmoji()}
+TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             ", true);
             emb.AddField("음성 채널 권한", @$"
-                        연결: {r.Permissions.Connect.ToEmoji()}
-                        말하기: {r.Permissions.Speak.ToEmoji()}
-                        동영상: {r.Permissions.Stream.ToEmoji()}
-                        음성 감지 사용: {r.Permissions.UseVAD.ToEmoji()}
-                        우선 발언권: {r.Permissions.PrioritySpeaker.ToEmoji()}
-                        맴버들의 마이크 음소거하기: {r.Permissions.MuteMembers.ToEmoji()}
-                        맴버의 헤드셋 음소거하기: {r.Permissions.DeafenMembers.ToEmoji()}
-                        맴버 이동: {r.Permissions.MoveMembers.ToEmoji()}
+연결: {r.Permissions.Connect.ToEmoji()}
+말하기: {r.Permissions.Speak.ToEmoji()}
+동영상: {r.Permissions.Stream.ToEmoji()}
+음성 감지 사용: {r.Permissions.UseVAD.ToEmoji()}
+우선 발언권: {r.Permissions.PrioritySpeaker.ToEmoji()}
+맴버들의 마이크 음소거하기: {r.Permissions.MuteMembers.ToEmoji()}
+맴버의 헤드셋 음소거하기: {r.Permissions.DeafenMembers.ToEmoji()}
+맴버 이동: {r.Permissions.MoveMembers.ToEmoji()}
             ", true);
+            emb.AddEmptyField();
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
@@ -225,9 +226,8 @@ namespace OliveToast.Commands
             emb.AddField("유저 수", $"{users.Count()}명", true);
             emb.AddEmptyField();
 
-            emb.AddField("버전", "v6.0.0 beta", true);
-            emb.AddField("핑", $"{Program.Client.Latency}ms", true);
-            emb.AddEmptyField();
+            emb.AddField("핑", $"{Program.Client.Latency}ms");
+            emb.AddField("버전", "v6.0.0 beta");
 
             emb.AddField(":mailbox_with_mail:", $"· [봇 초대 링크]({Utility.GetInvite()})\n· [UniqueCode 공식 서버](https://discord.gg/ARCdUzC)", true);
             emb.AddField(":page_facing_up:", $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)", true);
