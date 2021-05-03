@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,20 @@ namespace OliveToast.Managements
 {
     class Utility
     {
+
+    }
+
+    class DiscordUserUtility
+    {
+        public static string GetAvatar(SocketUser user)
+        {
+            return user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl();
+        }
+
+        public static string GetName(SocketUser user, bool isPrivate)
+        {
+            return isPrivate ? user.Username : (user as SocketGuildUser).Nickname ?? user.Username;
+        }
     }
 
     static class DateTimeOffsetExtension

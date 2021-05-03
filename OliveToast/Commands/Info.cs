@@ -73,8 +73,8 @@ namespace OliveToast.Commands
 
         [Command("채널 정보"), Alias("채널정보", "채널")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("채널의 정보를 확인합니다.")]
-        public async Task ChannerInfo([Name("채널(생략가능)")] SocketTextChannel c = null)
+        [Summary("채널의 정보를 확인합니다\n`채널`은 생략할 수 있습니다")]
+        public async Task ChannerInfo([Name("채널")] SocketTextChannel c = null)
         {
             if (c == null)
             {
@@ -98,7 +98,7 @@ namespace OliveToast.Commands
 
         [Command("역할 정보"), Alias("역할정보", "역할")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("역할의 정보를 확인합니다.")]
+        [Summary("역할의 정보를 확인합니다")]
         public async Task RoleInfo([Name("역할")] SocketRole r)
         {
             EmbedBuilder emb = Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color);
@@ -158,10 +158,55 @@ namespace OliveToast.Commands
 
         [Command("유저 정보"), Alias("역할정보", "역할")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("역할의 정보를 확인합니다.")]
-        public async Task UserInfo([Name("유저(생략가능)")] SocketUser u = null)
+        [Summary("역할의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
+        public async Task UserInfo([Name("유저")] SocketGuildUser u = null)
         {
+            if (u == null)
+            {
+                u = Context.User as SocketGuildUser;
+            }
 
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{u.Username}의 정보", thumbnailUrl: DiscordUserUtility.GetAvatar(u));
+
+            emb.AddField("유저네임", u.Username, true);
+            emb.AddField("닉네임", u.Nickname ?? "-", true);
+            emb.AddField("태그", u.Discriminator, true);
+
+            emb.AddField("ID", u.Id, true);
+            emb.AddField("봇 여부", u.IsBot.ToEmoji(), true);
+            emb.AddEmptyField();
+
+            emb.AddField("계정 생성일", u.CreatedAt.ToKSTString());
+            emb.AddField("서버 참가일", u.JoinedAt?.ToKSTString());
+
+            emb.AddField("역할", string.Join(' ', u.Roles.Select(r => r.Mention)));
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("유저 정보"), Alias("역할정보", "역할")]
+        [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.DM | ContextType.Group)]
+        [Summary("역할의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
+        public async Task UserInfo([Name("유저")] SocketUser u = null)
+        {
+            if (u == null)
+            {
+                u = Context.User;
+            }
+
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{u.Username}의 정보", thumbnailUrl: DiscordUserUtility.GetAvatar(u));
+
+            emb.AddField("유저네임", u.Username, true);
+            emb.AddField("태그", u.Discriminator, true);
+            emb.AddEmptyField();
+
+            emb.AddField("ID", u.Id, true);
+            emb.AddField("봇 여부", u.IsBot.ToEmoji(), true);
+            emb.AddEmptyField();
+
+            emb.AddField("계정 생성일", u.CreatedAt.ToKSTString());
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
     }
 }
