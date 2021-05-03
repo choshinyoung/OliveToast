@@ -25,7 +25,7 @@ namespace OliveToast.Commands
             EmbedBuilder emb = Context.CreateEmbed(title: $"{g.Name}의 정보", thumbnailUrl: g.IconUrl);
 
             emb.AddField("ID", g.Id, true);
-            emb.AddField("생성일", g.CreatedAt.ToUniversalTime().AddHours(9).ToString("yyyy년 MM월 dd일 HH시 mm분 ss초"), true);
+            emb.AddField("생성일", g.CreatedAt.ToKSTString(), true);
             emb.AddEmptyField();
 
             emb.AddField("기본 채널", g.DefaultChannel != null ? g.DefaultChannel.Mention : "-", true);
@@ -66,7 +66,7 @@ namespace OliveToast.Commands
                 ExplicitContentFilterLevel.AllMembers => "모든 맴버",
                 _ => "-"
             }, true);
-            emb.AddField("2단계 인증", g.MfaLevel == MfaLevel.Disabled ? "비활성화" : "활성화", true);
+            emb.AddField("2단계 인증", (g.MfaLevel == MfaLevel.Disabled).ToEmoji(), true);
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
@@ -84,11 +84,11 @@ namespace OliveToast.Commands
             EmbedBuilder emb = Context.CreateEmbed(title: $"{c.Name}의 정보");
 
             emb.AddField("ID", c.Id, true);
-            emb.AddField("생성일", c.CreatedAt.ToUniversalTime().AddHours(9).ToString("yyyy년 MM월 dd일 HH시 mm분 ss초"), true);
+            emb.AddField("생성일", c.CreatedAt.ToKSTString(), true);
             emb.AddEmptyField();
 
             emb.AddField("카테고리", c.Category != null ? c.Category.Name : "-", true);
-            emb.AddField("연령 제한 채널", c.IsNsfw ? "활성화" : "비활성화", true);
+            emb.AddField("연령 제한 채널", c.IsNsfw.ToEmoji(), true);
             emb.AddField("슬로우 모드", c.SlowModeInterval < 60 ? $"{c.SlowModeInterval}초" : c.SlowModeInterval < 3600 ? $"{c.SlowModeInterval / 60}분" : $"{c.SlowModeInterval / 3600}시간", true);
 
             emb.AddField("채널 주제", c.Topic ?? "** **");
@@ -101,7 +101,59 @@ namespace OliveToast.Commands
         [Summary("역할의 정보를 확인합니다.")]
         public async Task RoleInfo([Name("역할")] SocketRole r)
         {
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color);
 
+            emb.AddField("ID", r.Id, true);
+            emb.AddField("생성일", r.CreatedAt.ToKSTString(), true);
+            emb.AddEmptyField();
+
+            emb.AddField("색", r.Color, true);
+            emb.AddField("분리하여 표시", r.IsHoisted.ToEmoji(), true);
+            emb.AddField("맨션 허용", r.IsMentionable.ToEmoji(), true);
+
+            emb.AddField("서버 일반 권한", @$"
+                        관리자: {r.Permissions.Administrator.ToEmoji()}
+                        채널 보기: {r.Permissions.ViewChannel.ToEmoji()}
+                        채널 관리하기: {r.Permissions.ManageChannels.ToEmoji()}
+                        역할 관리하기: {r.Permissions.ManageRoles.ToEmoji()}
+                        이모티콘 관리: {r.Permissions.ManageEmojis.ToEmoji()}
+                        감사 로그 보기: {r.Permissions.ViewAuditLog.ToEmoji()}
+                        서버 인사이트 보기: {r.Permissions.ViewGuildInsights.ToEmoji()}
+                        웹후크 관리하기: {r.Permissions.ManageWebhooks.ToEmoji()}
+                        서버 관리하기: {r.Permissions.ManageGuild.ToEmoji()}
+            ", true);
+            emb.AddField("맴버십 권한", @$"
+                        초대 코드 만들기: {r.Permissions.CreateInstantInvite.ToEmoji()}
+                        별명 변경하기: {r.Permissions.ChangeNickname.ToEmoji()}
+                        별명 관리하기: {r.Permissions.ManageNicknames.ToEmoji()}
+                        맴버 추방하기: {r.Permissions.KickMembers.ToEmoji()}
+                        맴버 차단하기: {r.Permissions.BanMembers.ToEmoji()}
+            ", true);
+            emb.AddEmptyField();
+
+            emb.AddField("채팅 채널 권한", @$"
+                        메시지 보내기: {r.Permissions.SendMessages.ToEmoji()}
+                        링크 첨부: {r.Permissions.EmbedLinks.ToEmoji()}
+                        파일 첨부: {r.Permissions.AttachFiles.ToEmoji()}
+                        반응 추가하기: {r.Permissions.AddReactions.ToEmoji()}
+                        외부 이모티콘 사용: {r.Permissions.UseExternalEmojis.ToEmoji()}
+                        모든 역할 맨션하기: {r.Permissions.MentionEveryone.ToEmoji()}
+                        메시지 관리: {r.Permissions.ManageMessages.ToEmoji()}
+                        메시지 기록 보기: {r.Permissions.ReadMessageHistory.ToEmoji()}
+                        TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
+            ", true);
+            emb.AddField("음성 채널 권한", @$"
+                        연결: {r.Permissions.Connect.ToEmoji()}
+                        말하기: {r.Permissions.Speak.ToEmoji()}
+                        동영상: {r.Permissions.Stream.ToEmoji()}
+                        음성 감지 사용: {r.Permissions.UseVAD.ToEmoji()}
+                        우선 발언권: {r.Permissions.PrioritySpeaker.ToEmoji()}
+                        맴버들의 마이크 음소거하기: {r.Permissions.MuteMembers.ToEmoji()}
+                        맴버의 헤드셋 음소거하기: {r.Permissions.DeafenMembers.ToEmoji()}
+                        맴버 이동: {r.Permissions.MoveMembers.ToEmoji()}
+            ", true);
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
         [Command("유저 정보"), Alias("역할정보", "역할")]

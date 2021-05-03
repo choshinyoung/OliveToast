@@ -25,12 +25,12 @@ namespace OliveToast.Managements
             return await context.Message.ReplyAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null);
         }
 
-        public static EmbedBuilder CreateEmbed(this SocketCommandContext context, object description = null, string title = null, string imgUrl = null, string url = null, string thumbnailUrl = null)
+        public static EmbedBuilder CreateEmbed(this SocketCommandContext context, object description = null, string title = null, string imgUrl = null, string url = null, string thumbnailUrl = null, Color? color = null)
         {
             EmbedBuilder emb = new EmbedBuilder()
             {
                 Title = title,
-                Color = new Color(255, 200, 0),
+                Color = color ?? new Color(255, 200, 0),
                 Footer = new()
                 {
                     Text = context.IsPrivate ? context.User.Username : (context.User as SocketGuildUser).Nickname ?? context.User.Username,
