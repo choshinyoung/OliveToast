@@ -156,9 +156,9 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
-        [Command("유저 정보"), Alias("역할정보", "역할")]
+        [Command("유저 정보"), Alias("유저정보", "유저")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("역할의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
+        [Summary("유저의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
         public async Task UserInfo([Name("유저")] SocketGuildUser u = null)
         {
             if (u == null)
@@ -184,9 +184,9 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
-        [Command("유저 정보"), Alias("역할정보", "역할")]
+        [Command("유저 정보"), Alias("유저정보", "유저")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.DM | ContextType.Group)]
-        [Summary("역할의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
+        [Summary("유저의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
         public async Task UserInfo([Name("유저")] SocketUser u = null)
         {
             if (u == null)
@@ -205,6 +205,34 @@ namespace OliveToast.Commands
             emb.AddEmptyField();
 
             emb.AddField("계정 생성일", u.CreatedAt.ToKSTString());
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("봇 정보"), Alias("봇정보", "봇")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("봇의 정보를 확인합니다")]
+        public async Task BotInfo()
+        {
+            EmbedBuilder emb = Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: DiscordUserUtility.GetAvatar(Program.Client.CurrentUser));
+
+            emb.AddField("서버 수", $"{Program.Client.Guilds.Count}곳", true);
+            List<ulong> users = new List<ulong>();
+            foreach(SocketGuild guild in Program.Client.Guilds)
+            {
+                users.AddRange(guild.Users.Select(u => u.Id).Where(u => !users.Contains(u)));
+            }
+            emb.AddField("유저 수", $"{users.Count()}명", true);
+            emb.AddEmptyField();
+
+            emb.AddField("버전", "v6.0.0 beta", true);
+            emb.AddField("핑", $"{Program.Client.Latency}ms", true);
+            emb.AddEmptyField();
+
+            emb.AddField(":mailbox_with_mail:", $"· [봇 초대 링크]({Utility.GetInvite()})\n· [UniqueCode 공식 서버](https://discord.gg/ARCdUzC)", true);
+            emb.AddField(":page_facing_up:", $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)", true);
+            
+            emb.AddField("크레딧", "제작: <@396163884005851137>\n\n도움: <@410260925795270656> <@404891182423080960> <@310247242546151434>\n\n프로필 일러스트: <@679641309010853895>");
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }

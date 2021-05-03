@@ -10,7 +10,10 @@ namespace OliveToast.Managements
 {
     class Utility
     {
-
+        public static string GetInvite()
+        {
+            return $"https://discord.com/oauth2/authorize?client_id={Program.Client.CurrentUser.Id}&scope=bot&permissions=2416241734";
+        }
     }
 
     class DiscordUserUtility

@@ -40,7 +40,7 @@ namespace OliveToast.Commands
         [Summary("올리브토스트를 초대할 수 있는 초대 링크입니다")]
         public async Task BotInvite()
         {
-            await Context.MsgReplyEmbedAsync($"[올리브토스트 초대 링크](https://discord.com/oauth2/authorize?client_id={Program.Client.CurrentUser.Id}&scope=bot&permissions=2416241734)");
+            await Context.MsgReplyEmbedAsync($"[올리브토스트 초대 링크]({Utility.GetInvite()})");
         }
 
         [Command("핑퐁"), Alias("올토야", "올토님")]
