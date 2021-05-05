@@ -50,6 +50,8 @@ namespace OliveToast
             Client.MessageReceived += OnMessageReceived;
             Command.CommandExecuted += OnCommandExecuted;
 
+            Client.MessageUpdated += OnMessageUpdated;
+
             await Client.StartAsync();
             await Client.SetGameAsync("+도움", null, ActivityType.Playing);
 

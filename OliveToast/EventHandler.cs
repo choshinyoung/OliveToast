@@ -41,12 +41,20 @@ namespace OliveToast
             }
         }
 
+        public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
+        {
+            await OnMessageReceived(msg);
+        }
+
         public static async Task OnCommandExecuted(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             if (!result.IsSuccess)
             {
                 var ctx = context as SocketCommandContext;
-                await ctx.MsgReplyEmbedAsync(result.ErrorReason);
+
+                EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
+
+                await ctx.MsgReplyEmbedAsync(emb.Build());
             }
         }
     }
