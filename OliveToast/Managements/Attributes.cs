@@ -39,7 +39,7 @@ namespace OliveToast.Managements
     {
         public enum CategoryType
         {
-            Default, Info, Math, Search, Clock, Game, String, Emoji, Image, Vote, Command, Level, Log, Management, Setting
+            Default, Info, Search, Game, String, Emoji, Image, Vote, Command, Level, Log, Management, Setting
         }
 
         public readonly CategoryType Category;
