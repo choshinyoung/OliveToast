@@ -9,7 +9,6 @@ using static OliveToast.Managements.RequirePermission;
 
 namespace OliveToast.Commands
 {
-    [HideInHelp]
     public class Helps : ModuleBase<SocketCommandContext>
     {
         [Command("도움"), Alias("도움말")]
@@ -19,19 +18,19 @@ namespace OliveToast.Commands
         {
             EmbedBuilder emb = Context.CreateEmbed(title: "도움말", description: $"\"{EventHandler.prefix}도움 `카테고리/커맨드`\"로 자세한 사용법 보기");
 
-            foreach (ModuleInfo module in Program.Command.Modules)
-            {
-                if (!module.HaveAttribute<HideInHelp>())
-                {
-                    List<CommandInfo> cmds = new();
-                    foreach (CommandInfo cmd in module.Commands)
-                    {
-                        if (!cmd.HaveAttribute<HideInHelp>() && cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
-                            cmds.Add(cmd);
-                    }
+            List<ModuleInfo> modules = Program.Command.Modules.Where(m => m.HavePrecondition<RequireCategoryEnable>()).ToList();
+            modules.Sort((m1, m2) => RequireCategoryEnable.GetCategory(m1).CompareTo(RequireCategoryEnable.GetCategory(m2)));
 
-                    emb.AddField(module.Name, string.Join(' ', cmds.Select(c => $"`{EventHandler.prefix}{c.Name}`")));
+            foreach (ModuleInfo module in modules)
+            {
+                List<CommandInfo> cmds = new();
+                foreach (CommandInfo cmd in module.Commands)
+                {
+                    if (cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
+                        cmds.Add(cmd);
                 }
+
+                emb.AddField(module.Name, string.Join(' ', cmds.Select(c => $"`{EventHandler.prefix}{c.Name}`")));
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
@@ -42,13 +41,13 @@ namespace OliveToast.Commands
         [Summary("특정 카테고리 또는 커맨드의 자세한 정보를 확인합니다")]
         public async Task Help([Remainder, Name("카테고리/커맨드")] string name)
         {
-            List<ModuleInfo> moduleInfos = Program.Command.Modules.Where(m => m.Name == name && !m.HaveAttribute<HideInHelp>()).ToList();
+            List<ModuleInfo> moduleInfos = Program.Command.Modules.Where(m => m.Name == name).ToList();
             if (moduleInfos.Any())
             {
                 List<CommandInfo> cmds = new();
                 foreach (CommandInfo cmd in moduleInfos.FirstOrDefault().Commands)
                 {
-                    if (!cmd.HaveAttribute<HideInHelp>() && cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
+                    if (cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
                         cmds.Add(cmd);
                 }
 
@@ -63,7 +62,7 @@ namespace OliveToast.Commands
             }
             else
             {
-                List<CommandInfo> commandInfos = Program.Command.Commands.Where(c => c.Aliases.Contains(name) && c.Summary != null && !c.HaveAttribute<HideInHelp>()).ToList();
+                List<CommandInfo> commandInfos = Program.Command.Commands.Where(c => c.Aliases.Contains(name) && c.Summary != null).ToList();
                 if (commandInfos.Any())
                 {
                     EmbedBuilder emb = Context.CreateEmbed();

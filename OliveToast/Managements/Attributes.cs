@@ -7,14 +7,8 @@ using System.Threading.Tasks;
 
 namespace OliveToast.Managements
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    class HideInHelp : Attribute
-    {
-
-    }
-
     [AttributeUsage(AttributeTargets.Method)]
-    class RequirePermission : PreconditionAttribute
+    public class RequirePermission : PreconditionAttribute
     {
         public enum PermissionType
         {
@@ -35,7 +29,7 @@ namespace OliveToast.Managements
     }
 
     [AttributeUsage(AttributeTargets.Class)]
-    class RequireCategoryEnable : PreconditionAttribute
+    public class RequireCategoryEnable : PreconditionAttribute
     {
         public enum CategoryType
         {
@@ -53,20 +47,15 @@ namespace OliveToast.Managements
         {
             return Task.FromResult(PreconditionResult.FromSuccess());
         }
+
+        public static CategoryType GetCategory(ModuleInfo info)
+        {
+            return ((RequireCategoryEnable)info.Preconditions.Where(p => p.GetType() == typeof(RequireCategoryEnable)).First()).Category;
+        }
     }
 
     public static class InfoExtension
     {
-        public static bool HaveAttribute<T>(this CommandInfo info)
-        {
-            return info.Attributes.Where(a => a.GetType() == typeof(T)).Any();
-        }
-
-        public static bool HaveAttribute<T>(this ModuleInfo info)
-        {
-            return info.Attributes.Where(a => a.GetType() == typeof(T)).Any();
-        }
-
         public static bool HavePrecondition<T>(this CommandInfo info)
         {
             return info.Preconditions.Where(p => p.GetType() == typeof(T)).Any();
@@ -74,7 +63,7 @@ namespace OliveToast.Managements
 
         public static bool HavePrecondition<T>(this ModuleInfo info)
         {
-            return info.Attributes.Where(p => p.GetType() == typeof(T)).Any();
+            return info.Preconditions.Where(p => p.GetType() == typeof(T)).Any();
         }
     }
 }
