@@ -58,12 +58,12 @@ namespace OliveToast.Managements
     {
         public static bool HavePrecondition<T>(this CommandInfo info)
         {
-            return info.Preconditions.Where(p => p.GetType() == typeof(T)).Any();
+            return info.Preconditions.Any(p => p.GetType() == typeof(T));
         }
 
         public static bool HavePrecondition<T>(this ModuleInfo info)
         {
-            return info.Preconditions.Where(p => p.GetType() == typeof(T)).Any();
+            return info.Preconditions.Ant(p => p.GetType() == typeof(T));
         }
     }
 }

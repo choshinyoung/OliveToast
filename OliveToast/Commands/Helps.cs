@@ -26,7 +26,7 @@ namespace OliveToast.Commands
                 List<CommandInfo> cmds = new();
                 foreach (CommandInfo cmd in module.Commands)
                 {
-                    if (cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
+                    if (cmd.Summary != null && !cmds.Any(c => c.Name == cmd.Name))
                         cmds.Add(cmd);
                 }
 
@@ -47,7 +47,7 @@ namespace OliveToast.Commands
                 List<CommandInfo> cmds = new();
                 foreach (CommandInfo cmd in moduleInfos.FirstOrDefault().Commands)
                 {
-                    if (cmd.Summary != null && !cmds.Where(c => c.Name == cmd.Name).Any())
+                    if (cmd.Summary != null && !cmds.Any(c => c.Name == cmd.Name))
                         cmds.Add(cmd);
                 }
 
