@@ -50,6 +50,11 @@ namespace OliveToast
         {
             if (!result.IsSuccess)
             {
+                if (result.Error == CommandError.UnknownCommand)
+                {
+                    return;
+                }
+
                 var ctx = context as SocketCommandContext;
 
                 EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
