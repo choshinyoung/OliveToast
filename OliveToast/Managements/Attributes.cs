@@ -63,7 +63,7 @@ namespace OliveToast.Managements
 
         public static bool HavePrecondition<T>(this ModuleInfo info)
         {
-            return info.Preconditions.Ant(p => p.GetType() == typeof(T));
+            return info.Preconditions.Any(p => p.GetType() == typeof(T));
         }
     }
 }
