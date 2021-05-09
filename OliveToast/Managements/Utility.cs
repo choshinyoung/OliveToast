@@ -16,14 +16,14 @@ namespace OliveToast.Managements
         }
     }
 
-    class DiscordUserUtility
+    static class DiscordUserExtension
     {
-        public static string GetAvatar(SocketUser user)
+        public static string GetAvatar(this SocketUser user)
         {
             return user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl();
         }
 
-        public static string GetName(SocketUser user, bool isPrivate)
+        public static string GetName(this SocketUser user, bool isPrivate)
         {
             return isPrivate ? user.Username : (user as SocketGuildUser).Nickname ?? user.Username;
         }

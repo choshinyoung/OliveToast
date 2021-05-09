@@ -33,8 +33,8 @@ namespace OliveToast.Managements
                 Color = color ?? new Color(255, 200, 0),
                 Footer = new()
                 {
-                    Text = DiscordUserUtility.GetName(context.User, context.IsPrivate),
-                    IconUrl = DiscordUserUtility.GetAvatar(context.User)
+                    Text = context.User.GetName(context.IsPrivate),
+                    IconUrl = context.User.GetAvatar()
                 },
                 Description = description?.ToString(),
                 ImageUrl = imgUrl,

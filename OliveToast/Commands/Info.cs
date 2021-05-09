@@ -167,7 +167,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
                 u = Context.User as SocketGuildUser;
             }
 
-            EmbedBuilder emb = Context.CreateEmbed(title: $"{u.Username}의 정보", thumbnailUrl: DiscordUserUtility.GetAvatar(u));
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{u.Username}의 정보", thumbnailUrl: u.GetAvatar());
 
             emb.AddField("유저네임", u.Username, true);
             emb.AddField("닉네임", u.Nickname ?? "-", true);
@@ -195,7 +195,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
                 u = Context.User;
             }
 
-            EmbedBuilder emb = Context.CreateEmbed(title: $"{u.Username}의 정보", thumbnailUrl: DiscordUserUtility.GetAvatar(u));
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{u.Username}의 정보", thumbnailUrl: u.GetAvatar());
 
             emb.AddField("유저네임", u.Username, true);
             emb.AddField("태그", u.Discriminator, true);
@@ -215,7 +215,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
         [Summary("봇의 정보를 확인합니다")]
         public async Task BotInfo()
         {
-            EmbedBuilder emb = Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: DiscordUserUtility.GetAvatar(Program.Client.CurrentUser));
+            EmbedBuilder emb = Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: Program.Client.CurrentUser.GetAvatar());
 
             emb.AddField("서버 수", $"{Program.Client.Guilds.Count}곳", true);
             List<ulong> users = new List<ulong>();
