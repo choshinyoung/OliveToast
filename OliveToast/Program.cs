@@ -53,7 +53,7 @@ namespace OliveToast
             Client.MessageUpdated += OnMessageUpdated;
 
             await Client.StartAsync();
-            await Client.SetGameAsync("+도움", null, ActivityType.Playing);
+            await Client.SetGameAsync($"{ConfigManager.Get("PREFIX")}도움", null, ActivityType.Playing);
 
             await Task.Delay(-1);
         }

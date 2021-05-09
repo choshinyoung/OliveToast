@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using KoreanText;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,15 @@ namespace OliveToast.Commands
                     await Context.MsgReplyEmbedAsync($"{(Rcp)((int)(input - 1 + 3) % 3)}! {Context.User.Username} 승리!");
                     break;
             }
+        }
+
+        [Command("끝말잇기")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("올리브토스트와 끝말잇기를 할 수 있습니다\n답장 기능을 사용하면 게임을 이어서 할 수 있습니다")]
+        public async Task WordRelay(string word)
+        {
+            KoreanChar first = new KoreanChar(word[0]);
+            await ReplyAsync(first.GetChoSung().ToKoreanUniqueCode().ToString());
         }
 
         [Command("추첨")]
