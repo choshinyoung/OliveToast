@@ -56,7 +56,6 @@ namespace OliveToast.Commands
             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
             var response = await httpClient.SendAsync(request);
-            await ReplyAsync(await response.Content.ReadAsStringAsync());
             PingPongResult result = JsonConvert.DeserializeObject<PingPongResult>(await response.Content.ReadAsStringAsync());
 
             string resTxt = null;
