@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static OliveToast.Managements.RequireCategoryEnable;
 using static OliveToast.Managements.RequirePermission;
@@ -17,7 +18,7 @@ namespace OliveToast.Commands
     public class Text : ModuleBase<SocketCommandContext>
     {
         [Command("말하기")]
-        [RequirePermission(PermissionType.SpeakByBot), RequireBotPermission(ChannelPermission.ManageMessages)]
+        [RequirePermission(PermissionType.SpeakByBot)]
         [Summary("올리브토스트로 말을 할 수 있습니다\n`말`은 500자 이하여야 합니다")]
         public async Task Say([Remainder, Name("말")] string input)
         {
@@ -217,10 +218,17 @@ namespace OliveToast.Commands
         [Summary("Base64로 인코딩된 글을 디코딩합니다")]
         public async Task Decode([Remainder, Name("입력")] string input)
         {
-            byte[] bytes = Convert.FromBase64String(input);
-            string result = Encoding.UTF8.GetString(bytes);
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(input);
+                string result = Encoding.UTF8.GetString(bytes);
 
-            await Context.MsgReplyEmbedAsync(result);
+                await Context.MsgReplyEmbedAsync(result);
+            }
+            catch
+            {
+                EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: "해당 문자열을 디코딩 할 수 없어요");
+            }
         }
     }
 }
