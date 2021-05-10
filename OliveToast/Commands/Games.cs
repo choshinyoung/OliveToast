@@ -78,7 +78,7 @@ namespace OliveToast.Commands
                 {
                     if (!WordsManager.Words.Contains(word))
                     {
-                        await context.MsgReplyEmbedAsync($"제 사전에 {word.이()}란 없네요");
+                        await context.MsgReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
                         return true;
                     }
                     List<string> usedWords = WordSession.Sessions[context.User.Id].words;
