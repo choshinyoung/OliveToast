@@ -117,7 +117,7 @@ namespace OliveToast.Commands
                                 _ => null
                             };
                         }
-                        permission = permission != null ? $"\n - `이 커맨드를 실행하려면 <{permission}>` 권한이 필요해요" : "";
+                        permission = permission != null ? $"\n - 이 커맨드를 실행하려면 `<{permission}>` 권한이 필요해요" : "";
 
                         emb.AddField($"{EventHandler.prefix}{cmdName} {param}", $"{info.Summary}{permission}");
                     }

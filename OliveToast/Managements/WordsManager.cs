@@ -22,6 +22,6 @@ namespace OliveToast.Managements
 
     class WordSession
     {
-        public static Dictionary<ulong, List<string>> Sessions = new Dictionary<ulong, List<string>>();
+        public static Dictionary<ulong, (ulong channel, List<string> words)> Sessions = new Dictionary<ulong, (ulong channel, List<string> words)>();
     }
 }

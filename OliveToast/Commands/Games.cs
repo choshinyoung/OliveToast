@@ -51,13 +51,10 @@ namespace OliveToast.Commands
         {
             if (!WordSession.Sessions.ContainsKey(Context.User.Id))
             {
-                WordSession.Sessions.Add(Context.User.Id, new List<string>());
+                WordSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, new List<string>()));
+                await Context.MsgReplyEmbedAsync("끝말잇기 시작!\n`끝`을 입력해 게임을 끝낼 수 있어요");
 
-                if (word == null)
-                {
-                    await Context.MsgReplyEmbedAsync("끝말잇기 시작!");
-                }
-                else
+                if (word != null)
                 {
                     await WordRelay(Context, word);
                 }
@@ -70,7 +67,7 @@ namespace OliveToast.Commands
 
         public static async Task<bool> WordRelay(SocketCommandContext context, string word)
         {
-            if (WordSession.Sessions.ContainsKey(context.User.Id))
+            if (WordSession.Sessions.ContainsKey(context.User.Id) && WordSession.Sessions[context.User.Id].channel == context.Channel.Id)
             {
                 if (word == "끝")
                 {
@@ -84,7 +81,7 @@ namespace OliveToast.Commands
                         await context.MsgReplyEmbedAsync($"제 사전에 {word}이란 없네요");
                         return true;
                     }
-                    List<string> usedWords = WordSession.Sessions[context.User.Id];
+                    List<string> usedWords = WordSession.Sessions[context.User.Id].words;
 
                     if (usedWords.Count != 0 && !word.StartsWith(usedWords.Last().Last()))
                     {
