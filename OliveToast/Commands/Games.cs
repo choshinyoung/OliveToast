@@ -78,20 +78,20 @@ namespace OliveToast.Commands
                 {
                     if (!WordsManager.Words.Contains(word))
                     {
-                        await context.MsgReplyEmbedAsync($"제 사전에 {word}이란 없네요");
+                        await context.MsgReplyEmbedAsync($"제 사전에 {word.이()}란 없네요");
                         return true;
                     }
                     List<string> usedWords = WordSession.Sessions[context.User.Id].words;
 
                     if (usedWords.Count != 0 && !word.StartsWith(usedWords.Last().Last()))
                     {
-                        await context.MsgReplyEmbedAsync($"'{usedWords.Last().Last()}'로 시작해야돼요");
+                        await context.MsgReplyEmbedAsync($"'{usedWords.Last().Last().ToString().으로("'")} 시작해야돼요");
                         return true;
                     }
 
                     if (usedWords.Contains(word))
                     {
-                        await context.MsgReplyEmbedAsync($"{word}는 이미 사용한 단어에요");
+                        await context.MsgReplyEmbedAsync($"{word.은는()} 이미 사용한 단어에요");
                         return true;
                     }
                     usedWords.Add(word);

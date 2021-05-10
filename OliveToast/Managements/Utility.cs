@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using HPark.Hangul;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,47 @@ namespace OliveToast.Managements
         public static string GetInvite()
         {
             return $"https://discord.com/oauth2/authorize?client_id={Program.Client.CurrentUser.Id}&scope=bot&permissions=2416241734";
+        }
+    }
+
+    static class HangulExtension
+    {
+        public static string 이(this string content, string suffix = "")
+        {
+            return content + suffix + (HaveJongsung(content.Last()) ? "이" : "");
+        }
+
+        public static string 을를(this string content, string suffix = "")
+        {
+            return content + suffix + (HaveJongsung(content.Last()) ? "을" : "를");
+        }
+
+        public static string 은는(this string content, string suffix = "")
+        {
+            return content + suffix + (HaveJongsung(content.Last()) ? "은" : "는");
+        }
+
+        public static string 으로(this string content, string suffix = "")
+        {
+            HangulChar hc = new HangulChar(content.Last());
+            bool canSplit = hc.TrySplitSyllable(out char[] syllables);
+
+            return content + suffix + (canSplit && syllables[2] != '\u0000' && syllables[2] != 'ㄹ' ? "으로" : "로");
+        }
+
+        private static bool HaveJongsung(char c)
+        {
+            HangulChar hc = new HangulChar(c);
+            bool canSplit = hc.TrySplitSyllable(out char[] syllables);
+
+            if (canSplit)
+            {
+                return syllables[2] != '\u0000';
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
