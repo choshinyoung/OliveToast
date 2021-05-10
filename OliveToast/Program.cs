@@ -24,6 +24,7 @@ namespace OliveToast
         };
         private readonly CommandServiceConfig commandConfig = new CommandServiceConfig
         {
+            DefaultRunMode = RunMode.Async,
             LogLevel = LogSeverity.Debug,
         };
 
