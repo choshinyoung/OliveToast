@@ -19,4 +19,9 @@ namespace OliveToast.Managements
             Words = JsonConvert.DeserializeObject<List<string>>(content);
         }
     }
+
+    class WordSession
+    {
+        public static Dictionary<ulong, List<string>> Sessions = new Dictionary<ulong, List<string>>();
+    }
 }
