@@ -17,7 +17,7 @@ namespace OliveToast.Commands
     public class Text : ModuleBase<SocketCommandContext>
     {
         [Command("말하기")]
-        [RequirePermission(PermissionType.SpeakByBot)]
+        [RequirePermission(PermissionType.SpeakByBot), RequireBotPermission(ChannelPermission.ManageMessages)]
         [Summary("올리브토스트로 말을 할 수 있습니다\n`말`은 500자 이하여야 합니다")]
         public async Task Say([Remainder, Name("말")] string input)
         {
