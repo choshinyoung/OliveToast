@@ -49,7 +49,22 @@ namespace OliveToast.Commands
         [Summary("올리브토스트와 끝말잇기를 할 수 있습니다\n답장 기능을 사용하면 게임을 이어서 할 수 있습니다")]
         public async Task WordRelay(string word)
         {
-            await Context.MsgReplyEmbedAsync(WordsManager.Words.Contains(word));
+            if (!WordsManager.Words.Contains(word))
+            {
+                await Context.MsgReplyEmbedAsync("너무 사전에 없는 단어;;");
+                return;
+            }
+
+            char prefix = word.Last();
+            List<string> wordList = WordsManager.Words.Where(w => w.StartsWith(prefix)).ToList();
+
+            if (wordList.Count == 0)
+            {
+                await Context.MsgReplyEmbedAsync("한방단어 밴;;;");
+                return;
+            }
+
+            await Context.MsgReplyEmbedAsync(wordList[new Random().Next(0, wordList.Count)]);
         }
 
         [Command("추첨")]
