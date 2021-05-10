@@ -64,7 +64,7 @@ namespace OliveToast.Commands
             }
             else
             {
-                await Context.MsgReplyEmbedAsync("게임이 이미 진행중입니다");
+                await Context.MsgReplyEmbedAsync("게임이 이미 진행중이에요");
             }
         }
 
@@ -155,7 +155,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await Context.MsgReplyEmbedAsync($"축하합니다! ||{users[new Random().Next(0, users.Length)].Mention}||님이 당첨되었습니다! :tada:");
+            await Context.MsgReplyEmbedAsync($"||{users[new Random().Next(0, users.Length)].Mention}||님이 당첨됐어요! :tada:");
         }
 
         [Command("추첨")]

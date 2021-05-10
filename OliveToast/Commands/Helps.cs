@@ -117,7 +117,7 @@ namespace OliveToast.Commands
                                 _ => null
                             };
                         }
-                        permission = permission != null ? $"\n - `<{permission}>` 권한이 필요합니다" : "";
+                        permission = permission != null ? $"\n - `이 커맨드를 실행하려면 <{permission}>` 권한이 필요해요" : "";
 
                         emb.AddField($"{EventHandler.prefix}{cmdName} {param}", $"{info.Summary}{permission}");
                     }
@@ -126,7 +126,7 @@ namespace OliveToast.Commands
                 }
                 else
                 {
-                    await Context.MsgReplyEmbedAsync("해당 커맨드 또는 카테고리는 존재하지 않습니다");
+                    await Context.MsgReplyEmbedAsync("해당 커맨드 또는 카테고리가 없어요");
                 }
             }
         }
