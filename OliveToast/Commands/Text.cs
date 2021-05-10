@@ -200,5 +200,27 @@ namespace OliveToast.Commands
             EmbedBuilder emb = Context.CreateEmbed(title: "안드로어", description: HangulString.JoinPhonemes(result));
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
+
+        [Command("인코딩"), Alias("Base64")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("주어진 글을 Base64로 변환합니다")]
+        public async Task Encode([Remainder, Name("입력")] string input)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(input);
+            string result = Convert.ToBase64String(bytes);
+
+            await Context.MsgReplyEmbedAsync(result);
+        }
+
+        [Command("디코딩")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("Base64로 인코딩된 글을 디코딩합니다")]
+        public async Task Decode([Remainder, Name("입력")] string input)
+        {
+            byte[] bytes = Convert.FromBase64String(input);
+            string result = Encoding.UTF8.GetString(bytes);
+
+            await Context.MsgReplyEmbedAsync(result);
+        }
     }
 }
