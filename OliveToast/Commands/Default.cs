@@ -116,7 +116,7 @@ namespace OliveToast.Commands
                 a *= i;
             }
 
-            await Context.MsgReplyEmbedAsync($"{n}! = **{a}**");
+            await Context.MsgReplyEmbedAsync($"{n}! = {a}");
         }
     }
 }

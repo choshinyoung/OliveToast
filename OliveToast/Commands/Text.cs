@@ -53,7 +53,7 @@ namespace OliveToast.Commands
 
         [Command("안드로어"), Alias("안", "dksemfhdj", "dks")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("영어 키보드로 입력한 글을 한글로 바꿔줍니다")]
+        [Summary("영어 키보드로 입력된 글을 한글로 바꿔줍니다")]
         public async Task AndroLang([Remainder, Name("말")] string input)
         {
             char[] en = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
@@ -203,6 +203,25 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
+        [Command("역안드로어"), Alias("역안", "durdksemfhdj", "durdks")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("한글 키보드로 입력된 글을 영어로 바꿔줍니다")]
+        public async Task RvsAndroLang([Remainder, Name("말")] string input)
+        {
+            string[] ko = { "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "ㅃ", "ㅉ", "ㄸ", "ㄲ", "ㅆ", "ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ", "ㅐ", "ㅔ", "ㅒ", "ㅖ",
+                                                        "ㄳ", "ㄵ", "ㄶ", "ㄺ", "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ", "ㅀ", "ㅄ", "ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ" };
+
+            string[] en = { "r", "s", "e", "f", "a", "q", "t", "d", "w", "c", "z", "x", "v", "g", "Q", "W", "E", "R", "T", "k", "i", "j", "u", "h", "y", "n", "b", "m", "l", "o", "p", "O", "P",
+                                                        "rt", "sw", "sg", "fr", "fa", "fq", "ft", "fx", "fv", "fg", "qt", "hk", "ho", "hl", "nj", "np", "nl", "ml" };
+
+            string splited = HangulString.SplitToPhonemes(input);
+
+            string result = string.Join("", splited.Select(c => ko.Contains(c.ToString()) ? en[Array.IndexOf(ko, c.ToString())] : c.ToString()));
+
+            EmbedBuilder emb = Context.CreateEmbed(title: "역안드로어", description: result);
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
         [Command("인코딩"), Alias("Base64")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("주어진 글을 Base64로 변환합니다")]
@@ -229,6 +248,7 @@ namespace OliveToast.Commands
             catch
             {
                 EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: "해당 문자열을 디코딩 할 수 없어요");
+                await Context.MsgReplyEmbedAsync(emb.Build());
             }
         }
 
