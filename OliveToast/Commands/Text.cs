@@ -47,7 +47,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await ReplyAsync(string.Join("", input.Reverse()));
+            await ReplyAsync(new string(input.Reverse().ToArray()));
         }
 
         [Command("안드로어"), Alias("안", "dksemfhdj", "dks")]
@@ -78,13 +78,13 @@ namespace OliveToast.Commands
             string result = "";
             for(int i = 0; i < kInput.Length; i++)
             {
-                if (kInput.Length > i + 4 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(string.Join("", kInput[i + 1], kInput[i + 2])) && combinableJong.Contains(string.Join("", kInput[i + 3], kInput[i + 4])) && (kInput.Length == i + 5 || !new HangulChar(kInput[i + 5]).IsNucleus()))
+                if (kInput.Length > i + 4 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(new string(kInput[i + 1], kInput[i + 2])) && combinableJong.Contains(new string(kInput[i + 3], kInput[i + 4])) && (kInput.Length == i + 5 || !new HangulChar(kInput[i + 5]).IsNucleus()))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[] 
                     {
                         kInput[i],
-                        combinedJoong[Array.IndexOf(combinableJoong, string.Join("", kInput[i + 1], kInput[i + 2]))], 
-                        combinedJong[Array.IndexOf(combinableJong, string.Join("", kInput[i + 3], kInput[i + 4]))] 
+                        combinedJoong[Array.IndexOf(combinableJoong, new string(kInput[i + 1], kInput[i + 2]))], 
+                        combinedJong[Array.IndexOf(combinableJong, new string(kInput[i + 3], kInput[i + 4]))] 
                     }, out char res);
                      
                     if (isSuccess)
@@ -97,13 +97,13 @@ namespace OliveToast.Commands
                         result += kInput[i];
                     }
                 }
-                else if(kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && new HangulChar(kInput[i + 1]).IsNucleus() && combinableJong.Contains(string.Join("", kInput[i + 2], kInput[i + 3])) && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
+                else if(kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && new HangulChar(kInput[i + 1]).IsNucleus() && combinableJong.Contains(new string(kInput[i + 2], kInput[i + 3])) && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[]
                     {
                         kInput[i],
                         kInput[i + 1],
-                        combinedJong[Array.IndexOf(combinableJong, string.Join("", kInput[i + 2], kInput[i + 3]))]
+                        combinedJong[Array.IndexOf(combinableJong, new string(kInput[i + 2], kInput[i + 3]))]
                     }, out char res);
 
                     if (isSuccess)
@@ -116,12 +116,12 @@ namespace OliveToast.Commands
                         result += kInput[i];
                     }
                 }
-                else if (kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(string.Join("", kInput[i + 1], kInput[i + 2])) && new HangulChar(kInput[i + 3]).IsCoda() && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
+                else if (kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(new string(kInput[i + 1], kInput[i + 2])) && new HangulChar(kInput[i + 3]).IsCoda() && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[]
                     {
                         kInput[i],
-                        combinedJoong[Array.IndexOf(combinableJoong, string.Join("", kInput[i + 1], kInput[i + 2]))],
+                        combinedJoong[Array.IndexOf(combinableJoong, new string(kInput[i + 1], kInput[i + 2]))],
                         kInput[i + 3]
                     }, out char res);
 
@@ -135,12 +135,12 @@ namespace OliveToast.Commands
                         result += kInput[i];
                     }
                 }
-                else if (kInput.Length > i + 2 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(string.Join("", kInput[i + 1], kInput[i + 2])))
+                else if (kInput.Length > i + 2 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(new string(kInput[i + 1], kInput[i + 2])))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[]
                     {
                         kInput[i],
-                        combinedJoong[Array.IndexOf(combinableJoong, string.Join("", kInput[i + 1], kInput[i + 2]))],
+                        combinedJoong[Array.IndexOf(combinableJoong, new string(kInput[i + 1], kInput[i + 2]))],
                         '\u0000'
                     }, out char res);
 
@@ -229,6 +229,60 @@ namespace OliveToast.Commands
             {
                 EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: "해당 문자열을 디코딩 할 수 없어요");
             }
+        }
+
+        [Command("진법 변환"), Alias("진수 변환", "진법", "진수")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("`from`진수 `수`를 `to`진수로 변환합니다\n0-9, a-z를 사용해 36진수까지 표현할 수 있습니다")]
+        public async Task BaseConvert(ulong from, ulong to, [Remainder, Name("수")] string num)
+        {
+            if (from > 36 || to > 36 || from < 2 || to < 2)
+            {
+                await Context.MsgReplyEmbedAsync("36 이하, 2 이상의 진법을 입력해주세요");
+                return;
+            }
+
+            char[] numLetters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+
+            num = new string(num.Where(n => n != ' ').ToArray()).ToUpper();
+            if (num.Any(c => !numLetters.Contains(c)))
+            {
+                await Context.MsgReplyEmbedAsync("0-9, a-z와 공백으로만 이루어진 문자열을 입력해주세요");
+                return;
+            }
+            if (num.Any(c => (ulong)Array.IndexOf(numLetters, c) >= from))
+            {
+                await Context.MsgReplyEmbedAsync($"{from}진법에서 사용할 수 없는 문자가 있어요");
+                return;
+            }
+
+            ulong dec = 0;
+
+            ulong a = 1;
+            foreach (char c in num.Reverse())
+            {
+                dec += (ulong)Array.IndexOf(numLetters, c) * a;
+                a *= from;
+            }
+
+            if (dec < 0) 
+            {
+                await Context.MsgReplyEmbedAsync("숫자가 너무 커서 계산할 수 없어요");
+                return;
+            }
+
+            string result = "";
+
+            while (dec > 0)
+            {
+                ulong b = dec % to;
+                dec /= to;
+                result += numLetters[b];
+            }
+            result = new string(result.Reverse().ToArray());
+
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{from}진수 => {to}진수", description: result);
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
     }
 }

@@ -67,14 +67,14 @@ namespace OliveToast.Commands
 
         public static async Task<bool> WordRelay(SocketCommandContext context, string word)
         {
-            if (WordSession.Sessions.ContainsKey(context.User.Id) && WordSession.Sessions[context.User.Id].channel == context.Channel.Id)
+            if (WordSession.Sessions.ContainsKey(context.User.Id))
             {
                 if (word == "끝")
                 {
                     WordSession.Sessions.Remove(context.User.Id);
                     await context.MsgReplyEmbedAsync("게임 끝!");
                 }
-                else
+                else if (WordSession.Sessions[context.User.Id].channel == context.Channel.Id)
                 {
                     if (!WordsManager.Words.Contains(word))
                     {
