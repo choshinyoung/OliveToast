@@ -5,6 +5,7 @@ using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -234,7 +235,7 @@ namespace OliveToast.Commands
         [Command("진법 변환"), Alias("진수 변환", "진법", "진수")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("`from`진수 `수`를 `to`진수로 변환합니다\n0-9, a-z를 사용해 36진수까지 표현할 수 있습니다")]
-        public async Task BaseConvert(ulong from, ulong to, [Remainder, Name("수")] string num)
+        public async Task BaseConvert(int from, int to, [Remainder, Name("수")] string num)
         {
             if (from > 36 || to > 36 || from < 2 || to < 2)
             {
@@ -250,32 +251,26 @@ namespace OliveToast.Commands
                 await Context.MsgReplyEmbedAsync("0-9, a-z와 공백으로만 이루어진 문자열을 입력해주세요");
                 return;
             }
-            if (num.Any(c => (ulong)Array.IndexOf(numLetters, c) >= from))
+            if (num.Any(c => Array.IndexOf(numLetters, c) >= from))
             {
                 await Context.MsgReplyEmbedAsync($"{from}진법에서 사용할 수 없는 문자가 있어요");
                 return;
             }
 
-            ulong dec = 0;
+            BigInteger dec = 0;
 
-            ulong a = 1;
+            BigInteger a = 1;
             foreach (char c in num.Reverse())
             {
-                dec += (ulong)Array.IndexOf(numLetters, c) * a;
+                dec += Array.IndexOf(numLetters, c) * a;
                 a *= from;
-            }
-
-            if (dec < 0) 
-            {
-                await Context.MsgReplyEmbedAsync("숫자가 너무 커서 계산할 수 없어요");
-                return;
             }
 
             string result = "";
 
             while (dec > 0)
             {
-                ulong b = dec % to;
+                int b = (int)(dec % to);
                 dec /= to;
                 result += numLetters[b];
             }
