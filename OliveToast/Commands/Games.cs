@@ -210,10 +210,12 @@ namespace OliveToast.Commands
 
                     int speed = (int)(content.Length / (DateTime.Now - StartTime).TotalSeconds * 100);
 
-                    int accuracy = (int)((double)content.Where((c, i) => i < sentence.Length && c == sentence[i]).Count() / sentence.Length * 100);
+                    double a = content.Length < sentence.Length ?
+                        (double)content.Where((c, i) => i < sentence.Length && c == sentence[i]).Count() / sentence.Length :
+                        (double)sentence.Where((c, i) => i < content.Length && c == content[i]).Count() / content.Length;
+                    int accuracy = (int)(a * 100);
 
                     EmbedBuilder emb = context.CreateEmbed(title: "타자 연습", description: $"타수: {speed}\n정확도: {accuracy}%");
-
                     await context.MsgReplyEmbedAsync(emb.Build());
 
                     TypingSession.Sessions.Remove(context.User.Id);
