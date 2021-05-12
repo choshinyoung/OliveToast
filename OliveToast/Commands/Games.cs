@@ -198,6 +198,24 @@ namespace OliveToast.Commands
             TypingSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, sentence, DateTime.Now));
         }
 
+        [Command("영어 타자 연습"), Alias("영타", "entyping")]
+        [RequirePermission(PermissionType.UseBot), RequireBotPermission(ChannelPermission.AttachFiles)]
+        [Summary("타자 연습을 할 수 있습니다")]
+        public async Task StartEnTypingGame()
+        {
+            string sentence = SentenceManager.EnSentences[new Random().Next(SentenceManager.EnSentences.Count)];
+
+            if (TypingSession.Sessions.ContainsKey(Context.User.Id))
+            {
+                await Context.MsgReplyEmbedAsync("게임이 이미 진행중이에요");
+                return;
+            }
+
+            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}");
+
+            TypingSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, sentence, DateTime.Now));
+        }
+
         public static async Task<bool> TypingGame(SocketCommandContext context)
         {
             if (TypingSession.Sessions.ContainsKey(context.User.Id))

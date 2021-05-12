@@ -24,15 +24,19 @@ namespace OliveToast.Managements
     {
         public static Dictionary<ulong, (ulong channel, List<string> words)> Sessions = new();
     }
+
     class SentenceManager
     {
         public static readonly List<string> Sentences;
+        public static readonly List<string> EnSentences;
 
         static SentenceManager()
         {
             string content = File.ReadAllText("sentences.json");
-
             Sentences = JsonConvert.DeserializeObject<List<string>>(content);
+
+            content = File.ReadAllText("sentencesEn.json");
+            EnSentences = JsonConvert.DeserializeObject<List<string>>(content);
         }
     }
 

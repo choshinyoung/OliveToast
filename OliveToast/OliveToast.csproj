@@ -19,6 +19,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="sentencesEn.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="words.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
