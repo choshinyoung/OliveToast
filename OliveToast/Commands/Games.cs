@@ -187,60 +187,15 @@ namespace OliveToast.Commands
         {
             string sentence = SentenceManager.Sentences[new Random().Next(SentenceManager.Sentences.Count)];
 
-            string text = "";
-            int length = 0;
-            foreach(string s in sentence.Split(' '))
-            {
-                if (length + s.Length > 15)
-                {
-                    text += $"\n{s} ";
-                    length = 0;
-                }
-                else
-                {
-                    text += $"{s} ";
-                }
-
-                length += s.Length;
-            }
-
             if (TypingSession.Sessions.ContainsKey(Context.User.Id))
             {
                 await Context.MsgReplyEmbedAsync("게임이 이미 진행중이에요");
                 return;
             }
 
+            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}");
+
             TypingSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, sentence, DateTime.Now));
-
-            Bitmap bmp = new Bitmap(512, 128);
-            Graphics g = Graphics.FromImage(bmp); 
-            
-            g.InterpolationMode = InterpolationMode.High;
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-
-            g.Clear(System.Drawing.Color.Transparent);
-
-            StringFormat format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            Pen pen = new Pen(System.Drawing.Color.FromArgb(54, 57, 64), 2.5f);
-            Brush brush = Brushes.White;
-
-            GraphicsPath path = new GraphicsPath();
-            path.AddString(text, FontFamily.GenericSansSerif, (int)FontStyle.Bold, 25, new Rectangle(0, 0, bmp.Width, bmp.Height), format);
-
-            g.DrawPath(pen, path);
-            g.FillPath(brush, path);
-
-            path.Dispose();
-            g.Dispose();
-
-            Stream stream = new MemoryStream();
-            bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-            stream.Position = 0;
-
-            await Context.Channel.SendFileAsync(stream, "typing.png");
-            stream.Dispose();
         }
 
         public static async Task<bool> TypingGame(SocketCommandContext context)
@@ -253,7 +208,7 @@ namespace OliveToast.Commands
                 {
                     string content = context.Message.Content;
 
-                    int speed = (int)(content.Length / (DateTime.Now - StartTime).TotalSeconds * 60);
+                    int speed = (int)(content.Length / (DateTime.Now - StartTime).TotalSeconds * 100);
 
                     int accuracy = (int)((double)content.Where((c, i) => i < sentence.Length && c == sentence[i]).Count() / sentence.Length * 100);
 
@@ -262,6 +217,8 @@ namespace OliveToast.Commands
                     await context.MsgReplyEmbedAsync(emb.Build());
 
                     TypingSession.Sessions.Remove(context.User.Id);
+
+                    return true;
                 }
             }
 
