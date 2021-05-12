@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,39 @@ namespace OliveToast.Commands
 
             result = result.ToLower();
 
-            await Context.MsgReplyAsync(result);
+            await ReplyAsync(result);
+        }
+
+        [Command("외부이모지")]
+        [RequirePermission(PermissionType.SpeakByBot)]
+        [Summary("다른 서버의 이모지를 사용할 수 있습니다\n(올리브토스트가 있는 서버의 이모지만 사용 가능합니다)")]
+        public async Task CustomEmoji([Name("입력")] params string[] input)
+        {
+            List<GuildEmote> emojis = new List<GuildEmote>();
+            foreach(var g in Program.Client.Guilds)
+            {
+                emojis.AddRange(g.Emotes);
+            }
+
+            string result = "";
+
+            Random r = new Random();
+
+            foreach(string s in input)
+            {
+                List<GuildEmote> inputEmojis = emojis.Where(e => e.Name == s).ToList();
+                if (inputEmojis.Any())
+                {
+                    GuildEmote e = inputEmojis[r.Next(inputEmojis.Count)];
+                    result += $"<{(e.Animated ? "a" : "")}:{e.Name}:{e.Id}>";
+                }
+                else
+                {
+                    result += $":{s}:";
+                }
+            }
+
+            await ReplyAsync(result);
         }
     }
 }
