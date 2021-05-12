@@ -98,5 +98,21 @@ namespace OliveToast.Commands
 
             await ReplyAsync(result);
         }
+
+        [Command("이모지아이디")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("이모지의 아이디를 얻을 수 있습니다")]
+        public async Task EmojiID([Name("이름")] string name)
+        {
+            List<GuildEmote> emojis = Context.Guild.Emotes.Where(e => e.Name == name).ToList();
+            if (emojis.Any())
+            {
+                await Context.MsgReplyEmbedAsync(emojis.First().Id);
+            }
+            else
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 이모지에요");
+            }
+        }
     }
 }
