@@ -4,6 +4,10 @@ using Discord.WebSocket;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +34,7 @@ namespace OliveToast.Commands
         [Summary("가위바위보입니다\n`가위`, `바위`, `보` 중 하나를 입력할 수 있습니다")]
         public async Task RockScissorsPaper([Name("입력")] Rcp input)
         {
-            switch(new Random().Next(0, 3))
+            switch(new Random().Next(3))
             {
                 case 0:
                     await Context.MsgReplyEmbedAsync($"{input}! 무승부!");
@@ -65,10 +69,15 @@ namespace OliveToast.Commands
             }
         }
 
-        public static async Task<bool> WordRelay(SocketCommandContext context, string word)
+        public static async Task<bool> WordRelay(SocketCommandContext context, string word = null)
         {
             if (WordSession.Sessions.ContainsKey(context.User.Id))
             {
+                if (word == null)
+                {
+                    word = context.Message.Content;
+                }
+
                 if (word == "끝")
                 {
                     WordSession.Sessions.Remove(context.User.Id);
@@ -114,7 +123,7 @@ namespace OliveToast.Commands
                             return true;
                         }
 
-                        nextWord = wordList[new Random().Next(0, wordList.Count)];
+                        nextWord = wordList[new Random().Next(wordList.Count)];
                         wordList.Remove(nextWord);
                     }
                     while (usedWords.Contains(nextWord));
@@ -152,7 +161,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await Context.MsgReplyEmbedAsync($"||{users[new Random().Next(0, users.Length)].Mention}||님이 당첨됐어요! :tada:");
+            await Context.MsgReplyEmbedAsync($"||{users[new Random().Next(users.Length)].Mention}||님이 당첨됐어요! :tada:");
         }
 
         [Command("추첨")]
@@ -169,6 +178,94 @@ namespace OliveToast.Commands
             }
 
             await Rot(users);
+        }
+
+        [Command("타자 연습"), Alias("타자", "타자연습")]
+        [RequirePermission(PermissionType.UseBot), RequireBotPermission(ChannelPermission.AttachFiles)]
+        [Summary("타자 연습을 할 수 있습니다")]
+        public async Task StartTypingGame()
+        {
+            string sentence = SentenceManager.Sentences[new Random().Next(SentenceManager.Sentences.Count)];
+
+            string text = "";
+            int length = 0;
+            foreach(string s in sentence.Split(' '))
+            {
+                if (length + s.Length > 15)
+                {
+                    text += $"\n{s} ";
+                    length = 0;
+                }
+                else
+                {
+                    text += $"{s} ";
+                }
+
+                length += s.Length;
+            }
+
+            if (TypingSession.Sessions.ContainsKey(Context.User.Id))
+            {
+                await Context.MsgReplyEmbedAsync("게임이 이미 진행중이에요");
+                return;
+            }
+
+            TypingSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, sentence, DateTime.Now));
+
+            Bitmap bmp = new Bitmap(512, 128);
+            Graphics g = Graphics.FromImage(bmp); 
+            
+            g.InterpolationMode = InterpolationMode.High;
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+
+            g.Clear(System.Drawing.Color.Transparent);
+
+            StringFormat format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            Pen pen = new Pen(System.Drawing.Color.FromArgb(54, 57, 64), 2.5f);
+            Brush brush = Brushes.White;
+
+            GraphicsPath path = new GraphicsPath();
+            path.AddString(text, FontFamily.GenericSansSerif, (int)FontStyle.Bold, 25, new Rectangle(0, 0, bmp.Width, bmp.Height), format);
+
+            g.DrawPath(pen, path);
+            g.FillPath(brush, path);
+
+            path.Dispose();
+            g.Dispose();
+
+            Stream stream = new MemoryStream();
+            bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            stream.Position = 0;
+
+            await Context.Channel.SendFileAsync(stream, "typing.png");
+            stream.Dispose();
+        }
+
+        public static async Task<bool> TypingGame(SocketCommandContext context)
+        {
+            if (TypingSession.Sessions.ContainsKey(context.User.Id))
+            {
+                var (channel, sentence, StartTime) = TypingSession.Sessions[context.User.Id];
+
+                if (channel == context.Channel.Id) 
+                {
+                    string content = context.Message.Content;
+
+                    int speed = (int)(content.Length / (DateTime.Now - StartTime).TotalSeconds * 60);
+
+                    int accuracy = (int)((double)content.Where((c, i) => i < sentence.Length && c == sentence[i]).Count() / sentence.Length * 100);
+
+                    EmbedBuilder emb = context.CreateEmbed(title: "타자 연습", description: $"타수: {speed}\n정확도: {accuracy}%");
+
+                    await context.MsgReplyEmbedAsync(emb.Build());
+
+                    TypingSession.Sessions.Remove(context.User.Id);
+                }
+            }
+
+            return false;
         }
     }
 }

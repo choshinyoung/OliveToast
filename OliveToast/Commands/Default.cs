@@ -96,7 +96,12 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await Context.MsgReplyEmbedAsync(exp.Evaluate());
+            object result = exp.Evaluate();
+            if (result.GetType() == typeof(double))
+            {
+                result = Math.Round((double)result, 10, MidpointRounding.AwayFromZero);
+            }
+            await Context.MsgReplyEmbedAsync(result);
         }
 
         [Command("팩토리얼"), Alias("팩")]

@@ -37,7 +37,11 @@ namespace OliveToast
 
             SocketCommandContext context = new SocketCommandContext(Program.Client, userMsg);
 
-            if (await Games.WordRelay(context, context.Message.Content))
+            if (await Games.WordRelay(context))
+            {
+                return;
+            }
+            if (await Games.TypingGame(context))
             {
                 return;
             }
