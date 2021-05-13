@@ -22,22 +22,12 @@ namespace OliveToast.Commands
         [Summary("이미지를 gif로 바꿔줍니다")]
         public async Task ToGif([Name("Url")] string url = null)
         {
-            if (url == null)
+            MemoryStream stream = Context.GetFileStream(url);
+            if (stream == null)
             {
-                if (Context.Message.Attachments.Any()) {
-                    url = Context.Message.Attachments.First().Url;
-                }
-                else
-                {
-                    await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
-                    return;
-                }
+                await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
+                return;
             }
-
-            WebClient wc = new WebClient();
-            byte[] bytes = wc.DownloadData(url);
-
-            MemoryStream stream = new MemoryStream(bytes);
 
             await Context.Channel.SendFileAsync(stream, $"{Context.User.Username}-{Context.User.Discriminator}.gif");
 

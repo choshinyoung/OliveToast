@@ -4,6 +4,8 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,6 +51,28 @@ namespace OliveToast.Managements
         public static EmbedBuilder AddEmptyField(this EmbedBuilder emb)
         {
             return emb.AddField("**  **", "** **", true);
+        }
+
+        public static MemoryStream GetFileStream(this SocketCommandContext context, string url)
+        {
+            if (url == null)
+            {
+                if (context.Message.Attachments.Any())
+                {
+                    url = context.Message.Attachments.First().Url;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            WebClient wc = new WebClient();
+            byte[] bytes = wc.DownloadData(url);
+
+            MemoryStream stream = new MemoryStream(bytes);
+
+            return stream;
         }
     }
 }
