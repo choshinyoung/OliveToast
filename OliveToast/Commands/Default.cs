@@ -34,7 +34,16 @@ namespace OliveToast.Commands
         {
             await Context.MsgReplyEmbedAsync($"{Program.Client.Latency}ms");
         }
-        
+
+        [Command("업타임")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("봇의 업타임을 확인합니다")]
+        public async Task Uptime()
+        {
+            TimeSpan t = (DateTime.Now - Program.Uptime);
+            await Context.MsgReplyEmbedAsync($"{t.Days}일 {t.Hours}시간 {t.Minutes}분 {t.Seconds}초");
+        }
+
         [Command("봇 초대 링크"), Alias("초대 링크", "초대", "봇 초대")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("올리브토스트를 초대할 수 있는 초대 링크입니다")]

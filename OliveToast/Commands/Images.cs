@@ -39,7 +39,7 @@ namespace OliveToast.Commands
 
             MemoryStream stream = new MemoryStream(bytes);
 
-            await Context.Channel.SendFileAsync(stream, $"{Context.User.Username}_{Context.User.Discriminator}.gif");
+            await Context.Channel.SendFileAsync(stream, $"{Context.User.Username}-{Context.User.Discriminator}.gif");
 
             stream.Dispose();
         }

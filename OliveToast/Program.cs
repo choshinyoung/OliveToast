@@ -17,6 +17,8 @@ namespace OliveToast
         public static CommandService Command;
         public static IServiceProvider Service;
 
+        public static DateTime Uptime;
+
         private readonly DiscordSocketConfig clientConfig = new DiscordSocketConfig
         {
             AlwaysDownloadUsers = true,
@@ -55,6 +57,8 @@ namespace OliveToast
 
             await Client.StartAsync();
             await Client.SetGameAsync($"{ConfigManager.Get("PREFIX")}도움", null, ActivityType.Playing);
+
+            Uptime = DateTime.Now;
 
             await Task.Delay(-1);
         }
