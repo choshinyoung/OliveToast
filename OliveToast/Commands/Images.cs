@@ -1,8 +1,10 @@
 ﻿using Discord;
 using Discord.Commands;
+using Microsoft.VisualBasic;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -32,6 +34,105 @@ namespace OliveToast.Commands
             await Context.Channel.SendFileAsync(stream, $"{Context.User.Username}-{Context.User.Discriminator}.gif");
 
             stream.Dispose();
+        }
+
+        [Command("팔레트"), Alias("팔레트 추출", "색추출")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("이미지에서 가장 많이 쓰인 색을 추출합니다")]
+        public async Task Palette([Name("Url")] string url = null)
+        {
+            MemoryStream stream = Context.GetFileStream(url);
+            if (stream == null)
+            {
+                await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
+                return;
+            }
+
+            Bitmap bmp = (Bitmap)System.Drawing.Image.FromStream(stream);
+
+            Dictionary<System.Drawing.Color, int> colors = new Dictionary<System.Drawing.Color, int>();
+
+            for (int x = 0; x < bmp.Width; x++)
+            {
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    System.Drawing.Color px = bmp.GetPixel(x, y);
+                    if (colors.ContainsKey(px))
+                    {
+                        colors[px]++;
+                    }
+                    else
+                    {
+                        colors.Add(px, 1);
+                    }
+                }
+            }
+
+            List<(System.Drawing.Color color, int count)> colorList = colors.Select(c => (c.Key, c.Value)).ToList();
+            colorList.Sort((t1, t2) => t2.count.CompareTo(t1.count));
+            for (int i = 0; i < colorList.Count; i++)
+            {
+                for (int o = 0; o < i; o++)
+                {
+                    System.Drawing.Color c1 = colorList[i].color;
+                    System.Drawing.Color c2 = colorList[o].color;
+
+                    if (Math.Abs(c1.R - c2.R) < 10 && Math.Abs(c1.G - c2.G) < 10 && Math.Abs(c1.B - c2.B) < 10)
+                    {
+                        colorList[o] = (colorList[o].color, colorList[o].count + colorList[i].count);
+                        colorList.RemoveAt(i);
+                        i--;
+                        break;
+                    }
+                }
+            }
+            colorList.Sort((t1, t2) => t2.count.CompareTo(t1.count));
+
+            if (colorList.Count > 10)
+            {
+                colorList = colorList.GetRange(0, 10);
+            }
+
+            Bitmap output;
+            StringFormat format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far };
+
+            int cellCount = 0;
+
+            if (colorList.Count <= 5)
+            {
+                cellCount = colorList.Count;
+
+                output = new Bitmap(colorList.Count * 100, 100);
+            }
+            else
+            {
+                cellCount = (int)Math.Ceiling(colorList.Count / 2f);
+
+                output = new Bitmap(cellCount * 100, 200);
+            }
+
+            Graphics g = Graphics.FromImage(output);
+
+            for (int i = 0; i < colorList.Count; i++)
+            {
+                bool isTop = i < cellCount;
+                RectangleF rect = new RectangleF((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
+
+                g.FillRectangle(new SolidBrush(colorList[i].color), rect);
+                g.DrawString(colorList[i].color.ToHex(), new Font(new FontFamily("NanumGothic"), 13f), colorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
+            }
+
+            MemoryStream outputStram = new MemoryStream();
+            output.Save(outputStram, System.Drawing.Imaging.ImageFormat.Png);
+            outputStram.Position = 0;
+
+            EmbedBuilder emb = Context.CreateEmbed(title: "팔레트", imgUrl: "attachment://result.png");
+            for (int i = 0; i < colorList.Count; i++)
+            {
+                emb.AddField(colorList[i].color.ToHex(), colorList[i].color.ToFormattedString(), true);
+            }
+
+            await Context.Channel.SendFileAsync(outputStram, "result.png", embed: emb.Build());
         }
 
         [Command("이모지 변환")]

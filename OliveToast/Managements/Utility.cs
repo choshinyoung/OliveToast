@@ -4,6 +4,7 @@ using HPark.Hangul;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,36 @@ namespace OliveToast.Managements
         public static string GetInvite()
         {
             return $"https://discord.com/oauth2/authorize?client_id={Program.Client.CurrentUser.Id}&scope=bot&permissions=2416241734";
+        }
+
+        public class TimeOutWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                WebRequest wr = base.GetWebRequest(address);
+                wr.Timeout = 10000;
+                return wr;
+            }
+        }
+    }
+
+    static class ColorExtension
+    {
+        public static string ToHex(this System.Drawing.Color color)
+        {
+            return $"#{toHex(color.R)}{toHex(color.G)}{toHex(color.B)}";
+
+            static string toHex(int dec)
+            {
+                string result = string.Format("{0:x2}", dec).ToUpper();
+                    
+                return result;
+            }
+        }
+
+        public static string ToFormattedString(this System.Drawing.Color color)
+        {
+            return $"rgb({color.R}, {color.G}, {color.B})";
         }
     }
 

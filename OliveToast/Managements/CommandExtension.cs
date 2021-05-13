@@ -67,7 +67,7 @@ namespace OliveToast.Managements
                 }
             }
 
-            WebClient wc = new WebClient();
+            Utility.TimeOutWebClient wc = new Utility.TimeOutWebClient();
             byte[] bytes = wc.DownloadData(url);
 
             MemoryStream stream = new MemoryStream(bytes);
