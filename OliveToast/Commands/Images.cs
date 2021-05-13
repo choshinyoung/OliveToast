@@ -3,7 +3,9 @@ using Discord.Commands;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using static OliveToast.Managements.RequireCategoryEnable;
@@ -11,10 +13,37 @@ using static OliveToast.Managements.RequirePermission;
 
 namespace OliveToast.Commands
 {
-    [Name("이모지")]
-    [RequireCategoryEnable(CategoryType.Emoji)]
-    public class Emoji : ModuleBase<SocketCommandContext>
+    [Name("이미지")]
+    [RequireCategoryEnable(CategoryType.Image)]
+    public class Images : ModuleBase<SocketCommandContext>
     {
+        [Command("움짤")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("이미지를 gif로 바꿔줍니다")]
+        public async Task ToGif([Name("Url")] string url = null)
+        {
+            if (url == null)
+            {
+                if (Context.Message.Attachments.Any()) {
+                    url = Context.Message.Attachments.First().Url;
+                }
+                else
+                {
+                    await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
+                    return;
+                }
+            }
+
+            WebClient wc = new WebClient();
+            byte[] bytes = wc.DownloadData(url);
+
+            MemoryStream stream = new MemoryStream(bytes);
+
+            await Context.Channel.SendFileAsync(stream, $"{Context.User.Username}_{Context.User.Discriminator}.gif");
+
+            stream.Dispose();
+        }
+
         [Command("이모지 변환")]
         [RequirePermission(PermissionType.SpeakByBot)]
         [Summary("글자를 이모지로 바꿔줍니다")]
