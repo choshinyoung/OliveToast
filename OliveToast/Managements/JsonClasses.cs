@@ -69,4 +69,40 @@ namespace OliveToast.Managements
             public WiKiInfo WiKiInfo { get; set; }
         }
     }
+
+    public class DicResult
+    {
+        public int result { get; set; }
+        public ReturnObject return_object { get; set; }
+
+        public class MetaInfo
+        {
+            public string Title { get; set; }
+            public string Link { get; set; }
+        }
+
+        public class WordInfo
+        {
+            public double PolysemyCode { get; set; }
+            public string Definition { get; set; }
+            public string POS { get; set; }
+            public List<string> Hypernym { get; set; }
+            public List<object> Hypornym { get; set; }
+        }
+
+        public class WWNWordInfo
+        {
+            public string Word { get; set; }
+            public double HomonymCode { get; set; }
+            public List<WordInfo> WordInfo { get; set; }
+            public List<object> Synonym { get; set; }
+            public List<object> Antonym { get; set; }
+        }
+
+        public class ReturnObject
+        {
+            public MetaInfo MetaInfo { get; set; }
+            public List<WWNWordInfo> WWN_WordInfo { get; set; }
+        }
+    }
 }
