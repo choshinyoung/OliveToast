@@ -48,7 +48,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            Bitmap bmp = new Bitmap(System.Drawing.Image.FromStream(stream), 100, 100);
+            Bitmap bmp = new Bitmap(System.Drawing.Image.FromStream(stream), 128, 128);
 
             // get all colors
             Dictionary<System.Drawing.Color, int> colors = new Dictionary<System.Drawing.Color, int>();
@@ -132,7 +132,7 @@ namespace OliveToast.Commands
                 Rectangle rect = new Rectangle(lastX, percentY, (int)((float)count / (bmp.Width * bmp.Height) * output.Width), 10);
 
                 g.FillRectangle(new SolidBrush(color), rect);
-                g.DrawLine(Pens.White, rect.X, rect.Y, rect.X, rect.Y + 10);
+                g.DrawLine(Pens.White, rect.X + rect.Width, rect.Y, rect.X + rect.Width, rect.Y + 10);
 
                 lastX += rect.Width;
             }
