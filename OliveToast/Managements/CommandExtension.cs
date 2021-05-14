@@ -59,11 +59,26 @@ namespace OliveToast.Managements
             {
                 if (context.Message.Attachments.Any())
                 {
+                    if (context.Message.Attachments.First().Size > 8000000)
+                    {
+                        throw new Exception("파일이 너무 크고 아름다워요");
+                    }
                     url = context.Message.Attachments.First().Url;
                 }
                 else
                 {
                     return null;
+                }
+            }
+            else
+            {
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(new Uri(url));
+                webRequest.Credentials = CredentialCache.DefaultCredentials;
+                HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
+                long fileSize = webResponse.ContentLength;
+                if (fileSize > 8000000)
+                {
+                    throw new Exception("파일이 너무 크고 아름다워요");
                 }
             }
 

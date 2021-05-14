@@ -48,7 +48,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            Bitmap bmp = (Bitmap)System.Drawing.Image.FromStream(stream);
+            Bitmap bmp = new Bitmap(System.Drawing.Image.FromStream(stream), 100, 100);
 
             Dictionary<System.Drawing.Color, int> colors = new Dictionary<System.Drawing.Color, int>();
 
@@ -66,12 +66,6 @@ namespace OliveToast.Commands
                         colors.Add(px, 1);
                     }
                 }
-            }
-
-            if (colors.Count > 100000)
-            {
-                await Context.MsgReplyEmbedAsync("색이 너무 많아요!");
-                return;
             }
 
             List<(System.Drawing.Color color, int count)> colorList = colors.Select(c => (c.Key, c.Value)).ToList();
