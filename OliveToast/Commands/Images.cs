@@ -24,7 +24,7 @@ namespace OliveToast.Commands
         [Summary("이미지를 gif로 바꿔줍니다")]
         public async Task ToGif([Name("Url")] string url = null)
         {
-            MemoryStream stream = Context.GetFileStream(ref url);
+            using MemoryStream stream = Context.GetFileStream(ref url);
             if (stream == null)
             {
                 await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
@@ -32,8 +32,6 @@ namespace OliveToast.Commands
             }
 
             await Context.Channel.SendFileAsync(stream, $"{Context.User.Username}-{Context.User.Discriminator}.gif");
-
-            stream.Dispose();
         }
 
         [Command("팔레트"), Alias("팔레트 추출", "색추출")]
@@ -41,29 +39,30 @@ namespace OliveToast.Commands
         [Summary("이미지에서 가장 많이 쓰인 색을 추출합니다")]
         public async Task Palette([Name("Url")] string url = null)
         {
-            MemoryStream stream = Context.GetFileStream(ref url);
+            using MemoryStream stream = Context.GetFileStream(ref url);
             if (stream == null)
             {
                 await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
                 return;
             }
 
-            Bitmap bmp = new Bitmap(System.Drawing.Image.FromStream(stream), 128, 128);
-
             // get all colors
             Dictionary<System.Drawing.Color, int> colors = new Dictionary<System.Drawing.Color, int>();
-            for (int x = 0; x < bmp.Width; x++)
+            using (Bitmap bmp = new Bitmap(System.Drawing.Image.FromStream(stream), 128, 128))
             {
-                for (int y = 0; y < bmp.Height; y++)
+                for (int x = 0; x < bmp.Width; x++)
                 {
-                    System.Drawing.Color px = bmp.GetPixel(x, y);
-                    if (colors.ContainsKey(px))
+                    for (int y = 0; y < bmp.Height; y++)
                     {
-                        colors[px]++;
-                    }
-                    else
-                    {
-                        colors.Add(px, 1);
+                        System.Drawing.Color px = bmp.GetPixel(x, y);
+                        if (colors.ContainsKey(px))
+                        {
+                            colors[px]++;
+                        }
+                        else
+                        {
+                            colors.Add(px, 1);
+                        }
                     }
                 }
             }
@@ -96,7 +95,6 @@ namespace OliveToast.Commands
             }
 
             Bitmap output;
-            StringFormat format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far };
 
             int cellCount = 0;
             if (slicedColorList.Count <= 5)
@@ -115,13 +113,17 @@ namespace OliveToast.Commands
             Graphics g = Graphics.FromImage(output);
 
             // draw palette
-            for (int i = 0; i < slicedColorList.Count; i++)
+            using (Font font = new Font(new FontFamily("NanumGothic"), 13f))
+            using (StringFormat format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far })
             {
-                bool isTop = i < cellCount;
-                Rectangle rect = new Rectangle((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
+                for (int i = 0; i < slicedColorList.Count; i++)
+                {
+                    bool isTop = i < cellCount;
+                    Rectangle rect = new Rectangle((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
 
-                g.FillRectangle(new SolidBrush(slicedColorList[i].color), rect);
-                g.DrawString(slicedColorList[i].color.ToHex(), new Font(new FontFamily("NanumGothic"), 13f), slicedColorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
+                    g.FillRectangle(new SolidBrush(slicedColorList[i].color), rect);
+                    g.DrawString(slicedColorList[i].color.ToHex(), font, slicedColorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
+                }
             }
 
             // draw percent bar
@@ -129,7 +131,7 @@ namespace OliveToast.Commands
             int lastX = 0;
             foreach (var (color, count) in colorList)
             {
-                Rectangle rect = new Rectangle(lastX, percentY, (int)((float)count / (bmp.Width * bmp.Height) * output.Width), 10);
+                Rectangle rect = new Rectangle(lastX, percentY, (int)((float)count / (128 * 128) * output.Width), 10);
 
                 g.FillRectangle(new SolidBrush(color), rect);
                 g.DrawLine(Pens.White, rect.X + rect.Width, rect.Y, rect.X + rect.Width, rect.Y + 10);
@@ -150,6 +152,8 @@ namespace OliveToast.Commands
             }
 
             await Context.Channel.SendFileAsync(outputStram, "result.png", embed: emb.Build());
+
+            outputStram.Dispose();
         }
 
         [Command("이모지 변환")]

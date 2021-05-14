@@ -74,15 +74,14 @@ namespace OliveToast.Managements
             {
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(new Uri(url));
                 webRequest.Credentials = CredentialCache.DefaultCredentials;
-                HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
-                long fileSize = webResponse.ContentLength;
-                if (fileSize > 8000000)
+                using HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
+                if (webResponse.ContentLength > 8000000)
                 {
                     throw new Exception("파일이 너무 크고 아름다워요");
                 }
             }
 
-            Utility.TimeOutWebClient wc = new Utility.TimeOutWebClient();
+            using Utility.TimeOutWebClient wc = new Utility.TimeOutWebClient();
             byte[] bytes = wc.DownloadData(url);
 
             MemoryStream stream = new MemoryStream(bytes);
