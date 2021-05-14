@@ -40,7 +40,7 @@ namespace OliveToast.Commands
         [Summary("봇의 업타임을 확인합니다")]
         public async Task Uptime()
         {
-            TimeSpan t = (DateTime.Now - Program.Uptime);
+            TimeSpan t = DateTime.Now - Program.Uptime;
             await Context.MsgReplyEmbedAsync($"{t.Days}일 {t.Hours}시간 {t.Minutes}분 {t.Seconds}초");
         }
 
