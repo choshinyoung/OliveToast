@@ -50,8 +50,8 @@ namespace OliveToast.Commands
 
             Bitmap bmp = new Bitmap(System.Drawing.Image.FromStream(stream), 100, 100);
 
+            // get all colors
             Dictionary<System.Drawing.Color, int> colors = new Dictionary<System.Drawing.Color, int>();
-
             for (int x = 0; x < bmp.Width; x++)
             {
                 for (int y = 0; y < bmp.Height; y++)
@@ -68,6 +68,7 @@ namespace OliveToast.Commands
                 }
             }
 
+            // find simillar colors
             List<(System.Drawing.Color color, int count)> colorList = colors.Select(c => (c.Key, c.Value)).ToList();
             colorList.Sort((t1, t2) => t2.count.CompareTo(t1.count));
             for (int i = 0; i < colorList.Count; i++)
@@ -98,7 +99,6 @@ namespace OliveToast.Commands
             StringFormat format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far };
 
             int cellCount = 0;
-
             if (slicedColorList.Count <= 5)
             {
                 cellCount = slicedColorList.Count;
@@ -114,6 +114,7 @@ namespace OliveToast.Commands
 
             Graphics g = Graphics.FromImage(output);
 
+            // draw palette
             for (int i = 0; i < slicedColorList.Count; i++)
             {
                 bool isTop = i < cellCount;
@@ -123,8 +124,8 @@ namespace OliveToast.Commands
                 g.DrawString(slicedColorList[i].color.ToHex(), new Font(new FontFamily("NanumGothic"), 13f), slicedColorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
             }
 
+            // draw percent bar
             int percentY = colorList.Count <= 5 ? 100 : 200;
-
             int lastX = 0;
             foreach (var (color, count) in colorList)
             {
@@ -136,10 +137,12 @@ namespace OliveToast.Commands
                 lastX += rect.Width;
             }
 
+            // save image to stream
             MemoryStream outputStram = new MemoryStream();
             output.Save(outputStram, System.Drawing.Imaging.ImageFormat.Png);
             outputStram.Position = 0;
 
+            // send
             EmbedBuilder emb = Context.CreateEmbed(title: "팔레트", imgUrl: "attachment://result.png", thumbnailUrl: url);
             for (int i = 0; i < slicedColorList.Count; i++)
             {
