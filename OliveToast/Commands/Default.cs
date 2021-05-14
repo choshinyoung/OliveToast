@@ -64,13 +64,13 @@ namespace OliveToast.Commands
             request.Content = new StringContent("{\"request\": {\"query\": \"" + text + "\"}}");
             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-            var response = await httpClient.SendAsync(request);
+            using var response = await httpClient.SendAsync(request);
             PingPongResult result = JsonConvert.DeserializeObject<PingPongResult>(await response.Content.ReadAsStringAsync());
 
             string resTxt = null;
             string resImg = null;
 
-            foreach(var reply in result.response.replies)
+            foreach (var reply in result.response.replies)
             {
                 switch (reply.type)
                 {

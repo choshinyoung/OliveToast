@@ -65,6 +65,11 @@ namespace OliveToast.Managements
             return content + suffix + (HaveJongsung(content.Last()) ? "은" : "는");
         }
 
+        public static string 이가(this string content, string suffix = "")
+        {
+            return content + suffix + (HaveJongsung(content.Last()) ? "가" : "이");
+        }
+
         public static string 으로(this string content, string suffix = "")
         {
             HangulChar hc = new HangulChar(content.Last());
