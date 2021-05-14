@@ -24,7 +24,7 @@ namespace OliveToast.Commands
         [Summary("이미지를 gif로 바꿔줍니다")]
         public async Task ToGif([Name("Url")] string url = null)
         {
-            MemoryStream stream = Context.GetFileStream(url);
+            MemoryStream stream = Context.GetFileStream(ref url);
             if (stream == null)
             {
                 await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
@@ -41,7 +41,7 @@ namespace OliveToast.Commands
         [Summary("이미지에서 가장 많이 쓰인 색을 추출합니다")]
         public async Task Palette([Name("Url")] string url = null)
         {
-            MemoryStream stream = Context.GetFileStream(url);
+            MemoryStream stream = Context.GetFileStream(ref url);
             if (stream == null)
             {
                 await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
@@ -68,6 +68,12 @@ namespace OliveToast.Commands
                 }
             }
 
+            if (colors.Count > 100000)
+            {
+                await Context.MsgReplyEmbedAsync("색이 너무 많아요!");
+                return;
+            }
+
             List<(System.Drawing.Color color, int count)> colorList = colors.Select(c => (c.Key, c.Value)).ToList();
             colorList.Sort((t1, t2) => t2.count.CompareTo(t1.count));
             for (int i = 0; i < colorList.Count; i++)
@@ -88,9 +94,10 @@ namespace OliveToast.Commands
             }
             colorList.Sort((t1, t2) => t2.count.CompareTo(t1.count));
 
-            if (colorList.Count > 10)
+            var slicedColorList = colorList;
+            if (slicedColorList.Count > 10)
             {
-                colorList = colorList.GetRange(0, 10);
+                slicedColorList = slicedColorList.GetRange(0, 10);
             }
 
             Bitmap output;
@@ -98,38 +105,51 @@ namespace OliveToast.Commands
 
             int cellCount = 0;
 
-            if (colorList.Count <= 5)
+            if (slicedColorList.Count <= 5)
             {
-                cellCount = colorList.Count;
+                cellCount = slicedColorList.Count;
 
-                output = new Bitmap(colorList.Count * 100, 100);
+                output = new Bitmap(slicedColorList.Count * 100, 110);
             }
             else
             {
-                cellCount = (int)Math.Ceiling(colorList.Count / 2f);
+                cellCount = (int)Math.Ceiling(slicedColorList.Count / 2f);
 
-                output = new Bitmap(cellCount * 100, 200);
+                output = new Bitmap(cellCount * 100, 210);
             }
 
             Graphics g = Graphics.FromImage(output);
 
-            for (int i = 0; i < colorList.Count; i++)
+            for (int i = 0; i < slicedColorList.Count; i++)
             {
                 bool isTop = i < cellCount;
-                RectangleF rect = new RectangleF((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
+                Rectangle rect = new Rectangle((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
 
-                g.FillRectangle(new SolidBrush(colorList[i].color), rect);
-                g.DrawString(colorList[i].color.ToHex(), new Font(new FontFamily("NanumGothic"), 13f), colorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
+                g.FillRectangle(new SolidBrush(slicedColorList[i].color), rect);
+                g.DrawString(slicedColorList[i].color.ToHex(), new Font(new FontFamily("NanumGothic"), 13f), slicedColorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
+            }
+
+            int percentY = colorList.Count <= 5 ? 100 : 200;
+
+            int lastX = 0;
+            foreach (var (color, count) in colorList)
+            {
+                Rectangle rect = new Rectangle(lastX, percentY, (int)((float)count / (bmp.Width * bmp.Height) * output.Width), 10);
+
+                g.FillRectangle(new SolidBrush(color), rect);
+                g.DrawLine(Pens.White, rect.X, rect.Y, rect.X, rect.Y + 10);
+
+                lastX += rect.Width;
             }
 
             MemoryStream outputStram = new MemoryStream();
             output.Save(outputStram, System.Drawing.Imaging.ImageFormat.Png);
             outputStram.Position = 0;
 
-            EmbedBuilder emb = Context.CreateEmbed(title: "팔레트", imgUrl: "attachment://result.png");
-            for (int i = 0; i < colorList.Count; i++)
+            EmbedBuilder emb = Context.CreateEmbed(title: "팔레트", imgUrl: "attachment://result.png", thumbnailUrl: url);
+            for (int i = 0; i < slicedColorList.Count; i++)
             {
-                emb.AddField(colorList[i].color.ToHex(), colorList[i].color.ToFormattedString(), true);
+                emb.AddField(slicedColorList[i].color.ToHex(), slicedColorList[i].color.ToFormattedString(), true);
             }
 
             await Context.Channel.SendFileAsync(outputStram, "result.png", embed: emb.Build());

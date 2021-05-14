@@ -22,7 +22,7 @@ namespace OliveToast.Managements
             protected override WebRequest GetWebRequest(Uri address)
             {
                 WebRequest wr = base.GetWebRequest(address);
-                wr.Timeout = 10000;
+                wr.Timeout = 5000;
                 return wr;
             }
         }

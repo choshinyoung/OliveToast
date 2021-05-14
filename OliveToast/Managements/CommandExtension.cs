@@ -53,7 +53,7 @@ namespace OliveToast.Managements
             return emb.AddField("**  **", "** **", true);
         }
 
-        public static MemoryStream GetFileStream(this SocketCommandContext context, string url)
+        public static MemoryStream GetFileStream(this SocketCommandContext context, ref string url)
         {
             if (url == null)
             {
