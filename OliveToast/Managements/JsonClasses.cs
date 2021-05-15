@@ -134,4 +134,82 @@ namespace OliveToast.Managements
             public object banner { get; set; }
         }
     }
+
+    public class ScratchDbUserResult
+    {
+        public string username { get; set; }
+        public int id { get; set; }
+        public int sys_id { get; set; }
+        public DateTime joined { get; set; }
+        public string country { get; set; }
+        public string bio { get; set; }
+        public string work { get; set; }
+        public string status { get; set; }
+        public object school { get; set; }
+        public Statistics statistics { get; set; }
+
+        public class Country
+        {
+            public int loves { get; set; }
+            public int favorites { get; set; }
+            public int comments { get; set; }
+            public int views { get; set; }
+            public int followers { get; set; }
+            public int following { get; set; }
+        }
+
+        public class Ranks
+        {
+            public Country country { get; set; }
+            public int loves { get; set; }
+            public int favorites { get; set; }
+            public int comments { get; set; }
+            public int views { get; set; }
+            public int followers { get; set; }
+            public int following { get; set; }
+        }
+
+        public class Statistics
+        {
+            public Ranks ranks { get; set; }
+            public int loves { get; set; }
+            public int favorites { get; set; }
+            public int comments { get; set; }
+            public int views { get; set; }
+            public int followers { get; set; }
+            public int following { get; set; }
+        }
+    }
+
+    public class ScratchApiUserResult
+    {
+        public int id { get; set; }
+        public string username { get; set; }
+        public bool scratchteam { get; set; }
+        public History history { get; set; }
+        public Profile profile { get; set; }
+
+        public class History
+        {
+            public DateTime joined { get; set; }
+        }
+
+        public class Images
+        {
+            public string _90x90 { get; set; }
+            public string _60x60 { get; set; }
+            public string _55x55 { get; set; }
+            public string _50x50 { get; set; }
+            public string _32x32 { get; set; }
+        }
+
+        public class Profile
+        {
+            public int id { get; set; }
+            public Images images { get; set; }
+            public string status { get; set; }
+            public string bio { get; set; }
+            public string country { get; set; }
+        }
+    }
 }

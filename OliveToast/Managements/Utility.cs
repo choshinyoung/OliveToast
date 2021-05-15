@@ -118,6 +118,11 @@ namespace OliveToast.Managements
         {
             return time.ToKST().ToString("yyyy년 MM월 dd일 HH시 mm분 ss초");
         }
+
+        public static string ToShortKSTString(this DateTimeOffset time)
+        {
+            return time.ToKST().ToString("yyyy년 MM월 dd일");
+        }
     }
 
     static class BooleanExtension

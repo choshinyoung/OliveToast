@@ -119,7 +119,7 @@ namespace OliveToast.Commands
 
             KoreanBotsResult.Bot b = response.data.First();
 
-            emb = Context.CreateEmbed(title: b.name, thumbnailUrl: $"https://cdn.discordapp.com/avatars/{b.id}/{b.avatar}.png");
+            emb = Context.CreateEmbed(title: b.name, thumbnailUrl: $"https://beta.koreanbots.dev/api/image/discord/avatars/{b.id}.gif?size=512");
 
             emb.AddField("상태", b.status switch 
             {
@@ -149,7 +149,43 @@ namespace OliveToast.Commands
         [Summary("스크래치에서 주어진 유저를 검색합니다")]
         public async Task ScratchUser([Name("유저네임")] string name)
         {
+            using WebClient wc = new WebClient();
 
+            EmbedBuilder emb;
+
+            string DbResponse;
+            try
+            {
+                DbResponse = wc.DownloadString($"https://scratchdb.lefty.one/v3/user/info/{name}");
+            }
+            catch (WebException)
+            {
+                emb = Context.CreateEmbed(title: "검색 실패", description: "404. 오 이런! 올리브토스트가 머리를 스크래칭하고 있군요");
+                await Context.MsgReplyEmbedAsync(emb.Build());
+                return;
+            }
+
+            ScratchDbUserResult dbResult = JsonConvert.DeserializeObject<ScratchDbUserResult>(DbResponse);
+            ScratchApiUserResult apiResult = JsonConvert.DeserializeObject<ScratchApiUserResult>(wc.DownloadString($"https://api.scratch.mit.edu/users/{name}"));
+
+            emb = Context.CreateEmbed(title: apiResult.username, url: $"https://scratch.mit.edu/users/{name}", thumbnailUrl: $"https://cdn2.scratch.mit.edu/get_image/user/{apiResult.id}_90x90.png");
+
+            emb.AddField("스크래쳐", (dbResult.status == "Scratcher").ToEmoji(), true);
+            emb.AddField("가입일", ((DateTimeOffset)dbResult.joined).ToShortKSTString(), true);
+            emb.AddField("국가", dbResult.country, true);
+
+            emb.AddField("팔로잉", $"{dbResult.statistics.following}명", true);
+            emb.AddField("팔로워", $"{dbResult.statistics.followers}명", true);
+            emb.AddField("팔로워 순위", $"{dbResult.statistics.ranks.country.followers}위", true);
+
+            emb.AddField("전체 조회수", $"{dbResult.statistics.views}번", true);
+            emb.AddField("전체 :heart: 수", $"{dbResult.statistics.loves}개", true);
+            emb.AddField("전체 :star: 수", $"{dbResult.statistics.favorites}개", true);
+
+            emb.AddField("내 소개", $"```\n{apiResult.profile.bio}```");
+            emb.AddField("내가 하고 있는 일", $"```\n{apiResult.profile.status}```");
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
     }
 }
