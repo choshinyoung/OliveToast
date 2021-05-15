@@ -212,4 +212,73 @@ namespace OliveToast.Managements
             public string country { get; set; }
         }
     }
+
+    public class ScratchProjectResult
+    {
+        public int id { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public string instructions { get; set; }
+        public string visibility { get; set; }
+        public bool @public { get; set; }
+        public bool comments_allowed { get; set; }
+        public bool is_published { get; set; }
+        public Author author { get; set; }
+        public string image { get; set; }
+        public Images images { get; set; }
+        public History history { get; set; }
+        public Stats stats { get; set; }
+        public Remix remix { get; set; }
+
+        public class History
+        {
+            public DateTime joined { get; set; }
+            public DateTime created { get; set; }
+            public DateTime modified { get; set; }
+            public DateTime shared { get; set; }
+        }
+
+        public class Images
+        {
+            public string _90x90 { get; set; }
+            public string _60x60 { get; set; }
+            public string _55x55 { get; set; }
+            public string _50x50 { get; set; }
+            public string _32x32 { get; set; }
+            public string _282x218 { get; set; }
+            public string _216x163 { get; set; }
+            public string _200x200 { get; set; }
+            public string _144x108 { get; set; }
+            public string _135x102 { get; set; }
+            public string _100x80 { get; set; }
+        }
+
+        public class Profile
+        {
+            public object id { get; set; }
+            public Images images { get; set; }
+        }
+
+        public class Author
+        {
+            public int id { get; set; }
+            public string username { get; set; }
+            public bool scratchteam { get; set; }
+            public History history { get; set; }
+            public Profile profile { get; set; }
+        }
+
+        public class Stats
+        {
+            public int views { get; set; }
+            public int loves { get; set; }
+            public int favorites { get; set; }
+            public int remixes { get; set; }
+        }
+
+        public class Remix
+        {
+            public object root { get; set; }
+        }
+    }
 }

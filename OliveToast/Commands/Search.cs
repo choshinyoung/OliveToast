@@ -146,7 +146,7 @@ namespace OliveToast.Commands
 
         [Command("스크래치 유저")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("스크래치에서 주어진 유저를 검색합니다")]
+        [Summary("스크래치에서 해당 유저를 검색합니다")]
         public async Task ScratchUser([Name("유저네임")] string name)
         {
             using WebClient wc = new WebClient();
@@ -184,6 +184,41 @@ namespace OliveToast.Commands
 
             emb.AddField("내 소개", $"```\n{apiResult.profile.bio}```");
             emb.AddField("내가 하고 있는 일", $"```\n{apiResult.profile.status}```");
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("스크래치 프로젝트")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("스크래치에서 해당 프로젝트를 검색합니다")]
+        public async Task ScratchProject([Remainder, Name("검색어")] string keyword)
+        {
+            using WebClient wc = new WebClient();
+            List<ScratchProjectResult> projects = JsonConvert.DeserializeObject<List<ScratchProjectResult>>(wc.DownloadString($"https://api.scratch.mit.edu/search/projects?q={keyword}"));
+
+            EmbedBuilder emb;
+
+            if (projects.Count == 0)
+            {
+                emb = Context.CreateEmbed(title: "검색 실패", description: "404. 오 이런! 올리브토스트가 머리를 스크래칭하고 있군요");
+                await Context.MsgReplyEmbedAsync(emb.Build());
+                return;
+            }
+
+            ScratchProjectResult p = JsonConvert.DeserializeObject<ScratchProjectResult>(wc.DownloadString($"https://api.scratch.mit.edu/projects/{projects.First().id}"));
+
+            emb = Context.CreateEmbed(title: p.title, url: $"https://scratch.mit.edu/projects/{p.id}", thumbnailUrl: p.image);
+
+            emb.AddField("제작자", $"[{p.author.username}](https://scratch.mit.edu/users/{p.author.username})", true);
+            emb.AddField("공유일", ((DateTimeOffset)p.history.shared).ToShortKSTString(), true);
+            emb.AddField("조회수", $"{p.stats.views}번", true);
+
+            emb.AddField(":heart:", $"{p.stats.loves}개", true);
+            emb.AddField(":star:", $"{p.stats.favorites}개", true);
+            emb.AddField(":cyclone:", $"{p.stats.remixes}번", true);
+
+            emb.AddField("사용 방법", $"```\n{p.instructions}```");
+            emb.AddField("참고사항 및 참여자", $"```\n{p.description}```");
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
