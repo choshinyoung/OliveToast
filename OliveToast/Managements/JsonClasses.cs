@@ -105,4 +105,33 @@ namespace OliveToast.Managements
             public List<WWNWordInfo> WWN_WordInfo { get; set; }
         }
     }
+
+    public class KoreanBotsResult
+    {
+        public int code { get; set; }
+        public List<Bot> data { get; set; }
+        public int currentPage { get; set; }
+        public int totalPage { get; set; }
+
+        public class Bot
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+            public int servers { get; set; }
+            public int votes { get; set; }
+            public string intro { get; set; }
+            public string avatar { get; set; }
+            public string url { get; set; }
+            public List<string> category { get; set; }
+            public string tag { get; set; }
+            public string status { get; set; }
+            public string state { get; set; }
+            public int verified { get; set; }
+            public int trusted { get; set; }
+            public int boosted { get; set; }
+            public object vanity { get; set; }
+            public object bg { get; set; }
+            public object banner { get; set; }
+        }
+    }
 }

@@ -80,7 +80,7 @@ namespace OliveToast.Commands
 
             if (answers.Where(a => a.WordInfo.Count != 0).Any())
             {
-                EmbedBuilder emb = Context.CreateEmbed(title: "위키백과", description: "");
+                EmbedBuilder emb = Context.CreateEmbed(title: "사전", description: "");
 
                 int index = 1;
                 foreach (var wwn in answers)
@@ -99,6 +99,42 @@ namespace OliveToast.Commands
                 EmbedBuilder emb = Context.CreateEmbed(title: "검색 실패", description: $"어휘가 없네요");
                 await Context.MsgReplyEmbedAsync(emb.Build());
             }
+        }
+
+        [Command("디스코드봇"), Alias("코리안봇", "디코봇")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("[한국 디스코드 봇 리스트](https://koreanbots.dev/)에서 봇을 검색합니다")]
+        public async Task DiscordBot([Remainder, Name("봇")] string name)
+        {
+            using WebClient wc = new WebClient();
+            KoreanBotsResult response = JsonConvert.DeserializeObject<KoreanBotsResult>(wc.DownloadString($"https://api.koreanbots.dev/v1/bots/search?q={name}"));
+
+            EmbedBuilder emb;
+            if (response.data.Count == 0)
+            {
+                emb = Context.CreateEmbed(title: "검색 실패", description: $"알 수 없는 봇이에요");
+                await Context.MsgReplyEmbedAsync(emb.Build());
+                return;
+            }
+
+            KoreanBotsResult.Bot b = response.data.First();
+
+            emb = Context.CreateEmbed(title: b.name, thumbnailUrl: $"https://cdn.discordapp.com/avatars/{b.id}/{b.avatar}.png", description: b.intro);
+
+            emb.AddField("상태", b.status, true);
+
+            emb.AddField("카테고리", string.Join(' ', b.category.Select(c => $"`{c}`")));
+
+            emb.AddField("디스코드 인증됨", (b.verified == 1).ToEmoji(), true);
+            emb.AddField("신뢰함", (b.trusted == 1).ToEmoji(), true);
+            emb.AddField("부스트", (b.boosted == 1).ToEmoji(), true);
+
+            emb.AddField("서버 수", $"{b.servers} 서버", true);
+            emb.AddField("하트 수", $":heart: {b.votes}", true);
+            emb.AddField("초대하기", $"[초대 링크]({b.url})", true);
+
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
     }
 }
