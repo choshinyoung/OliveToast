@@ -119,11 +119,19 @@ namespace OliveToast.Commands
 
             KoreanBotsResult.Bot b = response.data.First();
 
-            emb = Context.CreateEmbed(title: b.name, thumbnailUrl: $"https://cdn.discordapp.com/avatars/{b.id}/{b.avatar}.png", description: b.intro);
+            emb = Context.CreateEmbed(title: b.name, thumbnailUrl: $"https://cdn.discordapp.com/avatars/{b.id}/{b.avatar}.png");
 
-            emb.AddField("상태", b.status, true);
+            emb.AddField("상태", b.status switch 
+            {
+                "online" => "<:online:708147696879272027>",
+                "idle" => "<:idle:708147696807968842>",
+                "dnd" => "<:dnd:708147696976003092>",
+                "offline" => "<:offline:708147696523018255>",
+                _ => ":question:"
+            }, true);
+            emb.AddField("카테고리", string.Join(' ', b.category.Select(c => $"`{c}`")), true);
 
-            emb.AddField("카테고리", string.Join(' ', b.category.Select(c => $"`{c}`")));
+            emb.AddField("설명", b.intro);
 
             emb.AddField("디스코드 인증됨", (b.verified == 1).ToEmoji(), true);
             emb.AddField("신뢰함", (b.trusted == 1).ToEmoji(), true);
@@ -133,8 +141,15 @@ namespace OliveToast.Commands
             emb.AddField("하트 수", $":heart: {b.votes}", true);
             emb.AddField("초대하기", $"[초대 링크]({b.url})", true);
 
-
             await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("스크래치 유저")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("스크래치에서 주어진 유저를 검색합니다")]
+        public async Task ScratchUser([Name("유저네임")] string name)
+        {
+
         }
     }
 }
