@@ -281,4 +281,47 @@ namespace OliveToast.Managements
             public object root { get; set; }
         }
     }
+
+    public class MinecraftUuidResult
+    {
+        public string name { get; set; }
+        public string id { get; set; }
+    }
+
+    public class MinecraftNameResult
+    {
+        public string name { get; set; }
+        public long? changedToAt { get; set; }
+    }
+
+    public class MinecraftProfileResult
+    {
+        public string id { get; set; }
+        public string name { get; set; }
+        public List<Property> properties { get; set; }
+
+        public class Property
+        {
+            public string name { get; set; }
+            public string value { get; set; }
+        }
+    }
+
+    public class MinecraftSkinResult
+    {
+        public long timestamp { get; set; }
+        public string profileId { get; set; }
+        public string profileName { get; set; }
+        public Textures textures { get; set; }
+
+        public class SKIN
+        {
+            public string url { get; set; }
+        }
+
+        public class Textures
+        {
+            public SKIN SKIN { get; set; }
+        }
+    }
 }

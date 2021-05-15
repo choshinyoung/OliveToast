@@ -222,5 +222,45 @@ namespace OliveToast.Commands
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
+
+        [Command("마인크래프트 유저"), Alias("마크 유저", "마인크래프트", "마크", "마크 정보")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("마인크래프트 유저를 검색합니다")]
+        public async Task MinecraftUser([Name("유저")] string name)
+        {
+            using WebClient wc = new WebClient();
+
+            MinecraftUuidResult uuid;
+            List<MinecraftNameResult> names;
+            MinecraftProfileResult profile;
+            MinecraftSkinResult skin;
+
+            EmbedBuilder emb;
+
+            try
+            {
+                uuid = JsonConvert.DeserializeObject<MinecraftUuidResult>(wc.DownloadString($"https://api.mojang.com/users/profiles/minecraft/{name}"));
+                names = JsonConvert.DeserializeObject<List<MinecraftNameResult>>(wc.DownloadString($"https://api.mojang.com/user/profiles/{uuid.id}/names"));
+                profile = JsonConvert.DeserializeObject<MinecraftProfileResult>(wc.DownloadString($"https://sessionserver.mojang.com/session/minecraft/profile/{uuid.id}"));
+                skin = JsonConvert.DeserializeObject<MinecraftSkinResult>(Encoding.UTF8.GetString(Convert.FromBase64String(profile.properties.First().value)));
+            }
+            catch
+            {
+                emb = Context.CreateEmbed(title: "검색 실패", description: "해당 유저를 찾을 수 없어요");
+                await Context.MsgReplyEmbedAsync(emb.Build());
+                return;
+            }
+
+            emb = Context.CreateEmbed(title: uuid.name, thumbnailUrl: skin.textures.SKIN.url, imgUrl: $"https://visage.surgeplay.com/full/{uuid.id}");
+
+            emb.AddField("UUID", $"{uuid.id}\n{uuid.id[..8]}-{uuid.id[8..12]}-{uuid.id[12..16]}-{uuid.id[16..20]}-{uuid.id[20..]}");
+
+            emb.AddField("UUIDMost", Convert.ToInt64(uuid.id[..16], 16), true);
+            emb.AddField("UUIDMost", Convert.ToInt64(uuid.id[16..], 16), true);
+
+            emb.AddField("닉네임 변경 역사", string.Join('\n', names.Select(n => $"`{n.name}`: {(n.changedToAt != null ? DateTimeOffset.FromUnixTimeMilliseconds(n.changedToAt.Value).ToShortKSTString() : "?")}")));
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
     }
 }
