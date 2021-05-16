@@ -14,7 +14,7 @@ namespace OliveToast.Managements
 
         static WordsManager()
         {
-            string content = File.ReadAllText("words.json");
+            string content = File.ReadAllText("Configs/words.json");
 
             Words = JsonConvert.DeserializeObject<List<string>>(content);
         }
@@ -32,10 +32,10 @@ namespace OliveToast.Managements
 
         static SentenceManager()
         {
-            string content = File.ReadAllText("sentences.json");
+            string content = File.ReadAllText("Configs/sentences.json");
             Sentences = JsonConvert.DeserializeObject<List<string>>(content);
 
-            content = File.ReadAllText("sentencesEn.json");
+            content = File.ReadAllText("Configs/sentencesEn.json");
             EnSentences = JsonConvert.DeserializeObject<List<string>>(content);
         }
     }

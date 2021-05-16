@@ -10,7 +10,7 @@ namespace OliveToast.Managements
 
         static ConfigManager()
         {
-            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+            var builder = new ConfigurationBuilder().AddJsonFile("Configs/appsettings.json");
             config = builder.Build();
         }
 
