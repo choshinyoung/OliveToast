@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /OliveToast/appsettings.json
+/OliveToast/Configs/appsettings.json
