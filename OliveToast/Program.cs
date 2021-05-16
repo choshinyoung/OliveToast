@@ -7,8 +7,6 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using static OliveToast.EventHandler;
-
 namespace OliveToast
 {
     class Program
@@ -23,6 +21,7 @@ namespace OliveToast
         {
             AlwaysDownloadUsers = true,
             LogLevel = LogSeverity.Debug,
+            MessageCacheSize = 100000,
         };
         private readonly CommandServiceConfig commandConfig = new CommandServiceConfig
         {
@@ -47,13 +46,7 @@ namespace OliveToast
             string token = ConfigManager.Get("TOKEN");
             await Client.LoginAsync(TokenType.Bot, token);
 
-            Client.Log += OnLog;
-            Command.Log += OnCommandLog;
-
-            Client.MessageReceived += OnMessageReceived;
-            Command.CommandExecuted += OnCommandExecuted;
-
-            Client.MessageUpdated += OnMessageUpdated;
+            EventHandler.RegisterEvents(Client, Command);
 
             await Client.StartAsync();
             await Client.SetGameAsync($"{ConfigManager.Get("PREFIX")}도움", null, ActivityType.Playing);

@@ -296,10 +296,7 @@ namespace OliveToast.Commands
             }
             result = new string(result.Reverse().ToArray());
 
-            if (result.Length > 2048)
-            {
-                result = result.Substring(0, 2045) + "...";
-            }
+            result = result.Slice(2048);
 
             EmbedBuilder emb = Context.CreateEmbed(title: $"{from}진수 => {to}진수", description: result);
             await Context.MsgReplyEmbedAsync(emb.Build());

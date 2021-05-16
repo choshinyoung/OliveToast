@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using HPark.Hangul;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -48,8 +49,41 @@ namespace OliveToast.Managements
         }
     }
 
-    static class HangulExtension
+    static class StringExtension
     {
+        public static string Slice(this string content, int length)
+        {
+            if (content.Length > length)
+            {
+                content = content.Substring(0, length - 3) + "...";
+            }
+
+            return content;
+        }
+
+        public static MemoryStream ToStream(this string content)
+        {
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+            return stream;
+        }
+
+        public static string Slice(this string content, int length, out bool isApplied)
+        {
+            if (content.Length > length)
+            {
+                content = content.Substring(0, length - 3) + "...";
+
+                isApplied = true;
+            }
+            else
+            {
+                isApplied = false;
+            }
+
+            return content;
+        }
+
         public static string 이(this string content, string suffix = "")
         {
             return content + suffix + (HaveJongsung(content.Last()) ? "이" : "");
