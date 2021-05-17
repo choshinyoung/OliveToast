@@ -58,7 +58,7 @@ namespace OliveToast.Commands
         public async Task PingPong([Remainder, Name("문장")] string text)
         {
             using HttpClient httpClient = new HttpClient();
-            using HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("POST"), $"https://builder.pingpong.us/api/builder/6083d376e4b078d873a93669/integration/v0.2/custom/{Context.User.Id}");
+            using HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("POST"), $"https://builder.pingpong.us/api/builder/60a1d801e4b091a94bc5294d/integration/v0.2/custom/{Context.User.Id}");
 
             request.Headers.TryAddWithoutValidation("Authorization", ConfigManager.Get("PINGPONG_TOKEN"));
             request.Content = new StringContent("{\"request\": {\"query\": \"" + text + "\"}}");

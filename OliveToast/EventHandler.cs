@@ -75,7 +75,7 @@ namespace OliveToast
                 Title = "메시지 수정",
                 Color = new Color(255, 255, 0),
                 Author = new EmbedAuthorBuilder { Name = $"{msg.Author.Username}#{msg.Author.Discriminator} ({msg.Author.Id})", IconUrl = msg.Author.GetAvatar() },
-                Description = $"<#{msg.Channel.Id}> 채널에서 [메시지]({msg.GetJumpUrl()})가 수정됐어요",
+                Description = $"<#{channel.Id}> 채널에서 [메시지]({msg.GetJumpUrl()})가 수정됐어요\n",
             };
 
             if (cache.HasValue)
@@ -122,14 +122,39 @@ namespace OliveToast
         private static async Task OnMessageDeleted(Cacheable<IMessage, ulong> cache, ISocketMessageChannel channel)
         {
             SocketTextChannel c = Program.Client.GetChannel(616499996149415946) as SocketTextChannel;
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "메시지 삭제",
+                Color = new Color(255, 0, 0),
+                Description = $"<#{channel.Id}> 채널에서 메시지({cache.Id})가 삭제됐어요\n",
+            };
+
             if (cache.HasValue)
             {
-                await c.SendMessageAsync(cache.Value.Content);
+                emb.WithAuthor($"{cache.Value.Author.Username}#{cache.Value.Author.Discriminator} ({cache.Value.Author.Id})", cache.Value.Author.GetAvatar());
+
+                if (string.IsNullOrWhiteSpace(cache.Value.Content))
+                {
+                    emb.Description += "\n내용이 비어있어요";
+                }
+                else
+                {
+                    emb.AddField("내용", cache.Value.Content.Slice(512, out bool isApplied), true);
+                    if (isApplied)
+                    {
+                        await c.SendFileAsync(cache.Value.Content.ToStream(), "before.txt", "");
+                    }
+                }
             }
             else
             {
-                await c.SendMessageAsync("캐시에 없는 메시지");
+                emb.WithAuthor("알 수 없음");
+
+                emb.Description += "\n내용이 캐시에 저장되지 않았어요";
             }
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         public static async Task OnCommandExecuted(Optional<CommandInfo> command, ICommandContext context, IResult result)

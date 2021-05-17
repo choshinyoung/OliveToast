@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using HPark.Hangul;
 using System;
@@ -130,12 +131,12 @@ namespace OliveToast.Managements
 
     static class DiscordUserExtension
     {
-        public static string GetAvatar(this SocketUser user)
+        public static string GetAvatar(this IUser user)
         {
             return user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl();
         }
 
-        public static string GetName(this SocketUser user, bool isPrivate)
+        public static string GetName(this IUser user, bool isPrivate)
         {
             return isPrivate ? user.Username : (user as SocketGuildUser).Nickname ?? user.Username;
         }
