@@ -48,10 +48,10 @@ namespace OliveToast
 
             EventHandler.RegisterEvents(Client, Command);
 
+            Uptime = DateTime.Now;
+
             await Client.StartAsync();
             await Client.SetGameAsync($"{ConfigManager.Get("PREFIX")}도움", null, ActivityType.Playing);
-
-            Uptime = DateTime.Now;
 
             await Task.Delay(-1);
         }

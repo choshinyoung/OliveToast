@@ -52,7 +52,7 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync($"[올리브토스트 초대 링크]({Utility.GetInvite()})");
         }
 
-        [Command("핑퐁"), Alias("올토야", "올토님")]
+        [Command("인공지능"), Alias("핑퐁", "올토야", "올토님")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("인공지능 올리브토스트와 대화할 수 있습니다")]
         public async Task PingPong([Remainder, Name("문장")] string text)

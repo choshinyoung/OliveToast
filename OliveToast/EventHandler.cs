@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using MongoDB.Driver;
 using OliveToast.Commands;
 using OliveToast.Managements;
 using System;
@@ -20,6 +21,9 @@ namespace OliveToast
             client.Log += OnLog;
             command.Log += OnCommandLog;
 
+            client.GuildAvailable += OnJoinGuild;
+            client.JoinedGuild += OnJoinGuild;
+
             client.MessageReceived += OnMessageReceived;
             command.CommandExecuted += OnCommandExecuted;
 
@@ -37,6 +41,18 @@ namespace OliveToast
         public static async Task OnCommandLog(LogMessage msg)
         {
             Console.WriteLine(msg);
+
+            await Task.CompletedTask;
+        }
+
+        private static async Task OnJoinGuild(SocketGuild arg)
+        {
+            if (DbManager.Guilds.Find(g => g.GuildId == arg.Id).Any())
+            {
+                return;
+            }
+
+            DbManager.Guilds.InsertOne(new OliveGuild(arg.Id));
 
             await Task.CompletedTask;
         }
@@ -68,7 +84,19 @@ namespace OliveToast
 
         public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
         {
-            SocketTextChannel c = Program.Client.GetChannel(616499996149415946) as SocketTextChannel;
+            if (channel.GetType() != typeof(SocketTextChannel))
+            {
+                return;
+            }
+
+            SocketGuild guild = ((SocketTextChannel)channel).Guild;
+            ulong? logChannelId = OliveGuild.Get(guild.Id).Setting.LogChannelId;
+            if (!logChannelId.HasValue || !guild.Channels.Any(c => c.Id == logChannelId.Value))
+            {
+                return;
+            }
+
+            SocketTextChannel c = guild.GetTextChannel(logChannelId.Value);
 
             EmbedBuilder emb = new EmbedBuilder
             {
@@ -121,7 +149,19 @@ namespace OliveToast
 
         private static async Task OnMessageDeleted(Cacheable<IMessage, ulong> cache, ISocketMessageChannel channel)
         {
-            SocketTextChannel c = Program.Client.GetChannel(616499996149415946) as SocketTextChannel;
+            if (channel.GetType() != typeof(SocketTextChannel))
+            {
+                return;
+            }
+
+            SocketGuild guild = ((SocketTextChannel)channel).Guild;
+            ulong? logChannelId = OliveGuild.Get(guild.Id).Setting.LogChannelId;
+            if (!logChannelId.HasValue || !guild.Channels.Any(c => c.Id == logChannelId.Value))
+            {
+                return;
+            }
+
+            SocketTextChannel c = guild.GetTextChannel(logChannelId.Value);
 
             EmbedBuilder emb = new EmbedBuilder
             {
@@ -157,7 +197,7 @@ namespace OliveToast
             await c.SendMessageAsync(embed: emb.Build());
         }
 
-        public static async Task OnCommandExecuted(Optional<CommandInfo> command, ICommandContext context, IResult result)
+        public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             if (!result.IsSuccess)
             {
