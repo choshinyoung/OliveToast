@@ -2,101 +2,45 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using MongoDB.Driver;
-using OliveToast.Commands;
 using OliveToast.Managements;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OliveToast
 {
-    class EventHandler
+    class LogEventHandler
     {
-        public static readonly string prefix = ConfigManager.Get("PREFIX");
-
-        public static void RegisterEvents(DiscordSocketClient client, CommandService command)
+        public static void RegisterEvents(DiscordSocketClient client)
         {
-            client.Log += OnLog;
-            command.Log += OnCommandLog;
-
-            client.MessageReceived += OnMessageReceived;
-            command.CommandExecuted += OnCommandExecuted;
-
-            client.GuildAvailable += OnJoinGuild;
-            client.JoinedGuild += OnJoinGuild;
-
             client.MessageUpdated += OnMessageUpdated;
             client.MessageDeleted += OnMessageDeleted;
-        }
 
-        public static async Task OnLog(LogMessage msg)
-        {
-            Console.WriteLine(msg);
+            client.ChannelCreated += OnChannelCreated;
+            client.ChannelDestroyed += OnChannelDestroyed;
+            client.ChannelUpdated += OnChannelUpdated;
 
-            await Task.CompletedTask;
-        }
+            client.GuildUpdated += OnGuildUpdated;
 
-        public static async Task OnCommandLog(LogMessage msg)
-        {
-            Console.WriteLine(msg);
+            client.InviteCreated += OnInviteCreated;
+            client.InviteDeleted += OnInviteDeleted;
 
-            await Task.CompletedTask;
-        }
+            client.ReactionAdded += OnReactionAdded;
+            client.ReactionRemoved += OnReactionRemoved;
+            client.ReactionsCleared += OnReactionCleared;
 
-        public static async Task OnMessageReceived(SocketMessage msg)
-        {
-            SocketUserMessage userMsg = msg as SocketUserMessage;
+            client.RoleCreated += OnRoleCreated;
+            client.RoleDeleted += OnRoleDeleted;
+            client.RoleUpdated += OnRoleUpdated;
 
-            if (userMsg == null || userMsg.Content == null ||
-                userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot) return;
+            client.UserBanned += OnUserBanned;
+            client.UserUnbanned += OnUserUnbanned;
 
-            SocketCommandContext context = new SocketCommandContext(Program.Client, userMsg);
+            client.UserJoined += OnuserJoined;
+            client.UserLeft += OnUserLeft;
 
-            if (await Games.WordRelay(context))
-            {
-                return;
-            }
-            if (await Games.TypingGame(context))
-            {
-                return;
-            }
+            client.GuildMemberUpdated += OnGuildMemberUpdated;
 
-            int argPos = 0;
-            if (userMsg.HasStringPrefix(prefix, ref argPos) || userMsg.HasMentionPrefix(Program.Client.CurrentUser, ref argPos))
-            {
-                await Program.Command.ExecuteAsync(context, argPos, Program.Service);
-            }
-        }
-
-        public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
-        {
-            if (!result.IsSuccess)
-            {
-                if (result.Error == CommandError.UnknownCommand)
-                {
-                    return;
-                }
-
-                var ctx = context as SocketCommandContext;
-
-                EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
-
-                await ctx.MsgReplyEmbedAsync(emb.Build());
-            }
-        }
-
-        private static async Task OnJoinGuild(SocketGuild arg)
-        {
-            if (DbManager.Guilds.Find(g => g.GuildId == arg.Id).Any())
-            {
-                return;
-            }
-
-            DbManager.Guilds.InsertOne(new OliveGuild(arg.Id));
-
-            await Task.CompletedTask;
+            client.UserVoiceStateUpdated += OnUserVoiceStateUpdated;
         }
 
         public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
@@ -212,6 +156,96 @@ namespace OliveToast
             }
 
             await c.SendMessageAsync(embed: emb.Build());
+        }
+
+        private static async Task OnChannelCreated(SocketChannel channel)
+        {
+
+        }
+
+        private static async Task OnChannelUpdated(SocketChannel before, SocketChannel after)
+        {
+
+        }
+
+        private static async Task OnChannelDestroyed(SocketChannel channel)
+        {
+
+        }
+
+        private static async Task OnGuildUpdated(SocketGuild before, SocketGuild after)
+        {
+
+        }
+
+        private static async Task OnInviteDeleted(SocketGuildChannel channel, string code)
+        {
+
+        }
+
+        private static async Task OnInviteCreated(SocketInvite invite)
+        {
+
+        }
+
+        private static async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+
+        }
+
+        private static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+
+        }
+
+        private static async Task OnReactionCleared(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel)
+        {
+
+        }
+
+        private static async Task OnRoleCreated(SocketRole role)
+        {
+
+        }
+
+        private static async Task OnRoleDeleted(SocketRole role)
+        {
+
+        }
+
+        private static async Task OnRoleUpdated(SocketRole before, SocketRole after)
+        {
+
+        }
+
+        private static async Task OnUserUnbanned(SocketUser user, SocketGuild guild)
+        {
+
+        }
+
+        private static async Task OnUserBanned(SocketUser user, SocketGuild guild)
+        {
+
+        }
+
+        private static async Task OnuserJoined(SocketGuildUser user)
+        {
+
+        }
+
+        private static async Task OnUserLeft(SocketGuildUser user)
+        {
+
+        }
+
+        private static async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        {
+
+        }
+
+        private static async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState before, SocketVoiceState after)
+        {
+
         }
     }
 }

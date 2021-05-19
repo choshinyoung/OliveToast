@@ -16,7 +16,7 @@ namespace OliveToast.Commands
         [Summary("커맨드 목록을 볼 수 있습니다")]
         public async Task Help()
         {
-            EmbedBuilder emb = Context.CreateEmbed(title: "도움말", description: $"\"{EventHandler.prefix}도움 `카테고리/커맨드`\"로 자세한 사용법 보기");
+            EmbedBuilder emb = Context.CreateEmbed(title: "도움말", description: $"\"{CommandEventHandler.prefix}도움 `카테고리/커맨드`\"로 자세한 사용법 보기");
 
             List<ModuleInfo> modules = Program.Command.Modules.Where(m => m.HavePrecondition<RequireCategoryEnable>()).ToList();
             modules.Sort((m1, m2) => RequireCategoryEnable.GetCategory(m1).CompareTo(RequireCategoryEnable.GetCategory(m2)));
@@ -30,7 +30,7 @@ namespace OliveToast.Commands
                         cmds.Add(cmd);
                 }
 
-                emb.AddField(module.Name, string.Join(' ', cmds.Select(c => $"`{EventHandler.prefix}{c.Name}`")));
+                emb.AddField(module.Name, string.Join(' ', cmds.Select(c => $"`{CommandEventHandler.prefix}{c.Name}`")));
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
@@ -55,7 +55,7 @@ namespace OliveToast.Commands
 
                 foreach (CommandInfo info in cmds)
                 {
-                    emb.AddField($"{EventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
+                    emb.AddField($"{CommandEventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
                 }
 
                 await Context.MsgReplyEmbedAsync(emb.Build());
@@ -119,7 +119,7 @@ namespace OliveToast.Commands
                         }
                         permission = permission != null ? $"\n - 이 커맨드를 실행하려면 `<{permission}>` 권한이 필요해요" : "";
 
-                        emb.AddField($"{EventHandler.prefix}{cmdName} {param}", $"{info.Summary}{permission}");
+                        emb.AddField($"{CommandEventHandler.prefix}{cmdName} {param}", $"{info.Summary}{permission}");
                     }
 
                     await Context.MsgReplyEmbedAsync(emb.Build());

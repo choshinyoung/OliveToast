@@ -46,7 +46,8 @@ namespace OliveToast
             string token = ConfigManager.Get("TOKEN");
             await Client.LoginAsync(TokenType.Bot, token);
 
-            EventHandler.RegisterEvents(Client, Command);
+            CommandEventHandler.RegisterEvents(Client, Command);
+            LogEventHandler.RegisterEvents(Client);
 
             Uptime = DateTime.Now;
 
