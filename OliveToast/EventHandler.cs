@@ -21,11 +21,11 @@ namespace OliveToast
             client.Log += OnLog;
             command.Log += OnCommandLog;
 
-            client.GuildAvailable += OnJoinGuild;
-            client.JoinedGuild += OnJoinGuild;
-
             client.MessageReceived += OnMessageReceived;
             command.CommandExecuted += OnCommandExecuted;
+
+            client.GuildAvailable += OnJoinGuild;
+            client.JoinedGuild += OnJoinGuild;
 
             client.MessageUpdated += OnMessageUpdated;
             client.MessageDeleted += OnMessageDeleted;
@@ -41,18 +41,6 @@ namespace OliveToast
         public static async Task OnCommandLog(LogMessage msg)
         {
             Console.WriteLine(msg);
-
-            await Task.CompletedTask;
-        }
-
-        private static async Task OnJoinGuild(SocketGuild arg)
-        {
-            if (DbManager.Guilds.Find(g => g.GuildId == arg.Id).Any())
-            {
-                return;
-            }
-
-            DbManager.Guilds.InsertOne(new OliveGuild(arg.Id));
 
             await Task.CompletedTask;
         }
@@ -80,6 +68,35 @@ namespace OliveToast
             {
                 await Program.Command.ExecuteAsync(context, argPos, Program.Service);
             }
+        }
+
+        public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
+        {
+            if (!result.IsSuccess)
+            {
+                if (result.Error == CommandError.UnknownCommand)
+                {
+                    return;
+                }
+
+                var ctx = context as SocketCommandContext;
+
+                EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
+
+                await ctx.MsgReplyEmbedAsync(emb.Build());
+            }
+        }
+
+        private static async Task OnJoinGuild(SocketGuild arg)
+        {
+            if (DbManager.Guilds.Find(g => g.GuildId == arg.Id).Any())
+            {
+                return;
+            }
+
+            DbManager.Guilds.InsertOne(new OliveGuild(arg.Id));
+
+            await Task.CompletedTask;
         }
 
         public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
@@ -195,23 +212,6 @@ namespace OliveToast
             }
 
             await c.SendMessageAsync(embed: emb.Build());
-        }
-
-        public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
-        {
-            if (!result.IsSuccess)
-            {
-                if (result.Error == CommandError.UnknownCommand)
-                {
-                    return;
-                }
-
-                var ctx = context as SocketCommandContext;
-
-                EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
-
-                await ctx.MsgReplyEmbedAsync(emb.Build());
-            }
         }
     }
 }
