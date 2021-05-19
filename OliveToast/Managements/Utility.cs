@@ -146,7 +146,7 @@ namespace OliveToast.Managements
     {
         public static DateTimeOffset ToKST(this DateTimeOffset time)
         {
-            return time.ToUniversalTime().AddHours(9);
+            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(time, "Korea Standard Time");
         }
 
         public static string ToKSTString(this DateTimeOffset time)

@@ -1,15 +1,22 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using MongoDB.Driver;
 using OliveToast.Managements;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static OliveToast.Managements.OliveGuild.GuildSetting;
 
 namespace OliveToast
 {
     class LogEventHandler
     {
+        static Color CreateColor = new Color(0, 255, 0);
+        static Color DeleteColor = new Color(255, 0, 0);
+        static Color UpdateColor = new Color(255, 255, 0);
+
         public static void RegisterEvents(DiscordSocketClient client)
         {
             client.MessageUpdated += OnMessageUpdated;
@@ -51,21 +58,22 @@ namespace OliveToast
             }
 
             SocketGuild guild = ((SocketTextChannel)channel).Guild;
-            ulong? logChannelId = OliveGuild.Get(guild.Id).Setting.LogChannelId;
-            if (!logChannelId.HasValue || !guild.Channels.Any(c => c.Id == logChannelId.Value))
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.메시지수정) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
             {
                 return;
             }
 
-            SocketTextChannel c = guild.GetTextChannel(logChannelId.Value);
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
 
             EmbedBuilder emb = new EmbedBuilder
             {
                 Title = "메시지 수정",
-                Color = new Color(255, 255, 0),
-                Author = new EmbedAuthorBuilder { Name = $"{msg.Author.Username}#{msg.Author.Discriminator} ({msg.Author.Id})", IconUrl = msg.Author.GetAvatar() },
+                Color = UpdateColor,
                 Description = $"<#{channel.Id}> 채널에서 [메시지]({msg.GetJumpUrl()})가 수정됐어요\n",
+                Timestamp = DateTimeOffset.Now.ToKST()
             };
+            emb.WithAuthor(msg.Author);
 
             if (cache.HasValue)
             {
@@ -116,19 +124,20 @@ namespace OliveToast
             }
 
             SocketGuild guild = ((SocketTextChannel)channel).Guild;
-            ulong? logChannelId = OliveGuild.Get(guild.Id).Setting.LogChannelId;
-            if (!logChannelId.HasValue || !guild.Channels.Any(c => c.Id == logChannelId.Value))
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.메시지삭제) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
             {
                 return;
             }
 
-            SocketTextChannel c = guild.GetTextChannel(logChannelId.Value);
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
 
             EmbedBuilder emb = new EmbedBuilder
             {
                 Title = "메시지 삭제",
-                Color = new Color(255, 0, 0),
+                Color = DeleteColor,
                 Description = $"<#{channel.Id}> 채널에서 메시지({cache.Id})가 삭제됐어요\n",
+                Timestamp = DateTimeOffset.Now.ToKST()
             };
 
             if (cache.HasValue)
@@ -160,7 +169,24 @@ namespace OliveToast
 
         private static async Task OnChannelCreated(SocketChannel channel)
         {
+            SocketGuild guild = ((SocketTextChannel)channel).Guild;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.채널생성) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
 
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "채널 생성",
+                Color = CreateColor,
+                Description = $"새로운 채널 {((SocketGuildChannel)channel).Name.이가($"({channel.Id.ToString()})")} 생성됐어요\n<#{channel.Id}>",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            };
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         private static async Task OnChannelUpdated(SocketChannel before, SocketChannel after)
