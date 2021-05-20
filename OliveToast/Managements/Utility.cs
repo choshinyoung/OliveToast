@@ -102,7 +102,7 @@ namespace OliveToast.Managements
 
         public static string 이가(this string content, string suffix = "")
         {
-            return content + suffix + (HaveJongsung(content.Last()) ? "가" : "이");
+            return content + suffix + (HaveJongsung(content.Last()) ? "이" : "가");
         }
 
         public static string 으로(this string content, string suffix = "")

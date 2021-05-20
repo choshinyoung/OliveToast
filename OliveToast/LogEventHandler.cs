@@ -13,9 +13,9 @@ namespace OliveToast
 {
     class LogEventHandler
     {
-        static Color CreateColor = new Color(0, 255, 0);
-        static Color DeleteColor = new Color(255, 0, 0);
-        static Color UpdateColor = new Color(255, 255, 0);
+        static readonly Color CreateColor = new Color(0, 255, 0);
+        static readonly Color DeleteColor = new Color(255, 0, 0);
+        static readonly Color UpdateColor = new Color(255, 255, 0);
 
         public static void RegisterEvents(DiscordSocketClient client)
         {
@@ -169,7 +169,7 @@ namespace OliveToast
 
         private static async Task OnChannelCreated(SocketChannel channel)
         {
-            SocketGuild guild = ((SocketTextChannel)channel).Guild;
+            SocketGuild guild = ((SocketGuildChannel)channel).Guild;
             OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
             if (!setting.LogType.Contains(LogTypes.채널생성) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
             {
@@ -182,7 +182,7 @@ namespace OliveToast
             {
                 Title = "채널 생성",
                 Color = CreateColor,
-                Description = $"새로운 채널 {((SocketGuildChannel)channel).Name.이가($"({channel.Id.ToString()})")} 생성됐어요\n<#{channel.Id}>",
+                Description = $"새로운 채널 `{((SocketGuildChannel)channel).Name.이가($"`({channel.Id})")} 생성됐어요\n<#{channel.Id}>",
                 Timestamp = DateTimeOffset.Now.ToKST()
             };
 
@@ -196,7 +196,24 @@ namespace OliveToast
 
         private static async Task OnChannelDestroyed(SocketChannel channel)
         {
+            SocketGuild guild = ((SocketGuildChannel)channel).Guild;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.채널삭제) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
 
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "채널 삭제",
+                Color = CreateColor,
+                Description = $"채널 `{((SocketGuildChannel)channel).Name.이가($"`({channel.Id})")} 삭제됐어요",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            };
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         private static async Task OnGuildUpdated(SocketGuild before, SocketGuild after)
