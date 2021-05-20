@@ -191,7 +191,69 @@ namespace OliveToast
 
         private static async Task OnChannelUpdated(SocketChannel before, SocketChannel after)
         {
+            SocketGuildChannel beforeGuild = before as SocketGuildChannel;
+            SocketGuildChannel afterGuild = after as SocketGuildChannel;
 
+            SocketGuild guild = beforeGuild.Guild;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.채널수정) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
+
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "채널 수정",
+                Color = CreateColor,
+                Description = $"채널 `{((SocketGuildChannel)before).Name.이가($"`({before.Id})")} 수정됐어요\n<#{before.Id}>",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            }; 
+
+            if (beforeGuild.Name != afterGuild.Name)
+            {
+                emb.AddField("채널 이름", $"{beforeGuild.Name} => {afterGuild.Name}", true);
+            }
+            if (beforeGuild.Position != afterGuild.Position)
+            {
+                return;
+            }
+
+            if (before is SocketTextChannel)
+            {
+                SocketTextChannel beforeText = before as SocketTextChannel;
+                SocketTextChannel afterText = after as SocketTextChannel;
+
+                if (beforeText.IsNsfw != afterText.IsNsfw)
+                {
+                    emb.AddField("연령 제한 채널", $"{beforeText.IsNsfw.ToEmoji()} => {afterText.IsNsfw.ToEmoji()}", true);
+                }
+                if (beforeText.SlowModeInterval != afterText.SlowModeInterval)
+                {
+                    emb.AddField("슬로우 모드", $"{(beforeText.SlowModeInterval < 60 ? $"{afterText.SlowModeInterval}초" : beforeText.SlowModeInterval < 3600 ? $"{beforeText.SlowModeInterval / 60}분" : $"{beforeText.SlowModeInterval / 3600}시간")} => {(afterText.SlowModeInterval < 60 ? $"{afterText.SlowModeInterval}초" : afterText.SlowModeInterval < 3600 ? $"{afterText.SlowModeInterval / 60}분" : $"{afterText.SlowModeInterval / 3600}시간")}", true);
+                }
+                if (beforeText.Topic != afterText.Topic)
+                {
+                    emb.AddField("채널 주제", $"{beforeText.Topic} => {afterText.Topic}", true);
+                }
+            }
+            else if (before is SocketVoiceChannel)
+            {
+                SocketVoiceChannel beforeVoice = before as SocketVoiceChannel;
+                SocketVoiceChannel afterVoice = after as SocketVoiceChannel;
+                
+                if (beforeVoice.Bitrate != afterVoice.Bitrate)
+                {
+                    emb.AddField("비트 레이트", $"{beforeVoice.Bitrate / 1000}kbps => {afterVoice.Bitrate / 1000}kbps", true);
+                }
+                if (beforeVoice.UserLimit != afterVoice.UserLimit)
+                {
+                    emb.AddField("최대 사용자 수", $"{beforeVoice.UserLimit?.ToString() ?? "∞"} => {afterVoice.UserLimit?.ToString() ?? "∞"}", true);
+                }
+            }
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         private static async Task OnChannelDestroyed(SocketChannel channel)
