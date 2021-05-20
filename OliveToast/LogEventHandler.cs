@@ -206,7 +206,7 @@ namespace OliveToast
             EmbedBuilder emb = new EmbedBuilder
             {
                 Title = "채널 수정",
-                Color = CreateColor,
+                Color = UpdateColor,
                 Description = $"채널 `{((SocketGuildChannel)before).Name.이가($"`({before.Id})")} 수정됐어요\n<#{before.Id}>",
                 Timestamp = DateTimeOffset.Now.ToKST()
             }; 
@@ -231,7 +231,7 @@ namespace OliveToast
                 }
                 if (beforeText.SlowModeInterval != afterText.SlowModeInterval)
                 {
-                    emb.AddField("슬로우 모드", $"{(beforeText.SlowModeInterval < 60 ? $"{afterText.SlowModeInterval}초" : beforeText.SlowModeInterval < 3600 ? $"{beforeText.SlowModeInterval / 60}분" : $"{beforeText.SlowModeInterval / 3600}시간")} => {(afterText.SlowModeInterval < 60 ? $"{afterText.SlowModeInterval}초" : afterText.SlowModeInterval < 3600 ? $"{afterText.SlowModeInterval / 60}분" : $"{afterText.SlowModeInterval / 3600}시간")}", true);
+                    emb.AddField("슬로우 모드", $"{beforeText.SlowModeInterval.ToTimeString()} => {afterText.SlowModeInterval.ToTimeString()}", true);
                 }
                 if (beforeText.Topic != afterText.Topic)
                 {
@@ -270,7 +270,7 @@ namespace OliveToast
             EmbedBuilder emb = new EmbedBuilder
             {
                 Title = "채널 삭제",
-                Color = CreateColor,
+                Color = DeleteColor,
                 Description = $"채널 `{((SocketGuildChannel)channel).Name.이가($"`({channel.Id})")} 삭제됐어요",
                 Timestamp = DateTimeOffset.Now.ToKST()
             };
@@ -291,7 +291,7 @@ namespace OliveToast
             EmbedBuilder emb = new EmbedBuilder
             {
                 Title = "서버 수정",
-                Color = CreateColor,
+                Color = UpdateColor,
                 Description = "서버가 수정됐어요",
                 Timestamp = DateTimeOffset.Now.ToKST()
             };
@@ -380,14 +380,54 @@ namespace OliveToast
             await c.SendMessageAsync(embed: emb.Build());
         }
 
-        private static async Task OnInviteDeleted(SocketGuildChannel channel, string code)
-        {
-
-        }
-
         private static async Task OnInviteCreated(SocketInvite invite)
         {
+            SocketGuild guild = invite.Guild;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.초대링크생성) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
 
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "초대링크 생성",
+                Color = CreateColor,
+                Description = $"<#{invite.Channel.Id}> 채널의 [초대링크]({invite.Url})가 생성됐어요",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            };
+            emb.WithAuthor(invite.Inviter);
+
+            emb.AddField("코드", invite.Code);
+
+            emb.AddField("잔여 유효 기간", invite.MaxAge.ToTimeString(), true);
+            emb.AddField("최대 사용 횟수", invite.MaxUses, true);
+
+            await c.SendMessageAsync(embed: emb.Build());
+        }
+
+        private static async Task OnInviteDeleted(SocketGuildChannel channel, string code)
+        {
+            SocketGuild guild = channel.Guild;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.초대링크삭제) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
+
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "초대링크 제거",
+                Color = DeleteColor,
+                Description = $"<#{channel.Id}> 채널의 초대링크 ({code})가 삭제됐어요",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            };
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         private static async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)

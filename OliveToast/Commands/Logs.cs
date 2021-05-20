@@ -34,7 +34,7 @@ namespace OliveToast.Commands
 
         [Command("로그 타입 설정"), Alias("로그 타입")]
         [RequirePermission(PermissionType.ManageBotSetting), RequireContext(ContextType.Guild)]
-        [Summary("지정된 로그 타입을 활성화하거나 비활성화합니다\n여러 타입을 한번에 입력할 수 있습니다\n\n로그 타입: `메시지수정`, `메시지삭제`, `채널생성`, `채널삭제`, `채널수정`, `서버수정`, `초대링크생성`, `초대링크제거`, `반응추가`, `반응삭제`, `모든반응삭제`, `역할추가`, `역할삭제`, `역할수정`, `차단`, `차단해제`, `입장`, `퇴장`, `유저수정`, `음성상태수정`")]
+        [Summary("지정된 로그 타입을 활성화하거나 비활성화합니다\n여러 타입을 한번에 입력할 수 있습니다\n\n로그 타입: `메시지수정`, `메시지삭제`, `채널생성`, `채널삭제`, `채널수정`, `서버수정`, `초대링크생성`, `초대링크삭제`, `반응추가`, `반응삭제`, `모든반응삭제`, `역할추가`, `역할삭제`, `역할수정`, `차단`, `차단해제`, `입장`, `퇴장`, `유저수정`, `음성상태수정`")]
         public async Task SetLogType([Name("타입")] params string[] types)
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;

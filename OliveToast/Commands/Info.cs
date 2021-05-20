@@ -89,7 +89,7 @@ namespace OliveToast.Commands
 
             emb.AddField("카테고리", c.Category != null ? c.Category.Name : "-", true);
             emb.AddField("연령 제한 채널", c.IsNsfw.ToEmoji(), true);
-            emb.AddField("슬로우 모드", c.SlowModeInterval < 60 ? $"{c.SlowModeInterval}초" : c.SlowModeInterval < 3600 ? $"{c.SlowModeInterval / 60}분" : $"{c.SlowModeInterval / 3600}시간", true);
+            emb.AddField("슬로우 모드", c.SlowModeInterval.ToTimeString(), true);
 
             emb.AddField("채널 주제", c.Topic ?? "** **");
 

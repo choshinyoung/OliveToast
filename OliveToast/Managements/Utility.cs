@@ -167,4 +167,12 @@ namespace OliveToast.Managements
             return b ? ":white_check_mark:" : ":negative_squared_cross_mark:";
         }
     }
+
+    static class IntExtension
+    {
+        public static string ToTimeString(this int a)
+        {
+            return a < 60 ? $"{a}초" : a < 3600 ? $"{a / 60}분" : $"{a / 3600}시간";
+        }
+    }
 }
