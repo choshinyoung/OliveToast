@@ -280,7 +280,104 @@ namespace OliveToast
 
         private static async Task OnGuildUpdated(SocketGuild before, SocketGuild after)
         {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(before.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.서버수정) || !setting.LogChannelId.HasValue || !before.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
 
+            SocketTextChannel c = before.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "서버 수정",
+                Color = CreateColor,
+                Description = "서버가 수정됐어요",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            };
+
+            if (before.AFKChannel != after.AFKChannel)
+            {
+                emb.AddField("비활성화 채널", $"{before.AFKChannel?.Name ?? ""} => {after.AFKChannel?.Name ?? ""}", true);
+            }
+            if (before.AFKTimeout != after.AFKTimeout)
+            {
+                emb.AddField("비활성화 시간 제한", $"{before.AFKTimeout / 60}분 => {after.AFKTimeout / 60}분", true);
+            }
+            if (before.DefaultChannel != after.DefaultChannel)
+            {
+                emb.AddField("기본 채널", $"{before.DefaultChannel.Name} => {after.DefaultChannel.Name}", true);
+            }
+            if (before.ExplicitContentFilter != after.ExplicitContentFilter)
+            {
+                string b = before.ExplicitContentFilter switch
+                {
+                    ExplicitContentFilterLevel.Disabled => "비활성화",
+                    ExplicitContentFilterLevel.MembersWithoutRoles => "역할 없는 맴버만",
+                    ExplicitContentFilterLevel.AllMembers => "모든 맴버",
+                    _ => "-"
+                };
+                string a = after.ExplicitContentFilter switch
+                {
+                    ExplicitContentFilterLevel.Disabled => "비활성화",
+                    ExplicitContentFilterLevel.MembersWithoutRoles => "역할 없는 맴버만",
+                    ExplicitContentFilterLevel.AllMembers => "모든 맴버",
+                    _ => "-"
+                };
+                emb.AddField("유해 미디어 콘텐츠 필터", $"{b} => {a}", true);
+            }
+            if (before.IconUrl != after.IconUrl)
+            {
+                emb.AddField("아이콘", $"{before.IconUrl} => {after.IconUrl}", true);
+            }
+            if (before.MfaLevel != after.MfaLevel)
+            {
+                emb.AddField("2단계 인증", $"{(before.MfaLevel == MfaLevel.Disabled).ToEmoji()} => {(after.MfaLevel == MfaLevel.Disabled).ToEmoji()}", true);
+            }
+            if (before.Name != after.Name)
+            {
+                emb.AddField("이름", $"{before.Name} => {after.Name}", true);
+            }
+            if (before.Owner != after.Owner)
+            {
+                emb.AddField("서버 주인", $"{before.Owner.Username}#{before.Owner.Discriminator} => {after.Owner.Username}#{after.Owner.Discriminator}", true);
+            }
+            if (before.PublicUpdatesChannel != after.PublicUpdatesChannel)
+            {
+                emb.AddField("커뮤니티 업데이트 채널", $"{before.PublicUpdatesChannel.Name} => {after.PublicUpdatesChannel.Name}", true);
+            }
+            if (before.RulesChannel != after.RulesChannel)
+            {
+                emb.AddField("채널 규칙 및 지침", $"{before.RulesChannel.Name} => {after.RulesChannel.Name}", true);
+            }
+            if (before.SystemChannel != after.SystemChannel)
+            {
+                emb.AddField("시스템 채널", $"{before.SystemChannel.Name} => {after.SystemChannel.Name}", true);
+            }
+            if (before.VerificationLevel != after.VerificationLevel)
+            {
+                string b = before.VerificationLevel switch
+                {
+                    VerificationLevel.None => "없음",
+                    VerificationLevel.Low => "낮음",
+                    VerificationLevel.Medium => "중간",
+                    VerificationLevel.High => "높음",
+                    VerificationLevel.Extreme => "매우 높음",
+                    _ => "-"
+                };
+                string a = after.VerificationLevel switch
+                {
+                    VerificationLevel.None => "없음",
+                    VerificationLevel.Low => "낮음",
+                    VerificationLevel.Medium => "중간",
+                    VerificationLevel.High => "높음",
+                    VerificationLevel.Extreme => "매우 높음",
+                    _ => "-"
+                };
+                emb.AddField("보안 수준", $"{b} => {a}", true);
+            }
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         private static async Task OnInviteDeleted(SocketGuildChannel channel, string code)
