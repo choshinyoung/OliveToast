@@ -12,7 +12,7 @@ namespace OliveToast.Managements
     class DbManager
     {
         public static MongoClient Client = new MongoClient("mongodb://localhost");
-        public static MongoDatabaseBase Db = (MongoDatabaseBase)Client.GetDatabase("oliveDb");
+        public static MongoDatabaseBase Db = (MongoDatabaseBase)Client.GetDatabase("oliveDb2");
 
         public static IMongoCollection<OliveGuild> Guilds = Db.GetCollection<OliveGuild>("Guilds");
     }
@@ -45,13 +45,9 @@ namespace OliveToast.Managements
         {
             public ulong? LogChannelId;
 
-            public enum LogTypes { 메시지수정, 메시지삭제, 채널생성, 채널삭제, 채널수정, 서버수정, 초대링크생성, 초대링크삭제, 반응추가, 반응삭제, 모든반응삭제, 역할추가, 역할삭제, 역할수정, 차단, 차단해제, 입장, 퇴장, 유저수정, 음성상태수정 }
-            public List<LogTypes> LogType;
-
             public GuildSetting()
             {
                 LogChannelId = null;
-                LogType = new List<LogTypes> { LogTypes.메시지수정, LogTypes.메시지삭제 };
             }
         }
     }
