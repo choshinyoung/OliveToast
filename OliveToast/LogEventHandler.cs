@@ -459,12 +459,56 @@ namespace OliveToast
 
         private static async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
+            if (channel.GetType() != typeof(SocketTextChannel))
+            {
+                return;
+            }
 
+            SocketGuild guild = ((SocketTextChannel)channel).Guild;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.반응삭제) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
+
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "반응 삭제",
+                Color = DeleteColor,
+                Description = $"<#{channel.Id}> 채널에서 [메시지](https://discord.com/channels/{guild.Id}/{channel.Id}/{cache.Id})의 반응 {reaction.Emote.Name.이가()} 삭제됐어요",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            };
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         private static async Task OnReactionCleared(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel)
         {
+            if (channel.GetType() != typeof(SocketTextChannel))
+            {
+                return;
+            }
 
+            SocketGuild guild = ((SocketTextChannel)channel).Guild;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.LogType.Contains(LogTypes.모든반응삭제) || !setting.LogChannelId.HasValue || !guild.Channels.Any(c => c.Id == setting.LogChannelId.Value))
+            {
+                return;
+            }
+
+            SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
+
+            EmbedBuilder emb = new EmbedBuilder
+            {
+                Title = "반응 삭제",
+                Color = DeleteColor,
+                Description = $"<#{channel.Id}> 채널에서 [메시지](https://discord.com/channels/{guild.Id}/{channel.Id}/{cache.Id})의 모든 반응이 삭제됐어요",
+                Timestamp = DateTimeOffset.Now.ToKST()
+            };
+
+            await c.SendMessageAsync(embed: emb.Build());
         }
 
         private static async Task OnRoleCreated(SocketRole role)
