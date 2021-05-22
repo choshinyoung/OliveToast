@@ -13,8 +13,10 @@ namespace OliveToast.Managements
     {
         public enum PermissionType
         {
-            UseBot, ManageCommand, ChangeAnnouncementChannel, ManageBotSetting, CreateVote, SpeakByBot, ServerAdmin, BotAdmin
+            UseBot, ManageCommand, ManageBotSetting, CreateVote, SpeakByBot, ServerAdmin, BotAdmin
         }
+
+        public static readonly string[] PermissionNames = { "봇 사용", "커맨드 관리", "설정 관리", "투표 생성", "봇으로 말하기", "서버 어드민", "봇 어드민" };
 
         public readonly PermissionType Permission;
 
@@ -25,7 +27,51 @@ namespace OliveToast.Managements
 
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
-            return Task.FromResult(PreconditionResult.FromSuccess());
+            // whitelist
+            if (context.User.Id == 396163884005851137)
+            {
+                return Task.FromResult(PreconditionResult.FromSuccess());
+            }
+
+            if (Permission != PermissionType.BotAdmin)
+            {
+                OliveGuild.GuildSetting setting = OliveGuild.Get(context.Guild.Id).Setting;
+                SocketGuildUser user = context.User as SocketGuildUser;
+
+                if (context.Guild.OwnerId == user.Id)
+                {
+                    return Task.FromResult(PreconditionResult.FromSuccess());
+                }
+
+                string perm = Permission.ToString();
+
+                if (setting.PermissionRoles.ContainsKey(perm) && context.Guild.Roles.Any(r => r.Id == setting.PermissionRoles[perm]))
+                {
+                    if (user.Roles.Any(r => r.Position >= context.Guild.GetRole(setting.PermissionRoles[perm]).Position))
+                    {
+                        return Task.FromResult(PreconditionResult.FromSuccess());
+                    }
+                }
+                else
+                {
+                    if (Permission is PermissionType.UseBot or PermissionType.SpeakByBot or PermissionType.ManageCommand or PermissionType.CreateVote)
+                    {
+                        return Task.FromResult(PreconditionResult.FromSuccess());
+                    }
+                }
+            }
+
+            return Task.FromResult(PreconditionResult.FromError($"이 커맨드를 실행하려면 {PermissionToString(Permission)} 권한이 필요해요"));
+        }
+
+        public static string PermissionToString(PermissionType type)
+        {
+            return PermissionNames[(int)type];
+        }
+
+        public static PermissionType StringToPermission(string type)
+        {
+            return (PermissionType)Array.IndexOf(PermissionNames, type);
         }
     }
 

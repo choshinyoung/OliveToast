@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using static OliveToast.Managements.RequireCategoryEnable;
+using static OliveToast.Managements.RequirePermission;
 
 namespace OliveToast.Managements
 {
@@ -46,11 +47,13 @@ namespace OliveToast.Managements
         {
             public ulong? LogChannelId;
             public List<CategoryType> EnabledCategories;
+            public Dictionary<string, ulong> PermissionRoles;
 
             public GuildSetting()
             {
                 LogChannelId = null;
                 EnabledCategories = new List<CategoryType>() { CategoryType.Default, CategoryType.Info, CategoryType.Search, CategoryType.Game, CategoryType.Text, CategoryType.Image, CategoryType.Setting };
+                PermissionRoles = new Dictionary<string, ulong>();
             }
         }
     }

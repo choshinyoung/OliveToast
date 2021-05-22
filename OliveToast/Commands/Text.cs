@@ -29,7 +29,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await ReplyAsync(input);
+            await ReplyAsync(input, allowedMentions: AllowedMentions.None);
 
             if (!Context.IsPrivate && Context.Guild.CurrentUser.GetPermissions((IGuildChannel)Context.Channel).ManageMessages)
             {
@@ -48,7 +48,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await ReplyAsync(new string(input.Reverse().ToArray()));
+            await ReplyAsync(new string(input.Reverse().ToArray()), allowedMentions: AllowedMentions.None);
         }
 
         [Command("안드로어"), Alias("안", "dksemfhdj", "dks")]

@@ -55,7 +55,7 @@ namespace OliveToast.Commands
 
                 foreach (CommandInfo info in cmds)
                 {
-                    emb.AddField($"{CommandEventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
+                    emb.AddField($"{CommandEventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Where(p => p.Name != "").Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
                 }
 
                 await Context.MsgReplyEmbedAsync(emb.Build());
@@ -74,6 +74,11 @@ namespace OliveToast.Commands
                         string param = "";
                         foreach (ParameterInfo paramInfo in info.Parameters)
                         {
+                            if (paramInfo.Name == "")
+                            {
+                                continue;
+                            }
+
                             param += $"`{paramInfo.Name}";
 
                             Type t = paramInfo.Type;
@@ -102,20 +107,9 @@ namespace OliveToast.Commands
                         }
 
                         string permission = null;
-
                         if (info.HavePrecondition<RequirePermission>())
                         {
-                            permission = ((RequirePermission)info.Preconditions.Where(p => p.GetType() == typeof(RequirePermission)).FirstOrDefault()).Permission switch
-                            {
-                                PermissionType.ManageCommand => "커맨드 관리",
-                                PermissionType.ChangeAnnouncementChannel => "공지 채널 변경",
-                                PermissionType.ManageBotSetting => "봇 설정 변경",
-                                PermissionType.CreateVote => "투표",
-                                PermissionType.SpeakByBot => "봇으로 말하기",
-                                PermissionType.ServerAdmin => "서버 어드민",
-                                PermissionType.BotAdmin => "봇 어드민",
-                                _ => null
-                            };
+                            permission = PermissionToString(((RequirePermission)info.Preconditions.Where(p => p.GetType() == typeof(RequirePermission)).FirstOrDefault()).Permission);
                         }
                         permission = permission != null ? $"\n - 이 커맨드를 실행하려면 `<{permission}>` 권한이 필요해요" : "";
 
