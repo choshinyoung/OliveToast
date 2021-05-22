@@ -324,4 +324,10 @@ namespace OliveToast.Managements
             public SKIN SKIN { get; set; }
         }
     }
+
+    public class Voted
+    {
+        public int code { get; set; }
+        public bool voted { get; set; }
+    }
 }

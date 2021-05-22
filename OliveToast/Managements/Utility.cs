@@ -2,11 +2,14 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using HPark.Hangul;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +30,42 @@ namespace OliveToast.Managements
                 wr.Timeout = 5000;
                 return wr;
             }
+        }
+    }
+
+    class KoreanBots
+    {
+        public static async Task UpdateServerCountAsync(int count)
+        {
+            if (Program.Client.CurrentUser.Id == 515688863474253824)
+            {
+                return;
+            }
+
+            using var httpClient = new HttpClient();
+            using var request = new HttpRequestMessage(new HttpMethod("POST"), "https://api.koreanbots.dev/bots/servers");
+
+            request.Headers.TryAddWithoutValidation("content-type", "application/json");
+            request.Headers.TryAddWithoutValidation("token", ConfigManager.Get("KOREANBOTS_TOKEN"));
+
+            request.Content = new StringContent("{\"servers\":" + count + "}");
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+
+            await httpClient.SendAsync(request);
+        }
+
+        public static async Task<bool> IsVotedAsync(ulong userId)
+        {
+            using var httpClient = new HttpClient();
+            using var request = new HttpRequestMessage(new HttpMethod("GET"), $"https://api.koreanbots.dev/bots/voted/{userId}");
+
+            request.Headers.TryAddWithoutValidation("token", ConfigManager.Get("KOREANBOTS_TOKEN"));
+
+            var response = await httpClient.SendAsync(request);
+
+            var result = JsonConvert.DeserializeObject<Voted>(await response.Content.ReadAsStringAsync());
+
+            return result.voted;
         }
     }
 
