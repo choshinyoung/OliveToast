@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,10 @@ namespace OliveToast.Managements
     {
         public enum CategoryType
         {
-            Default, Info, Search, Game, Text, Image, Vote, Command, Level, Log, Management, Setting
+            Default, Info, Search, Game, Text, Image, Vote, Command, Level, Log, Setting
         }
+
+        public static readonly string[] CategoryNames = { "일반", "정보", "검색", "게임", "텍스트", "이미지", "투표", "커맨드", "레벨", "로그", "설정" };
 
         public readonly CategoryType Category;
 
@@ -45,12 +48,30 @@ namespace OliveToast.Managements
 
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
-            return Task.FromResult(PreconditionResult.FromSuccess());
+            OliveGuild.GuildSetting setting = OliveGuild.Get(context.Guild.Id).Setting;
+            if (setting.EnabledCategories.Contains(Category))
+            {
+                return Task.FromResult(PreconditionResult.FromSuccess());
+            }
+            else
+            {
+                return Task.FromResult(PreconditionResult.FromError($"이 커맨드를 실행하려면 {CategoryToString(Category)} 타입의 활성화가 필요해요"));
+            }
         }
 
         public static CategoryType GetCategory(ModuleInfo info)
         {
             return ((RequireCategoryEnable)info.Preconditions.Where(p => p.GetType() == typeof(RequireCategoryEnable)).First()).Category;
+        }
+
+        public static string CategoryToString(CategoryType type)
+        {
+            return CategoryNames[(int)type];
+        }
+
+        public static CategoryType StringToCategory(string type)
+        {
+            return (CategoryType)Array.IndexOf(CategoryNames, type);
         }
     }
 

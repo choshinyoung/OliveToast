@@ -53,19 +53,5 @@ namespace OliveToast.Commands
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
-
-        [Command("로그 채널 초기화"), Alias("로그 설정 초기화")]
-        [RequirePermission(PermissionType.ManageBotSetting), RequireContext(ContextType.Guild)]
-        [Summary("로그 채널을 초기화합니다")]
-        public async Task ResetLogType()
-        {
-            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
-
-            setting.LogChannelId = null;
-
-            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
-
-            await Context.MsgReplyEmbedAsync("로그 설정을 초기화했어요");
-        }
     }
 }

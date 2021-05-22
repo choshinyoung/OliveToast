@@ -76,9 +76,7 @@ namespace OliveToast
 
         public static async Task OnMessageReceived(SocketMessage msg)
         {
-            SocketUserMessage userMsg = msg as SocketUserMessage;
-
-            if (userMsg == null || userMsg.Content == null ||
+            if (msg is not SocketUserMessage userMsg || userMsg.Content == null ||
                 userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot) return;
 
             SocketCommandContext context = new SocketCommandContext(Program.Client, userMsg);
