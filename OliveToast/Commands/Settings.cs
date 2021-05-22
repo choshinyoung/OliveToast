@@ -55,6 +55,12 @@ namespace OliveToast.Commands
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
             CategoryType cat = StringToCategory(category);
 
+            if (cat == CategoryType.Setting)
+            {
+                await Context.MsgReplyEmbedAsync($"비활성화 할 수 없는 카테고리에요");
+                return;
+            }
+
             if (!setting.EnabledCategories.Contains(cat))
             {
                 await Context.MsgReplyEmbedAsync($"이미 비활성화돼있는 카테고리에요");
