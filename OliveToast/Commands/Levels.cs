@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using OliveToast.Managements;
 using System;
@@ -36,6 +37,32 @@ namespace OliveToast.Commands
             }
 
             await Context.MsgReplyEmbedAsync($"{user.Mention}님의 레벨은 {guild.Levels[UserId].Level}, XP는 {guild.Levels[UserId].Xp}에요");
+        }
+
+        [Command("순위")]
+        [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
+        [Summary("서버 유저들의 레벨 순위를 확인합니다")]
+        public async Task Rank()
+        {
+            OliveGuild guild = OliveGuild.Get(Context.Guild.Id);
+
+            List<string> userIds = Context.Guild.Users.Select(u => u.Id.ToString()).ToList();
+            var users = guild.Levels.Where(u => userIds.Contains(u.Key)).ToList();
+            users.Sort((u1, u2) => u1.Value == u2.Value ? u1.Value.Xp.CompareTo(u2.Value.Xp) : u1.Value.Level.CompareTo(u2.Value.Level));
+            users.Reverse();
+            if (users.Count > 5)
+            {
+                users = users.GetRange(0, 5);
+            }
+
+            EmbedBuilder emb = Context.CreateEmbed(title: "순위");
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                emb.AddField($"{i + 1}위: {users[i].Value.Level}/{users[i].Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(users[i].Key)).Mention}");
+            }
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
     }
 }
