@@ -207,7 +207,7 @@ namespace OliveToast.Commands
 
             result = result.ToLower();
 
-            await ReplyAsync(result);
+            await ReplyAsync(result, allowedMentions: AllowedMentions.None);
         }
 
         [Command("외부이모지")]
@@ -239,7 +239,7 @@ namespace OliveToast.Commands
                 }
             }
 
-            await ReplyAsync(result);
+            await ReplyAsync(result, allowedMentions: AllowedMentions.None);
         }
 
         [Command("이모지아이디")]
