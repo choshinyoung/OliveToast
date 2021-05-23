@@ -13,7 +13,7 @@ using static OliveToast.Managements.RequirePermission;
 namespace OliveToast.Commands
 {
     [Name("설정")]
-    [RequireCategoryEnable(CategoryType.Setting)]
+    [RequireCategoryEnable(CategoryType.Setting), RequireContext(ContextType.Guild)]
     public class Settings : ModuleBase<SocketCommandContext>
     {
         [Command("활성화")]

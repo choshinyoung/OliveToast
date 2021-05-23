@@ -95,6 +95,59 @@ namespace OliveToast
             {
                 await Program.Command.ExecuteAsync(context, argPos, Program.Service);
             }
+
+            if (context.IsPrivate) 
+            {
+                return;
+            }
+
+            OliveGuild guild = OliveGuild.Get(context.Guild.Id);
+
+            if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Level))
+            {
+                return;
+            }
+            if (guild.Setting.NonXpChannels.Contains(context.Channel.Id))
+            {
+                return;
+            }
+
+            string UserId = context.User.Id.ToString();
+            if (guild.Levels.ContainsKey(UserId))
+            {
+                guild.Levels[UserId].Xp++;
+                if (guild.Levels[UserId].Xp >= guild.Levels[UserId].Level * 20 + 100)
+                {
+                    guild.Levels[UserId].Level++;
+                    guild.Levels[UserId].Xp = 0;
+
+                    if (guild.Setting.LevelUpChannelId.HasValue && context.Guild.Channels.Any(c => c.Id == guild.Setting.LevelUpChannelId.Value))
+                    {
+                        SocketTextChannel c = context.Guild.GetTextChannel(guild.Setting.LevelUpChannelId.Value);
+
+                        string lv = guild.Levels[UserId].Level.ToString();
+
+                        await c.SendMessageAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:");
+
+                        if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
+                        {
+                            await (context.User as SocketGuildUser).AddRoleAsync(context.Guild.GetRole(guild.Setting.LevelRoles[lv]));
+                        }
+                    }
+                    else
+                    {
+                        await context.MsgReplyEmbedAsync($"{context.User.Mention}님, {guild.Levels[UserId].Level}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
+                    }
+                }
+
+            }
+            else
+            {
+                guild.Levels.Add(UserId, new OliveGuild.UserLevel());
+                guild.Levels[UserId].Xp++;
+            }
+
+            OliveGuild.Set(context.Guild.Id, g => g.Levels, guild.Levels);
         }
 
         public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)

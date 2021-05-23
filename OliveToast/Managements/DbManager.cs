@@ -27,10 +27,25 @@ namespace OliveToast.Managements
 
         public GuildSetting Setting;
 
+        public Dictionary<string, UserLevel> Levels;
+
+        public class UserLevel
+        {
+            public int Level;
+            public int Xp;
+
+            public UserLevel()
+            {
+                Level = 0;
+                Xp = 0;
+            }
+        }
+
         public OliveGuild(ulong id)
         {
             GuildId = id;
             Setting = new GuildSetting();
+            Levels = new Dictionary<string, UserLevel>();
         }
 
         public static OliveGuild Get(ulong id)
@@ -49,11 +64,19 @@ namespace OliveToast.Managements
             public List<CategoryType> EnabledCategories;
             public Dictionary<string, ulong> PermissionRoles;
 
+            public ulong? LevelUpChannelId;
+            public List<ulong> NonXpChannels;
+            public Dictionary<string, ulong> LevelRoles;
+
             public GuildSetting()
             {
                 LogChannelId = null;
                 EnabledCategories = new List<CategoryType>() { CategoryType.Default, CategoryType.Info, CategoryType.Search, CategoryType.Game, CategoryType.Text, CategoryType.Image, CategoryType.Setting };
                 PermissionRoles = new Dictionary<string, ulong>();
+
+                LevelUpChannelId = null;
+                NonXpChannels = new List<ulong>();
+                LevelRoles = new Dictionary<string, ulong>();
             }
         }
     }
