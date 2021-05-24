@@ -93,7 +93,7 @@ namespace OliveToast.Commands
 
         [Command("권한 설정"), Alias("권한")]
         [RequirePermission(PermissionType.ServerAdmin)]
-        [Summary("봇 사용 권한을 설정합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `투표 생성`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
+        [Summary("역할별로 봇 사용 권한을 설정합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `투표 생성`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
         public async Task SetPermissionRole([Name("권한")] string permission, [Name("")] string permission2, [Remainder, Name("역할")] SocketRole role)
         {
             permission += $" {permission2}";
@@ -145,6 +145,44 @@ namespace OliveToast.Commands
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+
+        [Command("권한 제거"), Alias("권한 설정 취소")]
+        [RequirePermission(PermissionType.ServerAdmin)]
+        [Summary("봇 사용 권한을 제거합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `투표 생성`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
+        public async Task RemovePermissionRole([Name("권한")] string permission, [Name("")] string permission2)
+        {
+            permission += $" {permission2}";
+
+            if (!PermissionNames.Contains(permission))
+            {
+                await Context.MsgReplyEmbedAsync($"알 수 없는 권한이에요\n{string.Join(", ", PermissionNames[..(PermissionNames.Length - 2)].Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
+                return;
+            }
+
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+            PermissionType perm = StringToPermission(permission);
+
+            if (perm == PermissionType.ServerAdmin || perm == PermissionType.BotAdmin)
+            {
+                await Context.MsgReplyEmbedAsync($"설정할 수 없는 권한이에요");
+                return;
+            }
+
+            string sPerm = perm.ToString();
+
+            if (!setting.PermissionRoles.ContainsKey(sPerm))
+            {
+                await Context.MsgReplyEmbedAsync("해당 권한은 설정되지 않아서 제거할 수 없어요");
+                return;
+            }
+
+            setting.PermissionRoles.Remove(sPerm);
+
+            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            await Context.MsgReplyEmbedAsync($"{permission} 권한을 설정했어요\n이제 {role.Mention.이()}나 그 위의 역할이 있는 유저는 {permission} 권한이 필요한 커맨드를 사용할 수 있어요");
         }
     }
 }
