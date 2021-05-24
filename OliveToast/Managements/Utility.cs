@@ -22,6 +22,11 @@ namespace OliveToast.Managements
             return $"https://discord.com/oauth2/authorize?client_id={Program.Client.CurrentUser.Id}&scope=bot&permissions=2416241734";
         }
 
+        public static int GetLevelXp(int level)
+        {
+            return level * 20 + 100;
+        }
+
         public class TimeOutWebClient : WebClient
         {
             protected override WebRequest GetWebRequest(Uri address)

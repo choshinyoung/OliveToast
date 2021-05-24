@@ -36,7 +36,15 @@ namespace OliveToast.Commands
                 OliveGuild.Set(Context.Guild.Id, g => g.Levels, guild.Levels);
             }
 
-            await Context.MsgReplyEmbedAsync($"{user.Mention}님의 레벨은 {guild.Levels[UserId].Level}, XP는 {guild.Levels[UserId].Xp}에요");
+            EmbedBuilder emb = Context.CreateEmbed();
+
+            emb.AddField("level", guild.Levels[UserId].Level, true);
+            emb.AddField("xp", guild.Levels[UserId].Xp, true);
+
+            int totalXp = Utility.GetLevelXp(guild.Levels[UserId].Level);
+            emb.AddField($"레벨업까지 남은 xp: {totalXp - guild.Levels[UserId].Xp}", $"{guild.Levels[UserId].Xp} [{new string(Enumerable.Repeat('■', (int)Math.Round(guild.Levels[UserId].Xp / (float)totalXp * 10)).ToArray())}{new string(Enumerable.Repeat('□', (int)Math.Round((totalXp - guild.Levels[UserId].Xp) / (float)totalXp * 10)).ToArray())}] {totalXp}");
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
         [Command("순위")]

@@ -116,7 +116,7 @@ namespace OliveToast
             if (guild.Levels.ContainsKey(UserId))
             {
                 guild.Levels[UserId].Xp++;
-                if (guild.Levels[UserId].Xp >= guild.Levels[UserId].Level * 20 + 100)
+                if (guild.Levels[UserId].Xp >= Utility.GetLevelXp(guild.Levels[UserId].Level))
                 {
                     guild.Levels[UserId].Level++;
                     guild.Levels[UserId].Xp = 0;
