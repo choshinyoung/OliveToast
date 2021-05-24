@@ -56,8 +56,7 @@ namespace OliveToast.Commands
 
             List<string> userIds = Context.Guild.Users.Select(u => u.Id.ToString()).ToList();
             var users = guild.Levels.Where(u => userIds.Contains(u.Key)).ToList();
-            users.Sort((u1, u2) => u1.Value == u2.Value ? u1.Value.Xp.CompareTo(u2.Value.Xp) : u1.Value.Level.CompareTo(u2.Value.Level));
-            users.Reverse();
+            users.Sort((u1, u2) => u1.Value.Level == u2.Value.Level ? u2.Value.Xp.CompareTo(u1.Value.Xp) : u2.Value.Level.CompareTo(u1.Value.Level));
 
             var rankUser = new List<KeyValuePair<string, OliveGuild.UserLevel>>(users);
             if (rankUser.Count > 5)
@@ -76,7 +75,7 @@ namespace OliveToast.Commands
             {
                 var u = users.Where(u => u.Key == Context.User.Id.ToString()).First();
 
-                emb.AddField($"{users.IndexOf(u)}위: {u.Value.Level}/{u.Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(u.Key)).Mention}");
+                emb.AddField($"{users.IndexOf(u) + 1}위: {u.Value.Level}/{u.Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(u.Key)).Mention}");
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
