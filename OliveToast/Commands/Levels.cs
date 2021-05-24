@@ -50,16 +50,25 @@ namespace OliveToast.Commands
             var users = guild.Levels.Where(u => userIds.Contains(u.Key)).ToList();
             users.Sort((u1, u2) => u1.Value == u2.Value ? u1.Value.Xp.CompareTo(u2.Value.Xp) : u1.Value.Level.CompareTo(u2.Value.Level));
             users.Reverse();
-            if (users.Count > 5)
+
+            var rankUser = new List<KeyValuePair<string, OliveGuild.UserLevel>>(users);
+            if (rankUser.Count > 5)
             {
-                users = users.GetRange(0, 5);
+                rankUser = rankUser.GetRange(0, 5);
             }
 
             EmbedBuilder emb = Context.CreateEmbed(title: "순위");
 
-            for (int i = 0; i < users.Count; i++)
+            for (int i = 0; i < rankUser.Count; i++)
             {
-                emb.AddField($"{i + 1}위: {users[i].Value.Level}/{users[i].Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(users[i].Key)).Mention}");
+                emb.AddField($"{i + 1}위: {rankUser[i].Value.Level}/{rankUser[i].Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(rankUser[i].Key)).Mention}");
+            }
+
+            if (users.Any(u => u.Key == Context.User.Id.ToString()) && !rankUser.Any(u => u.Key == Context.User.Id.ToString())) 
+            {
+                var u = users.Where(u => u.Key == Context.User.Id.ToString()).First();
+
+                emb.AddField($"{users.IndexOf(u)}위: {u.Value.Level}/{u.Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(u.Key)).Mention}");
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
