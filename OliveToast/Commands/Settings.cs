@@ -182,7 +182,7 @@ namespace OliveToast.Commands
 
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"{permission} 권한을 설정했어요\n이제 {role.Mention.이()}나 그 위의 역할이 있는 유저는 {permission} 권한이 필요한 커맨드를 사용할 수 있어요");
+            await Context.MsgReplyEmbedAsync($"이제 {permission} 제거돼서 기본값으로 작동해요");
         }
     }
 }
