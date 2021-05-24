@@ -121,22 +121,22 @@ namespace OliveToast
                     guild.Levels[UserId].Level++;
                     guild.Levels[UserId].Xp = 0;
 
+                    string lv = guild.Levels[UserId].Level.ToString();
+
                     if (guild.Setting.LevelUpChannelId.HasValue && context.Guild.Channels.Any(c => c.Id == guild.Setting.LevelUpChannelId.Value))
                     {
                         SocketTextChannel c = context.Guild.GetTextChannel(guild.Setting.LevelUpChannelId.Value);
 
-                        string lv = guild.Levels[UserId].Level.ToString();
-
                         await c.SendMessageAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:");
-
-                        if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
-                        {
-                            await (context.User as SocketGuildUser).AddRoleAsync(context.Guild.GetRole(guild.Setting.LevelRoles[lv]));
-                        }
                     }
                     else
                     {
-                        await context.MsgReplyEmbedAsync($"{context.User.Mention}님, {guild.Levels[UserId].Level}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
+                        await context.MsgReplyEmbedAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
+                    }
+
+                    if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
+                    {
+                        await (context.User as SocketGuildUser).AddRoleAsync(context.Guild.GetRole(guild.Setting.LevelRoles[lv]));
                     }
                 }
 

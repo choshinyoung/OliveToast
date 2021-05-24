@@ -13,11 +13,11 @@ using static OliveToast.Managements.RequirePermission;
 namespace OliveToast.Commands
 {
     [Name("레벨")]
-    [RequireCategoryEnable(CategoryType.Level)]
+    [RequireCategoryEnable(CategoryType.Level), RequireContext(ContextType.Guild)]
     public class Levels : ModuleBase<SocketCommandContext>
     {
-        [Command("레벨 확인"), Alias("레벨 보기")]
-        [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
+        [Command("레벨 확인"), Alias("레벨 보기", "레벨")]
+        [RequirePermission(PermissionType.UseBot)]
         [Summary("레벨을 확인합니다\n`유저`는 생략할 수 있습니다")]
         public async Task SeeLevel([Remainder, Name("유저")] SocketGuildUser user = null)
         {
@@ -48,7 +48,7 @@ namespace OliveToast.Commands
         }
 
         [Command("순위")]
-        [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
+        [RequirePermission(PermissionType.UseBot)]
         [Summary("서버 유저들의 레벨 순위를 확인합니다")]
         public async Task Rank()
         {
@@ -76,6 +76,70 @@ namespace OliveToast.Commands
                 var u = users.Where(u => u.Key == Context.User.Id.ToString()).First();
 
                 emb.AddField($"{users.IndexOf(u) + 1}위: {u.Value.Level}/{u.Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(u.Key)).Mention}");
+            }
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("레벨 역할 추가"), Alias("레벨 역할 설정", "레벨 역할")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("특정 레벨에 도달하면 얻을 수 있는 역할을 설정합니다")]
+        public async Task AddLevelRole([Name("레벨")] int level, [Remainder, Name("역할")] SocketRole role)
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            if (setting.LevelRoles.ContainsKey(level.ToString()))
+            {
+                await Context.MsgReplyEmbedAsync("해당 레벨의 역할이 이미 설정돼있어요");
+                return;
+            }
+
+            setting.LevelRoles.Add(level.ToString(), role.Id);
+            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            await Context.MsgReplyEmbedAsync($"이제 {level} 레벨이 되면 {role.Mention} 역할을 얻을 수 있어요");
+        }
+
+        [Command("레벨 역할 제거"), Alias("레벨 역할 삭제")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("특정 레벨에 도달하면 얻을 수 있는 역할을 설정합니다")]
+        public async Task RemoveLevelRole([Name("레벨")] int level)
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            if (!setting.LevelRoles.ContainsKey(level.ToString()))
+            {
+                await Context.MsgReplyEmbedAsync("해당 레벨에 설정된 역할이 없어요");
+                return;
+            }
+
+            setting.LevelRoles.Remove(level.ToString());
+            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            await Context.MsgReplyEmbedAsync($"{level} 레벨의 역할을 제거했어요");
+        }
+
+        [Command("레벨 역할 확인"), Alias("레벨 역할 보기", "레벨 역할")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("특정 레벨에 도달하면 얻을 수 있는 역할을 설정합니다")]
+        public async Task SeeLevelRole()
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            EmbedBuilder emb = Context.CreateEmbed(title: "레벨 역할");
+
+            var roles = setting.LevelRoles.Where(lr => Context.Guild.Roles.Any(r => r.Id == lr.Value)).ToList();
+
+            if (roles.Count == 0)
+            {
+                emb.Description = "설정된 레벨 역할이 없어요";
+                await Context.MsgReplyEmbedAsync(emb.Build());
+                return;
+            }
+
+            foreach (var value in roles)
+            {
+                emb.AddField($"{value.Key} 레벨", Context.Guild.GetRole(value.Value).Mention, true);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
