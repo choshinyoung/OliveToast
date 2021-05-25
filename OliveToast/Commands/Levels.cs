@@ -120,32 +120,6 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync($"{level} 레벨의 역할을 제거했어요");
         }
 
-        [Command("레벨 역할 확인"), Alias("레벨 역할 보기", "레벨 역할")]
-        [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("현재 설정된 레벨 역할을 확인합니다")]
-        public async Task SeeLevelRole()
-        {
-            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
-
-            EmbedBuilder emb = Context.CreateEmbed(title: "레벨 역할");
-
-            var roles = setting.LevelRoles.Where(lr => Context.Guild.Roles.Any(r => r.Id == lr.Value)).ToList();
-
-            if (roles.Count == 0)
-            {
-                emb.Description = "설정된 레벨 역할이 없어요";
-                await Context.MsgReplyEmbedAsync(emb.Build());
-                return;
-            }
-
-            foreach (var value in roles)
-            {
-                emb.AddField($"{value.Key} 레벨", Context.Guild.GetRole(value.Value).Mention, true);
-            }
-
-            await Context.MsgReplyEmbedAsync(emb.Build());
-        }
-
         [Command("레벨업 채널 설정"), Alias("레벨업 채널")]
         [RequirePermission(PermissionType.ManageBotSetting)]
         [Summary("레벨업 메시지를 보내는 채널을 설정합니다")]
@@ -178,20 +152,42 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync($"레벨업 채널을 초기화했어요");
         }
 
-        [Command("레벨업 채널 확인"), Alias("레벨업 채널 보기", "레벨업 채널")]
+        [Command("레벨 설정 확인"), Alias("레벨 설정 보기", "레벨업 채널 확인", "레벨업 채널 보기", "레벨업 채널", "레벨 역할 확인", "레벨 역할 보기", "레벨 역할")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("현재 설정된 레벨업 채널을 확인합니다")]
+        [Summary("레벨 설정을 확인합니다")]
         public async Task SeeLevelUpChannel()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
 
-            if (!setting.LevelUpChannelId.HasValue || !Context.Guild.Channels.Any(c => c.Id == setting.LevelUpChannelId.Value))
+            EmbedBuilder emb = Context.CreateEmbed(title: "레벨 설정");
+
+            if (setting.LevelUpChannelId.HasValue && Context.Guild.Channels.Any(c => c.Id == setting.LevelUpChannelId.Value))
             {
-                await Context.MsgReplyEmbedAsync("레벨업 채널이 설정되지 않았어요");
-                return;
+                emb.AddField("레벨업 채널", Context.Guild.GetTextChannel(setting.LevelUpChannelId.Value).Mention);
+            }
+            else
+            {
+                emb.AddField("레벨업 채널", "레벨업 채널이 설정되지 않았어요");
             }
 
-            await Context.MsgReplyEmbedAsync($"현재 레벨업 채널은 {Context.Guild.GetTextChannel(setting.LevelUpChannelId.Value).Mention}에요");
+            var roles = setting.LevelRoles.Where(lr => Context.Guild.Roles.Any(r => r.Id == lr.Value)).ToList();
+            if (roles.Count > 0)
+            {
+                string s = "";
+
+                foreach (var value in roles)
+                {
+                    s += $"{value.Key} 레벨: {Context.Guild.GetRole(value.Value).Mention}\n";
+                }
+
+                emb.AddField("레벨 역할", s);
+            }
+            else
+            {
+                emb.AddField("레벨 역할", "설정된 레벨 역할이 없어요");
+            }
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
     }
 }
