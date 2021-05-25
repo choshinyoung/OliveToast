@@ -35,6 +35,11 @@ namespace OliveToast.Managements
 
             if (Permission != PermissionType.BotAdmin)
             {
+                if ((context as SocketCommandContext).IsPrivate)
+                {
+                    return Task.FromResult(PreconditionResult.FromSuccess());
+                }
+
                 OliveGuild.GuildSetting setting = OliveGuild.Get(context.Guild.Id).Setting;
                 SocketGuildUser user = context.User as SocketGuildUser;
 
@@ -94,6 +99,11 @@ namespace OliveToast.Managements
 
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
+            if ((context as SocketCommandContext).IsPrivate)
+            {
+                return Task.FromResult(PreconditionResult.FromSuccess());
+            }
+
             OliveGuild.GuildSetting setting = OliveGuild.Get(context.Guild.Id).Setting;
             if (setting.EnabledCategories.Contains(Category))
             {
