@@ -152,7 +152,45 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync($"레벨업 채널을 초기화했어요");
         }
 
-        [Command("레벨 설정 확인"), Alias("레벨 설정 보기", "레벨업 채널 확인", "레벨업 채널 보기", "레벨업 채널", "레벨 역할 확인", "레벨 역할 보기", "레벨 역할")]
+        [Command("레벨업 불가 채널 추가"), Alias("레벨업 불가 채널 설정", "레벨업 불가 채널")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("xp가 오르지 않는 채널을 설정합니다")]
+        public async Task AddNonXpChannel([Name("채널")] SocketTextChannel channel)
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            if (setting.NonXpChannels.Contains(channel.Id))
+            {
+                await Context.MsgReplyEmbedAsync("해당 채널은 이미 레벨업 불가 채널이에요");
+                return;
+            }
+
+            setting.NonXpChannels.Add(channel.Id);
+            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            await Context.MsgReplyEmbedAsync($"이제 {channel.Mention} 채널에서는 xp가 오르지 않아요");
+        }
+
+        [Command("레벨업 불가 채널 제거"), Alias("레벨업 불가 채널 삭제")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("설정된 레벨업 불가 채널을 제거합니다")]
+        public async Task RemoveNonXpChannel([Name("채널")] SocketTextChannel channel)
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            if (!setting.NonXpChannels.Contains(channel.Id))
+            {
+                await Context.MsgReplyEmbedAsync("해당 채널은 레벨업 불가 채널이 아니에요");
+                return;
+            }
+
+            setting.NonXpChannels.Remove(channel.Id);
+            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            await Context.MsgReplyEmbedAsync($"이제 {channel.Mention}에서 메시지를 보내면 xp가 올라요");
+        }
+
+        [Command("레벨 설정 확인"), Alias("레벨 설정 보기", "레벨업 채널 확인", "레벨업 채널 보기", "레벨업 채널", "레벨 역할 확인", "레벨 역할 보기", "레벨 역할", "레벨업 불가 채널 확인", "레벨업 불가 채널 보기", "레벨업 불가 채널")]
         [RequirePermission(PermissionType.ManageBotSetting)]
         [Summary("레벨 설정을 확인합니다")]
         public async Task SeeLevelUpChannel()
@@ -168,6 +206,23 @@ namespace OliveToast.Commands
             else
             {
                 emb.AddField("레벨업 채널", "레벨업 채널이 설정되지 않았어요");
+            }
+
+            List<ulong> cnl = setting.NonXpChannels.Where(c => Context.Guild.Channels.Any(cc => cc.Id == c)).ToList();
+            if (setting.NonXpChannels.Count > 0)
+            {
+                string s = "";
+
+                foreach (var value in cnl)
+                {
+                    s += $"{Context.Guild.GetTextChannel(value).Mention}\n";
+                }
+
+                emb.AddField("레벨업 불가 채널", s);
+            }
+            else
+            {
+                emb.AddField("레벨업 불가 채널", "설정된 레벨업 불가 채널이 없어요");
             }
 
             var roles = setting.LevelRoles.Where(lr => Context.Guild.Roles.Any(r => r.Id == lr.Value)).ToList();
