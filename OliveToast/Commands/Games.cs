@@ -225,6 +225,15 @@ namespace OliveToast.Commands
                 if (channel == context.Channel.Id) 
                 {
                     string content = context.Message.Content;
+                    
+                    if (content.Contains("\u200B"))
+                    {
+                        EmbedBuilder emb = context.CreateEmbed(title: "타자 연습", description: $"복붙이 감지되었어요. 정정당당하게 게임을 플레이해주세요!");
+                        await context.MsgReplyEmbedAsync(emb.Build());
+
+                        TypingSession.Sessions.Remove(context.User.Id);
+                        return true;
+                    }
 
                     int speed = (int)(content.Length / (DateTime.Now - StartTime).TotalSeconds * 100);
 
