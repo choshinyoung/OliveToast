@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static OliveToast.Managements.KoreanBotsResult;
 using static OliveToast.Managements.RequireCategoryEnable;
 using static OliveToast.Managements.RequirePermission;
 
@@ -107,19 +108,19 @@ namespace OliveToast.Commands
         public async Task DiscordBot([Remainder, Name("봇")] string name)
         {
             using WebClient wc = new WebClient();
-            KoreanBotsResult response = JsonConvert.DeserializeObject<KoreanBotsResult>(wc.DownloadString($"https://api.koreanbots.dev/v1/bots/search?q={name}"));
+            KoreanBotsResult response = JsonConvert.DeserializeObject<KoreanBotsResult>(wc.DownloadString($"https://koreanbots.dev/api/v2/search/bots?query={name}"));
 
             EmbedBuilder emb;
-            if (response.data.Count == 0)
+            if (response.code != 200)
             {
                 emb = Context.CreateEmbed(title: "검색 실패", description: $"알 수 없는 봇이에요");
                 await Context.MsgReplyEmbedAsync(emb.Build());
                 return;
             }
 
-            KoreanBotsResult.Bot b = response.data.First();
+            InnerData b = response.data.data.First();
 
-            emb = Context.CreateEmbed(title: b.name, thumbnailUrl: $"https://beta.koreanbots.dev/api/image/discord/avatars/{b.id}.gif?size=512");
+            emb = Context.CreateEmbed(title: b.name, url: $"https://koreanbots.dev/bots/{b.id}", thumbnailUrl: $"https://koreanbots.dev/api/image/discord/avatars/{b.id}.gif?size=512");
 
             emb.AddField("상태", b.status switch 
             {
@@ -133,9 +134,9 @@ namespace OliveToast.Commands
 
             emb.AddField("설명", b.intro);
 
-            emb.AddField("디스코드 인증됨", (b.verified == 1).ToEmoji(), true);
-            emb.AddField("신뢰함", (b.trusted == 1).ToEmoji(), true);
-            emb.AddField("부스트", (b.boosted == 1).ToEmoji(), true);
+            emb.AddField("디스코드 인증됨", ((b.flags & Flag.DiscordVerified) == Flag.DiscordVerified).ToEmoji(), true);
+            emb.AddField("신뢰함", ((b.flags & Flag.KoreanbotVerified) == Flag.KoreanbotVerified).ToEmoji(), true);
+            emb.AddField("부스트", ((b.flags & Flag.Premium) == Flag.Premium).ToEmoji(), true);
 
             emb.AddField("서버 수", $"{b.servers} 서버", true);
             emb.AddField("하트 수", $":heart: {b.votes}", true);

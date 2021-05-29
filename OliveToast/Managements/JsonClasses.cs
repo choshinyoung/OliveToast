@@ -109,29 +109,67 @@ namespace OliveToast.Managements
     public class KoreanBotsResult
     {
         public int code { get; set; }
-        public List<Bot> data { get; set; }
-        public int currentPage { get; set; }
-        public int totalPage { get; set; }
+        public Data data { get; set; }
+        public int version { get; set; }
 
-        public class Bot
+        public class Data
+        {
+            public string type { get; set; }
+            public List<InnerData> data { get; set; }
+            public int currentPage { get; set; }
+            public int totalPage { get; set; }
+        }
+
+        public class InnerData
         {
             public string id { get; set; }
-            public string name { get; set; }
-            public int servers { get; set; }
+            public Flag flags { get; set; }
+            public List<Owner> owners { get; set; }
+            public string lib { get; set; }
+            public string prefix { get; set; }
             public int votes { get; set; }
+            public int servers { get; set; }
             public string intro { get; set; }
-            public string avatar { get; set; }
-            public string url { get; set; }
+            public string desc { get; set; }
+            public string web { get; set; }
+            public string git { get; set; }
+            public object url { get; set; }
             public List<string> category { get; set; }
-            public string tag { get; set; }
             public string status { get; set; }
+            public string discord { get; set; }
             public string state { get; set; }
-            public int verified { get; set; }
-            public int trusted { get; set; }
-            public int boosted { get; set; }
-            public object vanity { get; set; }
-            public object bg { get; set; }
-            public object banner { get; set; }
+            public string vanity { get; set; }
+            public string bg { get; set; }
+            public string banner { get; set; }
+            public string tag { get; set; }
+            public string avatar { get; set; }
+            public string name { get; set; }
+        }
+
+        public class Owner
+        {
+            public string id { get; set; }
+            public int flags { get; set; }
+            public string github { get; set; }
+            public string tag { get; set; }
+            public string username { get; set; }
+            public List<string> bots { get; set; }
+        }
+
+        public enum Status
+        {
+            online, idle, dnd, streaming, offline
+        }
+
+        public enum Flag
+        {
+            None = 0 << 0,
+            Official = 1 << 0,
+            KoreanbotVerified = 1 << 2,
+            Partner = 1 << 3,
+            DiscordVerified = 1 << 4,
+            Premium = 1 << 5,
+            HackatonWinner = 1 << 6,
         }
     }
 

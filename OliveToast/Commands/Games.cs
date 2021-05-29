@@ -225,10 +225,11 @@ namespace OliveToast.Commands
                 if (channel == context.Channel.Id) 
                 {
                     string content = context.Message.Content;
-                    
+                    EmbedBuilder emb = context.CreateEmbed(title: "타자 연습");
+
                     if (content.Contains("\u200B"))
                     {
-                        EmbedBuilder emb = context.CreateEmbed(title: "타자 연습", description: $"복붙이 감지되었어요. 정정당당하게 게임을 플레이해주세요!");
+                        emb.Description = $"복붙이 감지되었어요. 정정당당하게 게임을 플레이해주세요!";
                         await context.MsgReplyEmbedAsync(emb.Build());
 
                         TypingSession.Sessions.Remove(context.User.Id);
@@ -242,7 +243,7 @@ namespace OliveToast.Commands
                         (double)sentence.Where((c, i) => i < content.Length && c == content[i]).Count() / content.Length;
                     int accuracy = (int)(a * 100);
 
-                    EmbedBuilder emb = context.CreateEmbed(title: "타자 연습", description: $"타수: {speed}\n정확도: {accuracy}%");
+                    emb.Description = $"타수: {speed}\n정확도: {accuracy}%";
                     await context.MsgReplyEmbedAsync(emb.Build());
 
                     TypingSession.Sessions.Remove(context.User.Id);
