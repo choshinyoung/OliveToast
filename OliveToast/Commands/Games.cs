@@ -229,7 +229,7 @@ namespace OliveToast.Commands
 
                     if (content.Contains("\u200B"))
                     {
-                        emb.Description = $"복붙이 감지되었어요. 정정당당하게 게임을 플레이해주세요!";
+                        emb.Description = $"복붙이 감지되었어요\n게임을 정정당당하게 플레이해주세요!";
                         await context.MsgReplyEmbedAsync(emb.Build());
 
                         TypingSession.Sessions.Remove(context.User.Id);
