@@ -133,7 +133,7 @@ namespace OliveToast.Managements
             public string desc { get; set; }
             public string web { get; set; }
             public string git { get; set; }
-            public object url { get; set; }
+            public string url { get; set; }
             public List<string> category { get; set; }
             public string status { get; set; }
             public string discord { get; set; }

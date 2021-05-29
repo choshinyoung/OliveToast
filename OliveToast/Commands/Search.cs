@@ -108,15 +108,22 @@ namespace OliveToast.Commands
         public async Task DiscordBot([Remainder, Name("봇")] string name)
         {
             using WebClient wc = new WebClient();
-            KoreanBotsResult response = JsonConvert.DeserializeObject<KoreanBotsResult>(wc.DownloadString($"https://koreanbots.dev/api/v2/search/bots?query={name}"));
 
             EmbedBuilder emb;
-            if (response.code != 200)
+
+            string str = "";
+            try
             {
-                emb = Context.CreateEmbed(title: "검색 실패", description: $"알 수 없는 봇이에요");
+                str = wc.DownloadString($"https://koreanbots.dev/api/v2/search/bots?query={name}");
+            }
+            catch
+            {
+                emb = Context.CreateEmbed(title: "검색 실패", description: "해당 봇을 찾을 수 없어요");
                 await Context.MsgReplyEmbedAsync(emb.Build());
                 return;
             }
+
+            KoreanBotsResult response = JsonConvert.DeserializeObject<KoreanBotsResult>(str);
 
             InnerData b = response.data.data.First();
 
@@ -134,9 +141,13 @@ namespace OliveToast.Commands
 
             emb.AddField("설명", b.intro);
 
-            emb.AddField("디스코드 인증됨", ((b.flags & Flag.DiscordVerified) == Flag.DiscordVerified).ToEmoji(), true);
-            emb.AddField("신뢰함", ((b.flags & Flag.KoreanbotVerified) == Flag.KoreanbotVerified).ToEmoji(), true);
-            emb.AddField("부스트", ((b.flags & Flag.Premium) == Flag.Premium).ToEmoji(), true);
+            emb.AddField("KOREANBOTS 인증된 봇", ((b.flags & Flag.KoreanbotVerified) == Flag.KoreanbotVerified).ToEmoji(), true);
+            emb.AddField("디스코드 인증된 봇", ((b.flags & Flag.DiscordVerified) == Flag.DiscordVerified).ToEmoji(), true);
+            emb.AddField("해커톤 우승 봇", ((b.flags & Flag.HackatonWinner) == Flag.HackatonWinner).ToEmoji(), true);
+
+            emb.AddField("제작자", string.Join(", ", b.owners.Select(o => $"`{o.username}#{o.tag}`")), true);
+            emb.AddField("라이브러리", $"`{b.lib}`", true);
+            emb.AddField("접두사", $"`{b.prefix}`", true);
 
             emb.AddField("서버 수", $"{b.servers} 서버", true);
             emb.AddField("하트 수", $":heart: {b.votes}", true);
