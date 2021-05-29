@@ -47,10 +47,10 @@ namespace OliveToast.Managements
     {
         public static async Task UpdateServerCountAsync(int count)
         {
-            // if (Program.Client.CurrentUser.Id == 515688863474253824)
-            // {
-            //     return;
-            // }
+            if (Program.Client.CurrentUser.Id == 515688863474253824)
+            {
+                return;
+            }
 
             using var httpClient = new HttpClient();
             using var request = new HttpRequestMessage(new HttpMethod("POST"), "https://koreanbots.dev/api/v2/bots/495209098929766400/stats");
