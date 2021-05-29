@@ -27,6 +27,11 @@ namespace OliveToast.Managements
             return level * 20 + 100;
         }
 
+        public static DateTime TimestampToDateTime(long timestamp)
+        {
+            return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(timestamp).AddHours(9);
+        }
+
         public class TimeOutWebClient : WebClient
         {
             protected override WebRequest GetWebRequest(Uri address)
@@ -62,15 +67,16 @@ namespace OliveToast.Managements
         public static async Task<bool> IsVotedAsync(ulong userId)
         {
             using var httpClient = new HttpClient();
-            using var request = new HttpRequestMessage(new HttpMethod("GET"), $"https://api.koreanbots.dev/bots/voted/{userId}");
+            using var request = new HttpRequestMessage(new HttpMethod("GET"), $"https://koreanbots.dev/api/v2/bots/495209098929766400/vote?userID={userId}");
 
-            request.Headers.TryAddWithoutValidation("token", ConfigManager.Get("KOREANBOTS_TOKEN"));
+            request.Headers.TryAddWithoutValidation("content-type", "application/json");
+            request.Headers.TryAddWithoutValidation("Authorization", ConfigManager.Get("KOREANBOTS_TOKEN"));
 
             var response = await httpClient.SendAsync(request);
 
             var result = JsonConvert.DeserializeObject<Voted>(await response.Content.ReadAsStringAsync());
 
-            return result.voted;
+            return (DateTimeOffset.Now.ToKST() - Utility.TimestampToDateTime(result.data.lastVote)).Days > 7;
         }
     }
 

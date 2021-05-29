@@ -328,6 +328,13 @@ namespace OliveToast.Managements
     public class Voted
     {
         public int code { get; set; }
-        public bool voted { get; set; }
+        public Data data { get; set; }
+        public int version { get; set; }
+
+        public class Data
+        {
+            public bool voted { get; set; }
+            public long lastVote { get; set; }
+        }
     }
 }
