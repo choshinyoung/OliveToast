@@ -47,16 +47,16 @@ namespace OliveToast.Managements
     {
         public static async Task UpdateServerCountAsync(int count)
         {
-            if (Program.Client.CurrentUser.Id == 515688863474253824)
-            {
-                return;
-            }
+            // if (Program.Client.CurrentUser.Id == 515688863474253824)
+            // {
+            //     return;
+            // }
 
             using var httpClient = new HttpClient();
-            using var request = new HttpRequestMessage(new HttpMethod("POST"), "https://api.koreanbots.dev/bots/servers");
+            using var request = new HttpRequestMessage(new HttpMethod("POST"), "https://koreanbots.dev/api/v2/bots/495209098929766400/stats");
 
             request.Headers.TryAddWithoutValidation("content-type", "application/json");
-            request.Headers.TryAddWithoutValidation("token", ConfigManager.Get("KOREANBOTS_TOKEN"));
+            request.Headers.TryAddWithoutValidation("Authorization", ConfigManager.Get("KOREANBOTS_TOKEN"));
 
             request.Content = new StringContent("{\"servers\":" + count + "}");
             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
