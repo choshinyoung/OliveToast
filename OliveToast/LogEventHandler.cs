@@ -27,7 +27,7 @@ namespace OliveToast
 
             SocketGuild guild = ((SocketTextChannel)channel).Guild;
             OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
-            if (!setting.LogChannelId.HasValue)
+            if (!setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Log) || !setting.LogChannelId.HasValue)
             {
                 return;
             }
@@ -92,7 +92,7 @@ namespace OliveToast
 
             SocketGuild guild = ((SocketTextChannel)channel).Guild;
             OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
-            if (!setting.LogChannelId.HasValue)
+            if (!setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Log) || !setting.LogChannelId.HasValue)
             {
                 return;
             }
