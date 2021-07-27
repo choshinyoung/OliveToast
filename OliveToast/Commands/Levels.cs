@@ -43,7 +43,7 @@ namespace OliveToast.Commands
             emb.AddField("xp", guild.Levels[UserId].Xp, true);
 
             int totalXp = Utility.GetLevelXp(guild.Levels[UserId].Level);
-            emb.AddField($"레벨업까지 남은 xp: {totalXp - guild.Levels[UserId].Xp}", $"{guild.Levels[UserId].Xp} [{new string(Enumerable.Repeat('■', (int)Math.Round(guild.Levels[UserId].Xp / (float)totalXp * 10)).ToArray())}{new string(Enumerable.Repeat('□', (int)Math.Round((totalXp - guild.Levels[UserId].Xp) / (float)totalXp * 10)).ToArray())}] {totalXp}");
+            emb.AddField($"레벨업까지 남은 xp: {totalXp - guild.Levels[UserId].Xp}", $"{(int)((float)guild.Levels[UserId].Xp / totalXp * 100)}% | {new string(Enumerable.Repeat('█', (int)Math.Round(guild.Levels[UserId].Xp / (float)totalXp * 10)).ToArray())}{new string(Enumerable.Repeat(' ', (int)Math.Round((totalXp - guild.Levels[UserId].Xp) / (float)totalXp * 10)).ToArray())} | {totalXp}");
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
@@ -201,11 +201,11 @@ namespace OliveToast.Commands
 
             if (setting.LevelUpChannelId.HasValue && Context.Guild.Channels.Any(c => c.Id == setting.LevelUpChannelId.Value))
             {
-                emb.AddField("레벨업 채널", Context.Guild.GetTextChannel(setting.LevelUpChannelId.Value).Mention);
+                emb.AddField("레벨업 알림 채널", Context.Guild.GetTextChannel(setting.LevelUpChannelId.Value).Mention);
             }
             else
             {
-                emb.AddField("레벨업 채널", "레벨업 채널이 설정되지 않았어요");
+                emb.AddField("레벨업 알림 채널", "레벨업 채널이 설정되지 않았어요");
             }
 
             List<ulong> cnl = setting.NonXpChannels.Where(c => Context.Guild.Channels.Any(cc => cc.Id == c)).ToList();
