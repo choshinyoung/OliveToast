@@ -191,8 +191,8 @@ namespace OliveToast.Commands
             emb.AddField("팔로워 순위", $"{dbResult.statistics.ranks.country.followers}위", true);
 
             emb.AddField("전체 조회수", $"{dbResult.statistics.views}번", true);
-            emb.AddField("전체 :heart: 수", $"{dbResult.statistics.loves}개", true);
-            emb.AddField("전체 :star: 수", $"{dbResult.statistics.favorites}개", true);
+            emb.AddField("전체 :heart:", $"{dbResult.statistics.loves}개", true);
+            emb.AddField("전체 :star:", $"{dbResult.statistics.favorites}개", true);
 
             emb.AddField("내 소개", $"```\n{apiResult.profile.bio}```");
             emb.AddField("내가 하고 있는 일", $"```\n{apiResult.profile.status}```");
@@ -225,8 +225,8 @@ namespace OliveToast.Commands
             emb.AddField("공유일", ((DateTimeOffset)p.history.shared).ToShortKSTString(), true);
             emb.AddField("조회수", $"{p.stats.views}번", true);
 
-            emb.AddField(":heart:", $"{p.stats.loves}개", true);
-            emb.AddField(":star:", $"{p.stats.favorites}개", true);
+            emb.AddField(":heart:", $"{p.stats.loves}", true);
+            emb.AddField(":star:", $"{p.stats.favorites}", true);
             emb.AddField(":cyclone:", $"{p.stats.remixes}번", true);
 
             emb.AddField("사용 방법", $"```\n{p.instructions}```");
