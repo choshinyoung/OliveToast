@@ -33,7 +33,7 @@ namespace OliveToast
             }
             SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
 
-            EmbedBuilder emb = new EmbedBuilder
+            EmbedBuilder emb = new()
             {
                 Title = "메시지 수정",
                 Color = new Color(255, 255, 0),
@@ -83,14 +83,14 @@ namespace OliveToast
             await c.SendMessageAsync(embed: emb.Build());
         }
 
-        private static async Task OnMessageDeleted(Cacheable<IMessage, ulong> cache, ISocketMessageChannel channel)
+        private static async Task OnMessageDeleted(Cacheable<IMessage, ulong> cache, Cacheable<IMessageChannel, ulong> channel)
         {
             if (channel.GetType() != typeof(SocketTextChannel))
             {
                 return;
             }
 
-            SocketGuild guild = ((SocketTextChannel)channel).Guild;
+            SocketGuild guild = ((SocketTextChannel)channel.Value).Guild;
             OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
             if (!setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Log) || !setting.LogChannelId.HasValue)
             {
@@ -98,7 +98,7 @@ namespace OliveToast
             }
             SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
 
-            EmbedBuilder emb = new EmbedBuilder
+            EmbedBuilder emb = new()
             {
                 Title = "메시지 삭제",
                 Color = new Color(255, 0, 0),

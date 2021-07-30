@@ -24,11 +24,18 @@ namespace OliveToast
             client.MessageReceived += OnMessageReceived;
             command.CommandExecuted += OnCommandExecuted;
 
+            client.InteractionCreated += OnInteractionCreated;
+
             client.GuildAvailable += OnGuildAvailable;
             client.JoinedGuild += OnJoinGuild;
             client.LeftGuild += OnLeftGuild;
 
             client.Ready += OnReady;
+        }
+
+        private static async Task OnInteractionCreated(SocketInteraction arg)
+        {
+            throw new NotImplementedException();
         }
 
         public static async Task OnLog(LogMessage msg)

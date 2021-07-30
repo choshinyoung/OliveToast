@@ -13,24 +13,28 @@ namespace OliveToast.Managements
 {
     public static class CommandExtension
     {
-        public static async Task<IUserMessage> MsgReplyAsync(this SocketCommandContext context, object content, bool disalbeMention = true)
+        public static async Task<IUserMessage> MsgReplyAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
         {
-            return await context.Message.ReplyAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null);
+            MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild.Id);
+            return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
         }
 
-        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, object content, bool disalbeMention = true)
+        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
         {
-            return await context.Message.ReplyAsync(embed: context.CreateEmbed(content.ToString()).Build(), allowedMentions: disalbeMention ? AllowedMentions.None : null);
+            Embed emb = context.CreateEmbed(content.ToString()).Build();
+            MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild.Id);
+            return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
         }
 
-        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, Embed emb, bool disalbeMention = true)
+        public static async Task<IUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, Embed emb, bool disalbeMention = true, MessageComponent component = null)
         {
-            return await context.Message.ReplyAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null);
+            MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild.Id);
+            return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
         }
 
         public static EmbedBuilder CreateEmbed(this SocketCommandContext context, object description = null, string title = null, string imgUrl = null, string url = null, string thumbnailUrl = null, Color? color = null)
         {
-            EmbedBuilder emb = new EmbedBuilder()
+            EmbedBuilder emb = new()
             {
                 Title = title,
                 Color = color ?? new Color(255, 200, 0),
@@ -81,10 +85,10 @@ namespace OliveToast.Managements
                 }
             }
 
-            using Utility.TimeOutWebClient wc = new Utility.TimeOutWebClient();
+            using Utility.TimeOutWebClient wc = new();
             byte[] bytes = wc.DownloadData(url);
 
-            MemoryStream stream = new MemoryStream(bytes);
+            MemoryStream stream = new(bytes);
 
             return stream;
         }
