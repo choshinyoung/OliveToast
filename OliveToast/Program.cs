@@ -17,16 +17,18 @@ namespace OliveToast
 
         public static DateTime Uptime;
 
-        private readonly DiscordSocketConfig clientConfig = new DiscordSocketConfig
+        public static bool IsDebugMode = ConfigManager.Get("DEBUG_MODE") == "true";
+
+        private readonly DiscordSocketConfig clientConfig = new()
         {
             AlwaysDownloadUsers = true,
-            LogLevel = LogSeverity.Debug,
+            LogLevel = IsDebugMode ? LogSeverity.Debug : LogSeverity.Info,
             MessageCacheSize = 100000,
         };
-        private readonly CommandServiceConfig commandConfig = new CommandServiceConfig
+        private readonly CommandServiceConfig commandConfig = new()
         {
             DefaultRunMode = RunMode.Async,
-            LogLevel = LogSeverity.Debug,
+            LogLevel = IsDebugMode ? LogSeverity.Debug : LogSeverity.Info,
         };
 
         static void Main(string[] args)

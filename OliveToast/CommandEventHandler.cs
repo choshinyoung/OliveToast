@@ -100,7 +100,10 @@ namespace OliveToast
             int argPos = 0;
             if (userMsg.HasStringPrefix(prefix, ref argPos) || userMsg.HasMentionPrefix(Program.Client.CurrentUser, ref argPos))
             {
-                await Program.Command.ExecuteAsync(context, argPos, Program.Service);
+                if (Program.Command.Search(context, argPos).IsSuccess)
+                {
+                    await Program.Command.ExecuteAsync(context, argPos, Program.Service);
+                }
             }
 
             if (context.IsPrivate) 
@@ -160,16 +163,17 @@ namespace OliveToast
         {
             if (!result.IsSuccess)
             {
-                if (result.Error == CommandError.UnknownCommand)
-                {
-                    return;
-                }
-
                 var ctx = context as SocketCommandContext;
 
-                EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}\n");
-
-                await ctx.MsgReplyEmbedAsync(emb.Build());
+                if (Program.IsDebugMode)
+                {
+                    EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
+                    await ctx.MsgReplyEmbedAsync(emb.Build());
+                }
+                else
+                {
+                    await context.Message.AddReactionAsync(new Emoji("⚠️"));
+                }
             }
             else
             {
