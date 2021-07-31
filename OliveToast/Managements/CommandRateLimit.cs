@@ -38,9 +38,7 @@ namespace OliveToast.Managements
         {
             Task.Run(async () =>
             {
-                Console.WriteLine("s");
                 await Task.Delay(LimitingTime * 1000);
-                Console.WriteLine("e");
 
                 if (RateLimits.ContainsKey(user)) 
                 {
