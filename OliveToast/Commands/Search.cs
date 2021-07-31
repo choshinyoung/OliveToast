@@ -37,7 +37,7 @@ namespace OliveToast.Commands
             dataStream.Close();
 
             using WebResponse response = request.GetResponse();
-            using StreamReader reader = new StreamReader(response.GetResponseStream());
+            using StreamReader reader = new(response.GetResponseStream());
 
             string responseFromServer = reader.ReadToEnd();
 
@@ -73,7 +73,7 @@ namespace OliveToast.Commands
             dataStream.Close();
 
             using WebResponse response = request.GetResponse();
-            using StreamReader reader = new StreamReader(response.GetResponseStream());
+            using StreamReader reader = new(response.GetResponseStream());
 
             string responseFromServer = reader.ReadToEnd();
 
@@ -107,7 +107,7 @@ namespace OliveToast.Commands
         [Summary("[한국 디스코드 봇 리스트](https://koreanbots.dev/)에서 봇을 검색합니다")]
         public async Task DiscordBot([Remainder, Name("봇")] string name)
         {
-            using WebClient wc = new WebClient();
+            using WebClient wc = new();
 
             EmbedBuilder emb;
 
@@ -161,7 +161,7 @@ namespace OliveToast.Commands
         [Summary("스크래치에서 해당 유저를 검색합니다")]
         public async Task ScratchUser([Name("유저네임")] string name)
         {
-            using WebClient wc = new WebClient();
+            using WebClient wc = new();
 
             EmbedBuilder emb;
 
@@ -205,7 +205,7 @@ namespace OliveToast.Commands
         [Summary("스크래치에서 해당 프로젝트를 검색합니다")]
         public async Task ScratchProject([Remainder, Name("검색어")] string keyword)
         {
-            using WebClient wc = new WebClient();
+            using WebClient wc = new();
             List<ScratchProjectResult> projects = JsonConvert.DeserializeObject<List<ScratchProjectResult>>(wc.DownloadString($"https://api.scratch.mit.edu/search/projects?q={keyword}"));
 
             EmbedBuilder emb;
@@ -240,7 +240,7 @@ namespace OliveToast.Commands
         [Summary("마인크래프트 유저를 검색합니다")]
         public async Task MinecraftUser([Name("유저")] string name)
         {
-            using WebClient wc = new WebClient();
+            using WebClient wc = new();
 
             MinecraftUuidResult uuid;
             List<MinecraftNameResult> names;

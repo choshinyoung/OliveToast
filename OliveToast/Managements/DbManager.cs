@@ -13,7 +13,7 @@ namespace OliveToast.Managements
 {
     class DbManager
     {
-        public static MongoClient Client = new MongoClient("mongodb://localhost");
+        public static MongoClient Client = new("mongodb://localhost");
         public static MongoDatabaseBase Db = (MongoDatabaseBase)Client.GetDatabase("oliveDb");
 
         public static IMongoCollection<OliveGuild> Guilds = Db.GetCollection<OliveGuild>("Guilds");
@@ -29,23 +29,14 @@ namespace OliveToast.Managements
 
         public Dictionary<string, UserLevel> Levels;
 
-        public class UserLevel
-        {
-            public int Level;
-            public int Xp;
-
-            public UserLevel()
-            {
-                Level = 0;
-                Xp = 0;
-            }
-        }
+        public Dictionary<string, List<CustomCommand>> Commands;
 
         public OliveGuild(ulong id)
         {
             GuildId = id;
-            Setting = new GuildSetting();
-            Levels = new Dictionary<string, UserLevel>();
+            Setting = new();
+            Levels = new();
+            Commands = new();
         }
 
         public static OliveGuild Get(ulong id)
@@ -56,6 +47,18 @@ namespace OliveToast.Managements
         public static void Set(ulong id, Expression<Func<OliveGuild, object>> field, object value)
         {
             DbManager.Guilds.UpdateOne(g => g.GuildId == id, Builders<OliveGuild>.Update.Set(field, value));
+        }
+
+        public class UserLevel
+        {
+            public int Level;
+            public int Xp;
+
+            public UserLevel()
+            {
+                Level = 0;
+                Xp = 0;
+            }
         }
 
         public class GuildSetting
@@ -77,6 +80,24 @@ namespace OliveToast.Managements
                 LevelUpChannelId = null;
                 NonXpChannels = new List<ulong>();
                 LevelRoles = new Dictionary<string, ulong>();
+            }
+        }
+
+        public class CustomCommand
+        {
+            public string Response;
+
+            public bool IsRegex;
+            public string[] ExecuteLines;
+
+            public ulong CreatedBy;
+
+            public CustomCommand(string response, bool isRegex, string[] executeLines, ulong createdBy)
+            {
+                Response = response;
+                IsRegex = isRegex;
+                ExecuteLines = executeLines;
+                CreatedBy = createdBy;
             }
         }
     }

@@ -120,6 +120,24 @@ namespace OliveToast
 
             OliveGuild guild = OliveGuild.Get(context.Guild.Id);
 
+            #region custom command
+            var commands = guild.Commands;
+            if (commands.ContainsKey(context.Message.Content))
+            {
+                if (CommandRateLimit.AddCount(context.User.Id))
+                {
+                    OliveGuild.CustomCommand command = commands[context.Message.Content][new Random().Next(commands[context.Message.Content].Count)];
+
+                    await context.MsgReplyAsync(command.Response);
+                }
+                else
+                {
+                    await context.Message.AddReactionAsync(new Emoji("🚫"));
+                }
+            }
+            #endregion
+
+            #region level
             if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Level))
             {
                 return;
@@ -164,6 +182,7 @@ namespace OliveToast
             }
 
             OliveGuild.Set(context.Guild.Id, g => g.Levels, guild.Levels);
+            #endregion
         }
 
         public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
