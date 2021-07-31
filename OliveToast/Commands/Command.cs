@@ -62,7 +62,7 @@ namespace OliveToast.Commands
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
         [RequirePermission(PermissionType.ManageCommand)]
         [Summary("커스텀 커맨드를 제거합니다")]
-        public async Task DeleteCommand([Name("커맨드")] string command)
+        public async Task DeleteCommand([Name("커맨드"), Remainder] string command)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
 
@@ -96,6 +96,61 @@ namespace OliveToast.Commands
             for (int i = 0; i < commands.Count; i++)
             {
                 emb.Description += $"{i}. {commands[i]}\n";
+            }
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
+        public async Task ResponseList([Name("번호")] int index)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= index)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[index];
+            var respose = commands[command];
+
+            EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
+
+            for (int i = 0; i < respose.Count; i++)
+            {
+                SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == respose[i].CreatedBy);
+
+                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.GetName(false)}#{user.Discriminator}")}", respose[i].Response);
+            }
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
+        public async Task ResponseList([Name("커맨드"), Remainder] string command)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (!commands.ContainsKey(command))
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            var respose = commands[command];
+
+            EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
+
+            for (int i = 0; i < respose.Count; i++)
+            {
+                SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == respose[i].CreatedBy);
+
+                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.GetName(false)}#{user.Discriminator}")}", respose[i].Response);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());

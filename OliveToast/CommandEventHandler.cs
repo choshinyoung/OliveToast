@@ -113,7 +113,7 @@ namespace OliveToast
                 }
             }
 
-            if (context.IsPrivate) 
+            if (context.IsPrivate)
             {
                 return;
             }
