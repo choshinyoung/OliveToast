@@ -123,7 +123,7 @@ namespace OliveToast.Commands
             {
                 SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == respose[i].CreatedBy);
 
-                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.GetName(false)}#{user.Discriminator}")}", respose[i].Response);
+                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", respose[i].Response);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
@@ -150,7 +150,7 @@ namespace OliveToast.Commands
             {
                 SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == respose[i].CreatedBy);
 
-                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.GetName(false)}#{user.Discriminator}")}", respose[i].Response);
+                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", respose[i].Response);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
