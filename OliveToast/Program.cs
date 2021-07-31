@@ -19,22 +19,19 @@ namespace OliveToast
 
         public static bool IsDebugMode = ConfigManager.Get("DEBUG_MODE") == "true";
 
-        private readonly DiscordSocketConfig clientConfig = new()
+        private static readonly DiscordSocketConfig clientConfig = new()
         {
             AlwaysDownloadUsers = true,
             LogLevel = IsDebugMode ? LogSeverity.Debug : LogSeverity.Info,
             MessageCacheSize = 100000,
         };
-        private readonly CommandServiceConfig commandConfig = new()
+        private static readonly CommandServiceConfig commandConfig = new()
         {
             DefaultRunMode = RunMode.Async,
             LogLevel = IsDebugMode ? LogSeverity.Debug : LogSeverity.Info,
         };
 
-        static void Main(string[] args)
-            => new Program().MainAsync().GetAwaiter().GetResult();
-        
-        public async Task MainAsync()
+        static async Task Main()
         {
             Client = new DiscordSocketClient(clientConfig);
             Command = new CommandService(commandConfig);
