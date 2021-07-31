@@ -86,7 +86,7 @@ namespace OliveToast
             if (msg is not SocketUserMessage userMsg || userMsg.Content == null ||
                 userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot) return;
 
-            SocketCommandContext context = new SocketCommandContext(Program.Client, userMsg);
+            SocketCommandContext context = new(Program.Client, userMsg);
 
             if (await Games.WordRelay(context))
             {

@@ -180,8 +180,6 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             emb.AddField("계정 생성일", u.CreatedAt.ToKSTString());
             emb.AddField("서버 참가일", u.JoinedAt?.ToKSTString());
 
-            emb.AddField("역할", string.Join(' ', u.Roles.Select(r => r.Mention)));
-
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
@@ -218,12 +216,12 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             EmbedBuilder emb = Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: Program.Client.CurrentUser.GetAvatar());
 
             emb.AddField("서버 수", $"{Program.Client.Guilds.Count}곳", true);
-            List<ulong> users = new List<ulong>();
+            List<ulong> users = new();
             foreach(SocketGuild guild in Program.Client.Guilds)
             {
                 users.AddRange(guild.Users.Select(u => u.Id).Where(u => !users.Contains(u)));
             }
-            emb.AddField("유저 수", $"{users.Count()}명", true);
+            emb.AddField("유저 수", $"{users.Count}명", true);
             emb.AddEmptyField();
 
             emb.AddField("핑", $"{Program.Client.Latency}ms", true);
