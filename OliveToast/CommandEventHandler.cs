@@ -102,7 +102,14 @@ namespace OliveToast
             {
                 if (Program.Command.Search(context, argPos).IsSuccess)
                 {
-                    await Program.Command.ExecuteAsync(context, argPos, Program.Service);
+                    if (CommandRateLimit.AddCount(context.User.Id))
+                    {
+                        await Program.Command.ExecuteAsync(context, argPos, Program.Service);
+                    }
+                    else
+                    {
+                        await context.Message.AddReactionAsync(new Emoji("🚫"));
+                    }
                 }
             }
 
