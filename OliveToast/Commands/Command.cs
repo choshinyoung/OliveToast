@@ -27,11 +27,11 @@ namespace OliveToast.Commands
 
             if (commands.ContainsKey(command))
             {
-                commands[command].Add(new(answer, true, new(), Context.User.Id));
+                commands[command].Add(new(answer, true, new(), new(), Context.User.Id));
             }
             else 
             {
-                commands.Add(command, new() { new(answer, true, new(), Context.User.Id) });
+                commands.Add(command, new() { new(answer, true, new(), new(), Context.User.Id) });
             }
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
@@ -47,7 +47,7 @@ namespace OliveToast.Commands
         [Summary("고급 설정을 사용해 커맨드를 생성합니다")]
         public async Task CreatCommand()
         {
-            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id);
+            OliveGuild.CustomCommand command = new(null, false, new(), new(), Context.User.Id);
 
             ComponentBuilder component = new ComponentBuilder().WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.Status.CommandInput}");
             RestUserMessage msg = await Context.MsgReplyEmbedAsync("커맨드를 입력해주세요", component: component.Build());

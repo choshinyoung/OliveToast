@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Toast.Nodes;
 using static OliveToast.Managements.RequireCategoryEnable;
 using static OliveToast.Managements.RequirePermission;
 
@@ -100,15 +101,17 @@ namespace OliveToast.Managements
             public string Answer;
 
             public bool IsRegex;
-            public List<string> ExecuteLines;
+            public List<string> RawToastLines;
+            public List<INode> ToastLines;
 
             public ulong CreatedBy;
 
-            public CustomCommand(string answer, bool isRegex, List<string> executeLines, ulong createdBy)
+            public CustomCommand(string answer, bool isRegex, List<string> rawLines, List<INode> lines, ulong createdBy)
             {
                 Answer = answer;
                 IsRegex = isRegex;
-                ExecuteLines = executeLines;
+                RawToastLines = rawLines;
+                ToastLines = lines;
                 CreatedBy = createdBy;
             }
         }

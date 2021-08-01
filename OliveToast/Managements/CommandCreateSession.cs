@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Toast.Nodes;
 
 namespace OliveToast.Managements
 {
@@ -69,7 +70,7 @@ namespace OliveToast.Managements
 
                     break;
                 case Status.ExecuteLinesInput:
-                    session.CustomCommand.ExecuteLines.Add(content);
+                    session.CustomCommand.RawToastLines.Add(content);
 
                     break;
                 default:
@@ -108,9 +109,9 @@ namespace OliveToast.Managements
                     emb.AddField("응답", session.CustomCommand.Answer, true);
                     emb.AddField("정규식 사용 여부", session.CustomCommand.IsRegex.ToEmoji(), true);
 
-                    if (session.CustomCommand.ExecuteLines.Count > 0)
+                    if (session.CustomCommand.RawToastLines.Count > 0)
                     {
-                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ExecuteLines.Select(l => $"```\n{l}\n```")));
+                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.RawToastLines.Select(l => $"```\n{l}\n```")));
                     }
 
                     Sessions.Remove(userId);
