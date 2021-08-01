@@ -14,6 +14,11 @@ namespace OliveToast
 {
     class CommandEventHandler
     {
+        public enum InteractionType
+        {
+            CreateCommand
+        }
+
         public static readonly string prefix = ConfigManager.Get("PREFIX");
 
         public static void RegisterEvents(DiscordSocketClient client, CommandService command)
@@ -34,7 +39,20 @@ namespace OliveToast
 
         private static async Task OnInteractionCreated(SocketInteraction arg)
         {
-            throw new NotImplementedException();
+            SocketMessageComponent component = arg as SocketMessageComponent;
+            string[] args = component.Data.CustomId.Split('.');
+
+            ulong userId = ulong.Parse(args[0]);
+            InteractionType type = (InteractionType)int.Parse(args[1]);
+
+            switch (type) 
+            {
+                case InteractionType.CreateCommand:
+                    CommandCreateSession.Status status = (CommandCreateSession.Status)int.Parse(args[2]);
+                    await CommandCreateSession.ButtonResponse(userId, status);
+
+                    break;
+            }
         }
 
         public static async Task OnLog(LogMessage msg)
@@ -73,11 +91,7 @@ namespace OliveToast
 
             SocketCommandContext context = new(Program.Client, userMsg);
 
-            if (await Games.WordRelay(context))
-            {
-                return;
-            }
-            if (await Games.TypingGame(context))
+            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Message.Content))
             {
                 return;
             }
@@ -113,7 +127,7 @@ namespace OliveToast
                 {
                     OliveGuild.CustomCommand command = commands[context.Message.Content][new Random().Next(commands[context.Message.Content].Count)];
 
-                    await context.MsgReplyAsync(command.Response);
+                    await context.MsgReplyAsync(command.Answer);
                 }
                 else
                 {

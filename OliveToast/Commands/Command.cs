@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using OliveToast.Managements;
 using System;
@@ -19,24 +20,44 @@ namespace OliveToast.Commands
         [Command("커맨드 만들기"), Alias("커맨드 생성")]
         [RequirePermission(PermissionType.ManageCommand)]
         [Summary("커스텀 커맨드를 생성합니다")]
-        public async Task CreateCommand([Name("커맨드")] string command, [Name("응답"), Remainder] string response)
+        public async Task CreateCommand([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
 
             if (commands.ContainsKey(command))
             {
-                commands[command].Add(new(response, true, Array.Empty<string>(), Context.User.Id));
+                commands[command].Add(new(answer, true, new(), Context.User.Id));
             }
-            else {
-                commands.Add(command, new() { new(response, true, Array.Empty<string>(), Context.User.Id) });
+            else 
+            {
+                commands.Add(command, new() { new(answer, true, new(), Context.User.Id) });
             }
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
             EmbedBuilder emb = Context.CreateEmbed("커맨드를 만들었어요");
             emb.AddField("커맨드", command, true);
-            emb.AddField("응답", response, true);
+            emb.AddField("응답", answer, true);
 
             await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("커맨드 만들기"), Alias("커맨드 생성")]
+        [RequirePermission(PermissionType.ManageCommand)]
+        [Summary("고급 설정을 사용해 커맨드를 생성합니다")]
+        public async Task CreatCommand()
+        {
+            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id);
+
+            ComponentBuilder component = new ComponentBuilder().WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.Status.CommandInput}");
+            RestUserMessage msg = await Context.MsgReplyEmbedAsync("커맨드를 입력해주세요", component: component.Build());
+
+            CommandCreateSession.Sessions.Add(Context.User.Id, new()
+            {
+                SessionStatus = CommandCreateSession.Status.CommandInput,
+                CustomCommand = command,
+                Message = msg,
+                UserMessageContext = Context
+            });
         }
 
         [Command("커맨드 삭제"), Alias("커맨드 제거"), Priority(1)]
@@ -104,7 +125,7 @@ namespace OliveToast.Commands
         [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
-        public async Task ResponseList([Name("번호")] int index)
+        public async Task AnswerList([Name("번호")] int index)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
 
@@ -115,15 +136,15 @@ namespace OliveToast.Commands
             }
 
             string command = commands.Keys.ToList()[index];
-            var respose = commands[command];
+            var answer = commands[command];
 
             EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
 
-            for (int i = 0; i < respose.Count; i++)
+            for (int i = 0; i < answer.Count; i++)
             {
-                SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == respose[i].CreatedBy);
+                SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
 
-                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", respose[i].Response);
+                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
@@ -132,7 +153,7 @@ namespace OliveToast.Commands
         [Command("커맨드 목록"), Alias("응답 목록")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
-        public async Task ResponseList([Name("커맨드"), Remainder] string command)
+        public async Task AnswerList([Name("커맨드"), Remainder] string command)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
 
@@ -142,15 +163,15 @@ namespace OliveToast.Commands
                 return;
             }
 
-            var respose = commands[command];
+            var answer = commands[command];
 
             EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
 
-            for (int i = 0; i < respose.Count; i++)
+            for (int i = 0; i < answer.Count; i++)
             {
-                SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == respose[i].CreatedBy);
+                SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
 
-                emb.AddField($"{i} - {(user is null ? respose[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", respose[i].Response);
+                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());

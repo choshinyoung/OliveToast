@@ -97,16 +97,16 @@ namespace OliveToast.Managements
 
         public class CustomCommand
         {
-            public string Response;
+            public string Answer;
 
             public bool IsRegex;
-            public string[] ExecuteLines;
+            public List<string> ExecuteLines;
 
             public ulong CreatedBy;
 
-            public CustomCommand(string response, bool isRegex, string[] executeLines, ulong createdBy)
+            public CustomCommand(string answer, bool isRegex, List<string> executeLines, ulong createdBy)
             {
-                Response = response;
+                Answer = answer;
                 IsRegex = isRegex;
                 ExecuteLines = executeLines;
                 CreatedBy = createdBy;
