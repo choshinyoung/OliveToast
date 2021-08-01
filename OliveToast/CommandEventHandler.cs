@@ -60,7 +60,7 @@ namespace OliveToast
                         break;
                     }
 
-                    SocketCommandContext context = TypingSession.Sessions[userId].context;
+                    SocketCommandContext context = TypingSession.Sessions[userId].Context;
 
                     TypingSession.Sessions.Remove(userId);
                     await context.MsgReplyEmbedAsync("게임이 취소됐어요");
@@ -72,7 +72,7 @@ namespace OliveToast
                         break;
                     }
 
-                    context = WordSession.Sessions[userId].context;
+                    context = WordSession.Sessions[userId].Context;
 
                     WordSession.Sessions.Remove(userId);
                     await context.MsgReplyEmbedAsync("게임이 취소됐어요");
@@ -108,6 +108,8 @@ namespace OliveToast
         private static async Task OnReady()
         {
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
+
+            await Task.Factory.StartNew(SessionManager.CollectExpiredSessions);
         }
 
         public static async Task OnMessageReceived(SocketMessage msg)
@@ -117,7 +119,7 @@ namespace OliveToast
 
             SocketCommandContext context = new(Program.Client, userMsg);
 
-            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Message.Content))
+            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content))
             {
                 return;
             }

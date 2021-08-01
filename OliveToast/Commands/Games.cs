@@ -50,7 +50,7 @@ namespace OliveToast.Commands
         {
             if (!WordSession.Sessions.ContainsKey(Context.User.Id))
             {
-                WordSession.Sessions.Add(Context.User.Id, (Context, new List<string>()));
+                WordSession.Sessions.Add(Context.User.Id, new(Context, new List<string>(), DateTime.Now));
 
                 ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelWordGame}", ButtonStyle.Danger);
                 await Context.MsgReplyEmbedAsync("끝말잇기 시작!", component: component.Build());
@@ -75,14 +75,16 @@ namespace OliveToast.Commands
                     word = context.Message.Content;
                 }
 
-                if (WordSession.Sessions[context.User.Id].context.Channel.Id == context.Channel.Id)
+                if (WordSession.Sessions[context.User.Id].Context.Channel.Id == context.Channel.Id)
                 {
+                    WordSession.Sessions[context.User.Id].LastActiveTime = DateTime.Now;
+
                     if (!WordsManager.Words.Contains(word))
                     {
                         await context.MsgReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
                         return true;
                     }
-                    List<string> usedWords = WordSession.Sessions[context.User.Id].words;
+                    List<string> usedWords = WordSession.Sessions[context.User.Id].Words;
 
                     if (usedWords.Count != 0 && !word.StartsWith(usedWords.Last().Last()))
                     {
@@ -188,7 +190,7 @@ namespace OliveToast.Commands
             ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
             await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
-            TypingSession.Sessions.Add(Context.User.Id, (Context, sentence, DateTime.Now));
+            TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
         }
 
         [Command("영어 타자 연습"), Alias("영타", "entyping")]
@@ -207,17 +209,19 @@ namespace OliveToast.Commands
             ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
             await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
-            TypingSession.Sessions.Add(Context.User.Id, (Context, sentence, DateTime.Now));
+            TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
         }
 
         public static async Task<bool> TypingGame(SocketCommandContext context)
         {
             if (TypingSession.Sessions.ContainsKey(context.User.Id))
             {
-                var (ctx, sentence, StartTime) = TypingSession.Sessions[context.User.Id];
+                var session = TypingSession.Sessions[context.User.Id];
 
-                if (ctx.Channel.Id == context.Channel.Id) 
+                if (session.Context.Channel.Id == context.Channel.Id)
                 {
+                    session.LastActiveTime = DateTime.Now;
+
                     string content = context.Message.Content;
                     EmbedBuilder emb = context.CreateEmbed(title: "타자 연습");
 
@@ -230,11 +234,11 @@ namespace OliveToast.Commands
                         return true;
                     }
 
-                    int speed = (int)(content.Length / (DateTime.Now - StartTime).TotalSeconds * 100);
+                    int speed = (int)(content.Length / (DateTime.Now - session.LastActiveTime).TotalSeconds * 100);
 
-                    double a = content.Length < sentence.Length ?
-                        (double)content.Where((c, i) => i < sentence.Length && c == sentence[i]).Count() / sentence.Length :
-                        (double)sentence.Where((c, i) => i < content.Length && c == content[i]).Count() / content.Length;
+                    double a = content.Length < session.Sentence.Length ?
+                        (double)content.Where((c, i) => i < session.Sentence.Length && c == session.Sentence[i]).Count() / session.Sentence.Length :
+                        (double)session.Sentence.Where((c, i) => i < content.Length && c == content[i]).Count() / content.Length;
                     int accuracy = (int)(a * 100);
 
                     emb.Description = $"타수: {speed}\n정확도: {accuracy}%";

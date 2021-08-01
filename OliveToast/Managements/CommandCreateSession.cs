@@ -32,14 +32,17 @@ namespace OliveToast.Managements
         public RestUserMessage Message;
         public SocketCommandContext UserMessageContext;
 
-        public static async Task<bool> MessageResponse(ulong userId, string content)
+        public DateTime LastActiveTime;
+
+        public static async Task<bool> MessageResponse(ulong userId, ulong channelId, string content)
         {
-            if (!Sessions.ContainsKey(userId))
+            if (!Sessions.ContainsKey(userId) || Sessions[userId].UserMessageContext.Channel.Id != channelId)
             {
                 return false;
             }
 
             CommandCreateSession session = Sessions[userId];
+            session.LastActiveTime = DateTime.Now;
 
             switch (session.SessionStatus)
             {
@@ -97,6 +100,7 @@ namespace OliveToast.Managements
             }
 
             CommandCreateSession session = Sessions[userId];
+            session.LastActiveTime = DateTime.Now;
 
             switch (response)
             {

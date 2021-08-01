@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OliveToast.Managements
+{
+    class SessionManager
+    {
+        public const int ExpireMinute = 5;
+
+        public static async Task CollectExpiredSessions()
+        {
+            while (true)
+            {
+                await Task.Delay(1000 * 30);
+
+                foreach (var session in WordSession.Sessions)
+                {
+                    Console.WriteLine((DateTime.Now - session.Value.LastActiveTime).TotalMinutes);
+                    if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
+                    {
+                        WordSession.Sessions.Remove(session.Key);
+
+                        await session.Value.Context.MsgReplyEmbedAsync("게임이 자동으로 중단됐어요");
+                    }
+                }
+
+                foreach (var session in TypingSession.Sessions)
+                {
+                    Console.WriteLine((DateTime.Now - session.Value.LastActiveTime).TotalMinutes);
+                    if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
+                    {
+                        TypingSession.Sessions.Remove(session.Key);
+
+                        await session.Value.Context.MsgReplyEmbedAsync("게임이 자동으로 종료됐어요");
+                    }
+                }
+
+                foreach (var session in CommandCreateSession.Sessions)
+                {
+                    Console.WriteLine((DateTime.Now - session.Value.LastActiveTime).TotalMinutes);
+                    if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
+                    {
+                        CommandCreateSession.Sessions.Remove(session.Key);
+
+                        await session.Value.UserMessageContext.MsgReplyEmbedAsync("커맨드 생성이 자동으로 종료됐어요");
+                    }
+                }
+            }
+        }
+    }
+}
