@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Discord.Commands;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +23,7 @@ namespace OliveToast.Managements
 
     class WordSession
     {
-        public static Dictionary<ulong, (ulong channel, List<string> words)> Sessions = new();
+        public static Dictionary<ulong, (SocketCommandContext context, List<string> words)> Sessions = new();
     }
 
     class SentenceManager
@@ -42,6 +43,6 @@ namespace OliveToast.Managements
 
     class TypingSession
     {
-        public static Dictionary<ulong, (ulong channel, string sentence, DateTime StartTime)> Sessions = new();
+        public static Dictionary<ulong, (SocketCommandContext context, string sentence, DateTime StartTime)> Sessions = new();
     }
 }

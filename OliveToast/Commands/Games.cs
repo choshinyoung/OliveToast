@@ -50,8 +50,10 @@ namespace OliveToast.Commands
         {
             if (!WordSession.Sessions.ContainsKey(Context.User.Id))
             {
-                WordSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, new List<string>()));
-                await Context.MsgReplyEmbedAsync("끝말잇기 시작!\n`끝`을 입력해 게임을 끝낼 수 있어요");
+                WordSession.Sessions.Add(Context.User.Id, (Context, new List<string>()));
+
+                ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelWordGame}", ButtonStyle.Danger);
+                await Context.MsgReplyEmbedAsync("끝말잇기 시작!", component: component.Build());
 
                 if (word != null)
                 {
@@ -73,12 +75,7 @@ namespace OliveToast.Commands
                     word = context.Message.Content;
                 }
 
-                if (word == "끝")
-                {
-                    WordSession.Sessions.Remove(context.User.Id);
-                    await context.MsgReplyEmbedAsync("게임 끝!");
-                }
-                else if (WordSession.Sessions[context.User.Id].channel == context.Channel.Id)
+                if (WordSession.Sessions[context.User.Id].context.Channel.Id == context.Channel.Id)
                 {
                     if (!WordsManager.Words.Contains(word))
                     {
@@ -188,9 +185,10 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}");
+            ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
+            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
-            TypingSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, sentence, DateTime.Now));
+            TypingSession.Sessions.Add(Context.User.Id, (Context, sentence, DateTime.Now));
         }
 
         [Command("영어 타자 연습"), Alias("영타", "entyping")]
@@ -206,18 +204,19 @@ namespace OliveToast.Commands
                 return;
             }
 
-            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}");
+            ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
+            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
-            TypingSession.Sessions.Add(Context.User.Id, (Context.Channel.Id, sentence, DateTime.Now));
+            TypingSession.Sessions.Add(Context.User.Id, (Context, sentence, DateTime.Now));
         }
 
         public static async Task<bool> TypingGame(SocketCommandContext context)
         {
             if (TypingSession.Sessions.ContainsKey(context.User.Id))
             {
-                var (channel, sentence, StartTime) = TypingSession.Sessions[context.User.Id];
+                var (ctx, sentence, StartTime) = TypingSession.Sessions[context.User.Id];
 
-                if (channel == context.Channel.Id) 
+                if (ctx.Channel.Id == context.Channel.Id) 
                 {
                     string content = context.Message.Content;
                     EmbedBuilder emb = context.CreateEmbed(title: "타자 연습");

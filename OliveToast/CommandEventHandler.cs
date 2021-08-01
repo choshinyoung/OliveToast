@@ -16,7 +16,7 @@ namespace OliveToast
     {
         public enum InteractionType
         {
-            CreateCommand
+            CreateCommand, CancelTypingGame, CancelWordGame
         }
 
         public static readonly string prefix = ConfigManager.Get("PREFIX");
@@ -47,11 +47,35 @@ namespace OliveToast
 
             if (component.User.Id != userId) return;
 
-            switch (type) 
+            switch (type)
             {
                 case InteractionType.CreateCommand:
                     CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
                     await CommandCreateSession.ButtonResponse(userId, response);
+
+                    break;
+                case InteractionType.CancelTypingGame:
+                    if (!TypingSession.Sessions.ContainsKey(userId))
+                    {
+                        break;
+                    }
+
+                    SocketCommandContext context = TypingSession.Sessions[userId].context;
+
+                    TypingSession.Sessions.Remove(userId);
+                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
+
+                    break;
+                case InteractionType.CancelWordGame:
+                    if (!WordSession.Sessions.ContainsKey(userId))
+                    {
+                        break;
+                    }
+
+                    context = WordSession.Sessions[userId].context;
+
+                    WordSession.Sessions.Remove(userId);
+                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
 
                     break;
             }
