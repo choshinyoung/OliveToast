@@ -26,7 +26,6 @@ namespace OliveToast
 
             client.InteractionCreated += OnInteractionCreated;
 
-            client.GuildAvailable += OnGuildAvailable;
             client.JoinedGuild += OnJoinGuild;
             client.LeftGuild += OnLeftGuild;
 
@@ -52,22 +51,8 @@ namespace OliveToast
             await Task.CompletedTask;
         }
 
-        private static async Task OnGuildAvailable(SocketGuild guild)
-        {
-            if (DbManager.Guilds.Find(g => g.GuildId == guild.Id).Any())
-            {
-                return;
-            }
-
-            DbManager.Guilds.InsertOne(new OliveGuild(guild.Id));
-
-            await Task.CompletedTask;
-        }
-
         private static async Task OnJoinGuild(SocketGuild guild)
         {
-            await OnGuildAvailable(guild);
-
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
         }
 

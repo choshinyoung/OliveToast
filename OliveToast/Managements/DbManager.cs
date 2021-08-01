@@ -41,7 +41,19 @@ namespace OliveToast.Managements
 
         public static OliveGuild Get(ulong id)
         {
-            return DbManager.Guilds.Find(g => g.GuildId == id).Single();
+            var searchResult = DbManager.Guilds.Find(g => g.GuildId == id);
+
+            if (searchResult.Any())
+            {
+                return searchResult.Single();
+            }
+            else
+            {
+                OliveGuild guild = new(id);
+                DbManager.Guilds.InsertOne(guild);
+
+                return guild;
+            }
         }
 
         public static void Set(ulong id, Expression<Func<OliveGuild, object>> field, object value)
