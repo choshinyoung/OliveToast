@@ -18,7 +18,7 @@ namespace OliveToast.Commands
     {
         [Command("활성화")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("지정된 카테고리를 활성화합니다\n`일반`, `정보`, `검색`, `게임`, `텍스트`, `이미지`, `투표`, `커맨드`, `레벨`, `로그`, `설정` 중 하나를 선택할 수 있습니다")]
+        [Summary("지정된 카테고리를 활성화합니다\n`일반`, `정보`, `검색`, `게임`, `텍스트`, `이미지`, `커맨드`, `레벨`, `로그`, `설정` 중 하나를 선택할 수 있습니다")]
         public async Task Enable([Name("카테고리")] string category)
         {
             if (!CategoryNames.Contains(category))
@@ -93,7 +93,7 @@ namespace OliveToast.Commands
 
         [Command("권한 설정"), Alias("권한")]
         [RequirePermission(PermissionType.ServerAdmin)]
-        [Summary("역할별로 봇 사용 권한을 설정합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `투표 생성`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
+        [Summary("역할별로 봇 사용 권한을 설정합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
         public async Task SetPermissionRole([Name("권한")] string permission, [Name("")] string permission2, [Remainder, Name("역할")] SocketRole role)
         {
             permission += $" {permission2}";
@@ -150,7 +150,7 @@ namespace OliveToast.Commands
 
         [Command("권한 제거"), Alias("권한 설정 취소")]
         [RequirePermission(PermissionType.ServerAdmin)]
-        [Summary("봇 사용 권한을 제거합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `투표 생성`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
+        [Summary("봇 사용 권한을 제거합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
         public async Task RemovePermissionRole([Name("권한")] string permission, [Name("")] string permission2)
         {
             permission += $" {permission2}";

@@ -129,7 +129,7 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
-        [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
+        [Command("커맨드 목록"), Alias("응답 목록")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
         public async Task ResponseList([Name("커맨드"), Remainder] string command)

@@ -13,10 +13,10 @@ namespace OliveToast.Managements
     {
         public enum PermissionType
         {
-            UseBot, ManageCommand, ManageBotSetting, CreateVote, SpeakByBot, ServerAdmin, BotAdmin
+            UseBot, ManageCommand, ManageBotSetting, SpeakByBot, ServerAdmin, BotAdmin
         }
 
-        public static readonly string[] PermissionNames = { "봇 사용", "커맨드 관리", "설정 관리", "투표 생성", "봇으로 말하기", "서버 어드민", "봇 어드민" };
+        public static readonly string[] PermissionNames = { "봇 사용", "커맨드 관리", "설정 관리", "봇으로 말하기", "서버 어드민", "봇 어드민" };
 
         public readonly PermissionType Permission;
 
@@ -59,7 +59,7 @@ namespace OliveToast.Managements
                 }
                 else
                 {
-                    if (Permission is PermissionType.UseBot or PermissionType.SpeakByBot or PermissionType.ManageCommand or PermissionType.CreateVote)
+                    if (Permission is PermissionType.UseBot or PermissionType.SpeakByBot or PermissionType.ManageCommand)
                     {
                         return Task.FromResult(PreconditionResult.FromSuccess());
                     }
@@ -85,10 +85,10 @@ namespace OliveToast.Managements
     {
         public enum CategoryType
         {
-            Default, Info, Search, Game, Text, Image, Vote, Command, Level, Log, Setting
+            Default, Info, Search, Game, Text, Image, Command, Level, Log, Setting
         }
 
-        public static readonly string[] CategoryNames = { "일반", "정보", "검색", "게임", "텍스트", "이미지", "투표", "커맨드", "레벨", "로그", "설정" };
+        public static readonly string[] CategoryNames = { "일반", "정보", "검색", "게임", "텍스트", "이미지", "커맨드", "레벨", "로그", "설정" };
 
         public readonly CategoryType Category;
 
