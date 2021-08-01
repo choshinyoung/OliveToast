@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Toast;
 using static OliveToast.Managements.RequireCategoryEnable;
 using static OliveToast.Managements.RequirePermission;
 
@@ -175,6 +176,23 @@ namespace OliveToast.Commands
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("토스트")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("토스트 커맨드를 실행합니다")]
+        public async Task ExecuteToast([Name("입력"), Remainder] string line)
+        {
+            Toaster toaster = new();
+            toaster.AddCommand(BasicCommands.All);
+            toaster.AddConverter(BasicConverters.All);
+
+            object result = toaster.Execute(line);
+
+            if (result is not null)
+            {
+                await Context.MsgReplyEmbedAsync(result);
+            }
         }
     }
 }
