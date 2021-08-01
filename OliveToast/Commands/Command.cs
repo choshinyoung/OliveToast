@@ -49,7 +49,8 @@ namespace OliveToast.Commands
         {
             OliveGuild.CustomCommand command = new(null, false, new(), new(), Context.User.Id);
 
-            ComponentBuilder component = new ComponentBuilder().WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.Status.CommandInput}");
+            ComponentBuilder component = new ComponentBuilder().WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ChangeRegex}");
+            component.WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger);
             RestUserMessage msg = await Context.MsgReplyEmbedAsync("커맨드를 입력해주세요", component: component.Build());
 
             CommandCreateSession.Sessions.Add(Context.User.Id, new()

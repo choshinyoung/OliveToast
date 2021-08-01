@@ -45,11 +45,13 @@ namespace OliveToast
             ulong userId = ulong.Parse(args[0]);
             InteractionType type = (InteractionType)int.Parse(args[1]);
 
+            if (component.User.Id != userId) return;
+
             switch (type) 
             {
                 case InteractionType.CreateCommand:
-                    CommandCreateSession.Status status = (CommandCreateSession.Status)int.Parse(args[2]);
-                    await CommandCreateSession.ButtonResponse(userId, status);
+                    CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
+                    await CommandCreateSession.ButtonResponse(userId, response);
 
                     break;
             }
