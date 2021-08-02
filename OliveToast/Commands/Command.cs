@@ -5,7 +5,9 @@ using Discord.WebSocket;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Toast;
@@ -18,6 +20,8 @@ namespace OliveToast.Commands
     [RequireCategoryEnable(CategoryType.Command), RequireContext(ContextType.Guild)]
     public class Command : ModuleBase<SocketCommandContext>
     {
+        public const int MaxListCommandCount = 15;
+
         [Command("커맨드 만들기"), Alias("커맨드 생성")]
         [RequirePermission(PermissionType.ManageCommand)]
         [Summary("커스텀 커맨드를 생성합니다")]
@@ -119,40 +123,53 @@ namespace OliveToast.Commands
                 emb.Description = "커맨드가 없어요";
             }
 
-            for (int i = 0; i < commands.Count; i++)
+            int count = commands.Count;
+
+            ComponentBuilder component = new();
+            if (count > MaxListCommandCount)
+            {
+                count = MaxListCommandCount;
+                component.WithButton("<", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CommandList}.{Context.Guild.Id}.{0}", disabled: true);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary);
+                component.WithButton(">", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CommandList}.{Context.Guild.Id}.{2}");
+            }
+
+            for (int i = 0; i < count; i++)
             {
                 emb.AddField(i.ToString(), commands[i], true);
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
         }
 
-        [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
-        [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
-        public async Task AnswerList([Name("번호")] int index)
+        public static async Task ChangeListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, int page)
         {
-            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+            List<string> commands = OliveGuild.Get(guild.Id).Commands.Keys.ToList();
 
-            if (commands.Count <= index)
+            EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
+            emb.Fields = new List<EmbedFieldBuilder>();
+
+            int startIndex = MaxListCommandCount * (page - 1);
+
+            for (int i = 0; i < MaxListCommandCount; i++)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
-                return;
+                int index = startIndex + i;
+
+                if (commands.Count <= index) break;
+
+                emb.AddField(index.ToString(), commands[index], true);
             }
 
-            string command = commands.Keys.ToList()[index];
-            var answer = commands[command];
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("<", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandList}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
+                .WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary)
+                .WithButton(">", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandList}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= commands.Count);
 
-            EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
-
-            for (int i = 0; i < answer.Count; i++)
+            await msg.ModifyAsync(m =>
             {
-                SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
-
-                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer ?? "응답이 없어요");
-            }
-
-            await Context.MsgReplyEmbedAsync(emb.Build());
+                m.Embed = emb.Build();
+                m.Components = component.Build();
+            });
         }
 
         [Command("커맨드 목록"), Alias("응답 목록")]
@@ -170,16 +187,76 @@ namespace OliveToast.Commands
 
             var answer = commands[command];
 
+            int count = answer.Count;
+
+            ComponentBuilder component = new();
+            if (count > MaxListCommandCount)
+            {
+                count = MaxListCommandCount;
+                component.WithButton("<", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CommandAnswerList}.{Context.Guild.Id}.{command}.{0}", disabled: true);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary);
+                component.WithButton(">", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CommandAnswerList}.{Context.Guild.Id}.{command}.{2}");
+            }
+
             EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
 
-            for (int i = 0; i < answer.Count; i++)
+            for (int i = 0; i < count; i++)
             {
                 SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
 
-                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer ?? "응답이 없어요");
+                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer ?? "응답이 없어요", true);
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
+        }
+
+        [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
+        public async Task AnswerList([Name("번호")] int index)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= index)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[index];
+            await AnswerList(command);
+        }
+
+        public static async Task ChangeAnswerListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, string command, int page)
+        {
+            var answer = OliveGuild.Get(guild.Id).Commands[command];
+
+            EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
+            emb.Fields = new List<EmbedFieldBuilder>();
+
+            int startIndex = MaxListCommandCount * (page - 1);
+
+            for (int i = 0; i < MaxListCommandCount; i++)
+            {
+                int index = startIndex + i;
+
+                if (answer.Count <= index) break;
+
+                SocketGuildUser user = guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
+
+                emb.AddField($"{index} - {(user is null ? answer[index].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[index].Answer ?? "응답이 없어요", true);
+            }
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("<", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandAnswerList}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
+                .WithButton($"1 / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary)
+                .WithButton(">", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandAnswerList}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= answer.Count);
+
+            await msg.ModifyAsync(m =>
+            {
+                m.Embed = emb.Build();
+                m.Components = component.Build();
+            });
         }
 
         [Command("토스트")]

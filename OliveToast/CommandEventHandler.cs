@@ -16,7 +16,7 @@ namespace OliveToast
     {
         public enum InteractionType
         {
-            CreateCommand, CancelTypingGame, CancelWordGame
+            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList
         }
 
         public static readonly string prefix = ConfigManager.Get("PREFIX");
@@ -76,6 +76,21 @@ namespace OliveToast
 
                     WordSession.Sessions.Remove(userId);
                     await context.MsgReplyEmbedAsync("게임이 취소됐어요");
+
+                    break;
+                case InteractionType.CommandList:
+                    SocketGuild guild = Program.Client.GetGuild(ulong.Parse(args[2]));
+                    int page = int.Parse(args[3]);
+
+                    await Command.ChangeListPage(guild, userId, component.Message, page);
+
+                    break;
+                case InteractionType.CommandAnswerList:
+                    guild = Program.Client.GetGuild(ulong.Parse(args[2]));
+                    string command = args[3];
+                    page = int.Parse(args[4]);
+
+                    await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
 
                     break;
             }
