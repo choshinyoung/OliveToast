@@ -49,8 +49,8 @@ namespace OliveToast.Commands
             }
 
             // get all colors
-            Dictionary<System.Drawing.Color, int> colors = new Dictionary<System.Drawing.Color, int>();
-            using (Bitmap bmp = new Bitmap(System.Drawing.Image.FromStream(stream), 128, 128))
+            Dictionary<System.Drawing.Color, int> colors = new();
+            using (Bitmap bmp = new(System.Drawing.Image.FromStream(stream), 128, 128))
             {
                 for (int x = 0; x < bmp.Width; x++)
                 {
@@ -121,7 +121,7 @@ namespace OliveToast.Commands
                 for (int i = 0; i < slicedColorList.Count; i++)
                 {
                     bool isTop = i < cellCount;
-                    Rectangle rect = new Rectangle((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
+                    Rectangle rect = new((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
 
                     g.FillRectangle(new SolidBrush(slicedColorList[i].color), rect);
                     g.DrawString(slicedColorList[i].color.ToHex(), font, slicedColorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
@@ -133,7 +133,7 @@ namespace OliveToast.Commands
             int lastX = 0;
             foreach (var (color, count) in colorList)
             {
-                Rectangle rect = new Rectangle(lastX, percentY, (int)((float)count / (128 * 128) * output.Width), 10);
+                Rectangle rect = new(lastX, percentY, (int)((float)count / (128 * 128) * output.Width), 10);
 
                 g.FillRectangle(new SolidBrush(color), rect);
                 g.DrawLine(Pens.White, rect.X + rect.Width, rect.Y, rect.X + rect.Width, rect.Y + 10);
@@ -142,7 +142,7 @@ namespace OliveToast.Commands
             }
 
             // save image to stream
-            MemoryStream outputStram = new MemoryStream();
+            MemoryStream outputStram = new();
             output.Save(outputStram, System.Drawing.Imaging.ImageFormat.Png);
             outputStram.Position = 0;
 
@@ -215,7 +215,7 @@ namespace OliveToast.Commands
         [Summary("다른 서버의 이모지를 사용할 수 있습니다\n(올리브토스트가 있는 서버의 이모지만 사용 가능합니다)")]
         public async Task CustomEmoji([Name("입력")] params string[] input)
         {
-            List<GuildEmote> emojis = new List<GuildEmote>();
+            List<GuildEmote> emojis = new();
             foreach(var g in Program.Client.Guilds)
             {
                 emojis.AddRange(g.Emotes);
@@ -223,7 +223,7 @@ namespace OliveToast.Commands
 
             string result = "";
 
-            Random r = new Random();
+            Random r = new();
 
             foreach(string s in input)
             {
