@@ -115,8 +115,8 @@ namespace OliveToast.Commands
             Graphics g = Graphics.FromImage(output);
 
             // draw palette
-            using (Font font = new Font(new FontFamily("NanumGothic"), 13f))
-            using (StringFormat format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far })
+            using (Font font = new(new FontFamily("Noto Sans KR"), 13f))
+            using (StringFormat format = new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far })
             {
                 for (int i = 0; i < slicedColorList.Count; i++)
                 {
