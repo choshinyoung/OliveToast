@@ -121,7 +121,7 @@ namespace OliveToast.Commands
 
             for (int i = 0; i < commands.Count; i++)
             {
-                emb.Description += $"{i}. {commands[i]}\n";
+                emb.AddField(i.ToString(), commands[i], true);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
@@ -149,7 +149,7 @@ namespace OliveToast.Commands
             {
                 SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
 
-                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer);
+                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer ?? "응답이 없어요");
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
@@ -176,7 +176,7 @@ namespace OliveToast.Commands
             {
                 SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
 
-                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer);
+                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer ?? "응답이 없어요");
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build());
