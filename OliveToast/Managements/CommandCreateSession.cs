@@ -20,7 +20,7 @@ namespace OliveToast.Managements
 
         public enum ResponseType
         {
-            ChangeRegex, Complete, Cancel
+            ChangeRegex, Complete, Cancel, ContinueWithoutAnswer
         }
 
         public static Dictionary<ulong, CommandCreateSession> Sessions = new();
@@ -54,7 +54,9 @@ namespace OliveToast.Managements
                     emb.Description = "응답을 입력해주세요";
                     emb.AddField("커맨드", content, true);
 
-                    ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
+                    ComponentBuilder component = new ComponentBuilder()
+                        .WithButton("응답 없이 계속하기", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.ContinueWithoutAnswer}")
+                        .WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
 
                     await session.Message.ModifyAsync(msg => 
                     { 
@@ -71,8 +73,9 @@ namespace OliveToast.Managements
                     emb.Description = "토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요";
                     emb.AddField("응답", content, true);
 
-                    component = new ComponentBuilder().WithButton("완료", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Complete}", ButtonStyle.Success);
-                    component.WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
+                    component = new ComponentBuilder()
+                        .WithButton("완료", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Complete}", ButtonStyle.Success)
+                        .WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
 
                     await session.Message.ModifyAsync(msg =>
                     {
@@ -107,8 +110,9 @@ namespace OliveToast.Managements
                 case ResponseType.ChangeRegex:
                     session.CustomCommand.IsRegex = !session.CustomCommand.IsRegex;
 
-                    ComponentBuilder component = new ComponentBuilder().WithButton(session.CustomCommand.IsRegex ? "일반 텍스트로 변경" : "정규식으로 변경", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.ChangeRegex}");
-                    component.WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
+                    ComponentBuilder component = new ComponentBuilder()
+                        .WithButton(session.CustomCommand.IsRegex ? "일반 텍스트로 변경" : "정규식으로 변경", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.ChangeRegex}")
+                        .WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
 
                     await session.Message.ModifyAsync(msg =>
                     {
@@ -117,10 +121,20 @@ namespace OliveToast.Managements
 
                     break;
                 case ResponseType.Complete:
+                    if (session.CustomCommand.Answer is null && session.CustomCommand.RawToastLines.Count == 0)
+                    {
+                        await session.UserMessageContext.MsgReplyEmbedAsync("응답이 없는 커맨드는 토스트 커맨드가 한 줄 이상 있어야돼요");
+
+                        break;
+                    }
+
                     EmbedBuilder emb = session.UserMessageContext.CreateEmbed("커맨드가 생성됐어요");
 
                     emb.AddField("커맨드", session.Command, true);
-                    emb.AddField("응답", session.CustomCommand.Answer, true);
+                    if (session.CustomCommand.Answer is not null)
+                    {
+                        emb.AddField("응답", session.CustomCommand.Answer, true);
+                    }
                     emb.AddField("정규식 사용 여부", session.CustomCommand.IsRegex.ToEmoji(), true);
 
                     if (session.CustomCommand.RawToastLines.Count > 0)
@@ -149,6 +163,24 @@ namespace OliveToast.Managements
                     Sessions.Remove(userId);
 
                     await session.UserMessageContext.MsgReplyEmbedAsync("커맨드 생성을 취소했어요");
+
+                    break;
+                case ResponseType.ContinueWithoutAnswer:
+                    session.CustomCommand.Answer = null;
+                    session.SessionStatus = Status.ExecuteLinesInput;
+
+                    emb = session.Message.Embeds.First().ToEmbedBuilder();
+                    emb.Description = "토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요";
+
+                    component = new ComponentBuilder()
+                        .WithButton("완료", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Complete}", ButtonStyle.Success)
+                        .WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
+
+                    await session.Message.ModifyAsync(msg =>
+                    {
+                        msg.Embed = emb.Build();
+                        msg.Components = component.Build();
+                    });
 
                     break;
             }

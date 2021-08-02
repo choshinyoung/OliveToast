@@ -18,7 +18,6 @@ namespace OliveToast.Managements
 
                 foreach (var session in WordSession.Sessions)
                 {
-                    Console.WriteLine((DateTime.Now - session.Value.LastActiveTime).TotalMinutes);
                     if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
                     {
                         WordSession.Sessions.Remove(session.Key);
@@ -29,7 +28,6 @@ namespace OliveToast.Managements
 
                 foreach (var session in TypingSession.Sessions)
                 {
-                    Console.WriteLine((DateTime.Now - session.Value.LastActiveTime).TotalMinutes);
                     if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
                     {
                         TypingSession.Sessions.Remove(session.Key);
@@ -40,7 +38,6 @@ namespace OliveToast.Managements
 
                 foreach (var session in CommandCreateSession.Sessions)
                 {
-                    Console.WriteLine((DateTime.Now - session.Value.LastActiveTime).TotalMinutes);
                     if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
                     {
                         CommandCreateSession.Sessions.Remove(session.Key);
