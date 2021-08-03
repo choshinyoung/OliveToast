@@ -162,7 +162,7 @@ namespace OliveToast.Commands
 
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("<", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandList}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
-                .WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary)
+                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary)
                 .WithButton(">", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandList}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= commands.Count);
 
             await msg.ModifyAsync(m =>
@@ -249,7 +249,7 @@ namespace OliveToast.Commands
 
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("<", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandAnswerList}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
-                .WithButton($"1 / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary)
+                .WithButton($"{page} / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary)
                 .WithButton(">", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandAnswerList}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= answer.Count);
 
             await msg.ModifyAsync(m =>
