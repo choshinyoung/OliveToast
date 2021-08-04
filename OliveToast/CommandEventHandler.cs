@@ -166,11 +166,11 @@ namespace OliveToast
             #region custom command
             var commands = guild.Commands;
 
-            List<OliveGuild.CustomCommand> answers = new();
+            List<(string[] groups, OliveGuild.CustomCommand command)> answers = new();
 
             if (commands.ContainsKey(context.Message.Content) && commands[context.Message.Content].Any(c => !c.IsRegex))
             {
-                answers.AddRange(commands[context.Message.Content].Where(c => !c.IsRegex));
+                answers.AddRange(commands[context.Message.Content].Where(c => !c.IsRegex).Select(c => (new[] { context.Message.Content }, c)));
             }
             foreach (var command in commands)
             {
@@ -186,18 +186,18 @@ namespace OliveToast
                     continue;
                 }
 
-                answers.AddRange(command.Value.Where(a => a.IsRegex));
+                answers.AddRange(command.Value.Where(a => a.IsRegex).Select(c => (match.Groups.Values.Select(v => v.Value).ToArray(), c)));
             }
 
             if (answers.Any())
             {
                 if (CommandRateLimit.AddCount(context.User.Id))
                 {
-                    OliveGuild.CustomCommand command = answers[new Random().Next(answers.Count)];
+                    var command = answers[new Random().Next(answers.Count)];
 
-                    if (command.Answer is not null)
+                    if (command.command.Answer is not null)
                     {
-                        await context.MsgReplyAsync(command.Answer);
+                        await context.MsgReplyAsync(command.command.Answer);
                     }
                 }
                 else
