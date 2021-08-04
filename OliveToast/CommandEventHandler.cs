@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OliveToast
@@ -171,6 +172,22 @@ namespace OliveToast
             {
                 answers.AddRange(commands[context.Message.Content].Where(c => !c.IsRegex));
             }
+            foreach (var command in commands)
+            {
+                if (!command.Value.Any(a => a.IsRegex))
+                {
+                    continue;
+                }
+                
+                Match match = new Regex(command.Key).Match(context.Message.Content);
+
+                if (!match.Success)
+                {
+                    continue;
+                }
+
+                answers.AddRange(command.Value.Where(a => a.IsRegex));
+            }
 
             if (answers.Any())
             {
@@ -178,7 +195,10 @@ namespace OliveToast
                 {
                     OliveGuild.CustomCommand command = answers[new Random().Next(answers.Count)];
 
-                    await context.MsgReplyAsync(command.Answer);
+                    if (command.Answer is not null)
+                    {
+                        await context.MsgReplyAsync(command.Answer);
+                    }
                 }
                 else
                 {
