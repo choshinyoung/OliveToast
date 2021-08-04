@@ -26,7 +26,7 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) =>
             {
                 ctx.DiscordContext.Channel.SendMessageAsync(x).Wait();
-            }));
+            }, -1));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
 
             toaster.AddConverter(BasicConverters.All);
@@ -77,7 +77,17 @@ namespace OliveToast.Managements
 
                 foreach (string line in command.command.RawToastLines)
                 {
-                    ExecuteToastCommand(line, context, command.groups);
+                    try
+                    {
+                        ExecuteToastCommand(line, context, command.groups);
+                    }
+                    catch (Exception e)
+                    {
+                        EmbedBuilder emb = context.CreateEmbed(title: "오류 발생!", description: e.Message);
+                        await context.MsgReplyEmbedAsync(emb.Build());
+
+                        return;
+                    }
                 }
             }
             else
