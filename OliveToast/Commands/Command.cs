@@ -270,11 +270,7 @@ namespace OliveToast.Commands
         [Summary("토스트 커맨드를 실행합니다")]
         public async Task ExecuteToast([Name("입력"), Remainder] string line)
         {
-            Toaster toaster = new();
-            toaster.AddCommand(BasicCommands.All);
-            toaster.AddConverter(BasicConverters.All);
-
-            object result = toaster.Execute(line);
+            object result = CustomCommandExecutor.ExecuteToastCommand(line, Context, new[] { Context.Message.Content });
 
             if (result is not null)
             {
