@@ -164,11 +164,19 @@ namespace OliveToast
 
             #region custom command
             var commands = guild.Commands;
-            if (commands.ContainsKey(context.Message.Content))
+
+            List<OliveGuild.CustomCommand> answers = new();
+
+            if (commands.ContainsKey(context.Message.Content) && commands[context.Message.Content].Any(c => !c.IsRegex))
+            {
+                answers.AddRange(commands[context.Message.Content].Where(c => !c.IsRegex));
+            }
+
+            if (answers.Any())
             {
                 if (CommandRateLimit.AddCount(context.User.Id))
                 {
-                    OliveGuild.CustomCommand command = commands[context.Message.Content][new Random().Next(commands[context.Message.Content].Count)];
+                    OliveGuild.CustomCommand command = answers[new Random().Next(answers.Count)];
 
                     await context.MsgReplyAsync(command.Answer);
                 }

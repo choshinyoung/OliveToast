@@ -31,11 +31,11 @@ namespace OliveToast.Commands
 
             if (commands.ContainsKey(command))
             {
-                commands[command].Add(new(answer, true, new(), new(), Context.User.Id));
+                commands[command].Add(new(answer, false, new(), new(), Context.User.Id));
             }
             else 
             {
-                commands.Add(command, new() { new(answer, true, new(), new(), Context.User.Id) });
+                commands.Add(command, new() { new(answer, false, new(), new(), Context.User.Id) });
             }
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
@@ -203,8 +203,11 @@ namespace OliveToast.Commands
             for (int i = 0; i < count; i++)
             {
                 SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
+                string username = user is null ? answer[i].CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}";
+                string isRegex = answer[i].IsRegex ? "- 정규식" : "";
+                string toastCommands = answer[i].RawToastLines.Any() ? $"\n토스트 커맨드 {answer[i].RawToastLines.Count}줄" : "";
 
-                emb.AddField($"{i} - {(user is null ? answer[i].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[i].Answer ?? "응답이 없어요", true);
+                emb.AddField($"*{i} {isRegex} {toastCommands}\n{username}*", answer[i].Answer ?? "응답이 없어요", true);
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
@@ -242,9 +245,12 @@ namespace OliveToast.Commands
 
                 if (answer.Count <= index) break;
 
-                SocketGuildUser user = guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
+                SocketGuildUser user = guild.Users.ToList().Find(u => u.Id == answer[index].CreatedBy);
+                string username = user is null ? answer[index].CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}";
+                string isRegex = answer[index].IsRegex ? "- 정규식" : "";
+                string toastCommands = answer[index].RawToastLines.Any() ? $"\n토스트 커맨드 {answer[index].RawToastLines.Count}줄" : "";
 
-                emb.AddField($"{index} - {(user is null ? answer[index].CreatedBy : $"{user.Username}#{user.Discriminator}")}", answer[index].Answer ?? "응답이 없어요", true);
+                emb.AddField($"*{index} {isRegex} {toastCommands}\n{username}*", answer[index].Answer ?? "응답이 없어요", true);
             }
 
             ComponentBuilder component = new ComponentBuilder()

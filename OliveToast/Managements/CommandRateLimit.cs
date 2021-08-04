@@ -11,27 +11,43 @@ namespace OliveToast.Managements
 
         private static readonly Dictionary<ulong, int> RateLimits = new();
 
-        public static bool AddCount(ulong user)
+        public static bool Check(ulong user)
         {
             if (RateLimits.ContainsKey(user))
             {
-                if (RateLimits[user] < 5)
+                if (RateLimits[user] < LimitCount)
                 {
-                    RateLimits[user]++;
-                    StartTimer(user);
-
                     return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             else
             {
-                RateLimits.Add(user, 1);
-                StartTimer(user);
-
                 return true;
             }
+        }
 
-            return false;
+        public static bool AddCount(ulong user)
+        {
+            if (!Check(user))
+            {
+                return false;
+            }
+
+            if (RateLimits.ContainsKey(user))
+            {
+                RateLimits[user]++;
+            }
+            else
+            {
+                RateLimits.Add(user, 1);
+            }
+            StartTimer(user);
+
+            return true;
         }
 
         private static void StartTimer(ulong user)
