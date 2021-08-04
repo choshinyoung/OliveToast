@@ -74,7 +74,7 @@ namespace OliveToast.Commands
         [Command("채널 정보"), Alias("채널정보", "채널")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
         [Summary("채널의 정보를 확인합니다\n`채널`은 생략할 수 있습니다")]
-        public async Task ChannerInfo([Name("채널")] SocketTextChannel c = null)
+        public async Task ChannerInfo([Name("채널"), Remainder] SocketTextChannel c = null)
         {
             if (c == null)
             {
@@ -99,7 +99,7 @@ namespace OliveToast.Commands
         [Command("역할 정보"), Alias("역할정보", "역할")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
         [Summary("역할의 정보를 확인합니다")]
-        public async Task RoleInfo([Name("역할")] SocketRole r)
+        public async Task RoleInfo([Name("역할"), Remainder] SocketRole r)
         {
             EmbedBuilder emb = Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color);
 
@@ -160,7 +160,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
         [Command("유저 정보"), Alias("유저정보", "유저")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
         [Summary("유저의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
-        public async Task UserInfo([Name("유저")] SocketGuildUser u = null)
+        public async Task UserInfo([Name("유저"), Remainder] SocketGuildUser u = null)
         {
             if (u == null)
             {
@@ -186,7 +186,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
         [Command("유저 정보"), Alias("유저정보", "유저")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.DM | ContextType.Group)]
         [Summary("유저의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
-        public async Task UserInfo([Name("유저")] SocketUser u = null)
+        public async Task UserInfo([Name("유저"), Remainder] SocketUser u = null)
         {
             if (u == null)
             {

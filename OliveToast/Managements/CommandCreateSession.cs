@@ -128,7 +128,7 @@ namespace OliveToast.Managements
                         break;
                     }
 
-                    EmbedBuilder emb = session.UserMessageContext.CreateEmbed("커맨드가 생성됐어요");
+                    EmbedBuilder emb = session.UserMessageContext.CreateEmbed(title: "커맨드 생성 완료");
 
                     emb.AddField("커맨드", session.Command, true);
                     if (session.CustomCommand.Answer is not null)

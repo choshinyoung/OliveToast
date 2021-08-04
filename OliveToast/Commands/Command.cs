@@ -39,9 +39,10 @@ namespace OliveToast.Commands
             }
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
-            EmbedBuilder emb = Context.CreateEmbed("커맨드를 만들었어요");
+            EmbedBuilder emb = Context.CreateEmbed(title: "커맨드 생성 완료");
             emb.AddField("커맨드", command, true);
             emb.AddField("응답", answer, true);
+            emb.AddField("정규식 사용 여부", false.ToEmoji(), true);
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
