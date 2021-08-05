@@ -25,19 +25,21 @@ namespace OliveToast.Managements
 
             toaster.AddConverter(BasicConverters.All);
 
-            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) =>
-            {
-                ctx.DiscordContext.Channel.SendMessageAsync(x).Wait();
-            }, -1));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) => ctx.DiscordContext.Channel.SendMessageAsync(x).Wait(), -1));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("reply", (ctx, x) => ctx.DiscordContext.MsgReplyAsync(x).Wait(), -1));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext>("delete", (ctx) => ctx.DiscordContext.Message.DeleteAsync().Wait()));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("react", (ctx, x) 
+                => ctx.DiscordContext.Message.AddReactionAsync(Emote.TryParse(x, out var result) ? result : new Emoji(x)), -1));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.DiscordContext.User as SocketGuildUser));
-
-            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("username", (ctx, user) => user.Username));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("id", (ctx, user) => user.Id));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, int>("tag", (ctx, user) => user.DiscriminatorValue));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, user) => user.GetName(false)));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, user) => user.IsBot));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("mention", (ctx, user) => user.Mention));
+
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
 
             toaster.AddConverter(ToastConverter.Create<string, SocketGuildUser>((_ctx, x) =>
             {
@@ -47,6 +49,11 @@ namespace OliveToast.Managements
                 if (match.Success)
                 {
                     return ctx.DiscordContext.Guild.GetUser(ulong.Parse(match.Groups[1].Value));
+                }
+
+                if (x.All(c => char.IsDigit(c)))
+                {
+                    return ctx.DiscordContext.Guild.GetUser(ulong.Parse(x));
                 }
 
                 var users = ctx.DiscordContext.Guild.Users.ToList();
