@@ -50,6 +50,13 @@ namespace OliveToast.Commands
         [Summary("고급 설정을 사용해 커맨드를 생성합니다")]
         public async Task CreatCommand()
         {
+            if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
+            {
+                await Context.MsgReplyEmbedAsync("이미 커맨드를 만드는 중이에요");
+
+                return;
+            }
+
             OliveGuild.CustomCommand command = new(null, false, new(), new(), Context.User.Id);
 
             ComponentBuilder component = new ComponentBuilder()
