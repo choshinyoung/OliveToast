@@ -161,7 +161,7 @@ namespace OliveToast
 
             OliveGuild guild = OliveGuild.Get(context.Guild.Id);
 
-            await CustomCommandExecutor.Execute(context, guild);
+            new Task((async () => await CustomCommandExecutor.Execute(context, guild))).Start();
 
             #region level
             if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Level))

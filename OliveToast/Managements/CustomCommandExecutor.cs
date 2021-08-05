@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Toast;
 
@@ -40,6 +41,7 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("mention", (ctx, user) => user.Mention));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) => Task.Delay(x * 1000).Wait()));
 
             toaster.AddConverter(ToastConverter.Create<string, SocketGuildUser>((_ctx, x) =>
             {
