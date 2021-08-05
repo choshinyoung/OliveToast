@@ -116,7 +116,7 @@ namespace OliveToast.Commands
 채널 보기: {r.Permissions.ViewChannel.ToEmoji()}
 채널 관리하기: {r.Permissions.ManageChannels.ToEmoji()}
 역할 관리하기: {r.Permissions.ManageRoles.ToEmoji()}
-이모티콘 관리: {r.Permissions.ManageEmojis.ToEmoji()}
+이모티콘 관리: {r.Permissions.ManageEmojisAndStickers.ToEmoji()}
 감사 로그 보기: {r.Permissions.ViewAuditLog.ToEmoji()}
 서버 인사이트 보기: {r.Permissions.ViewGuildInsights.ToEmoji()}
 웹후크 관리하기: {r.Permissions.ManageWebhooks.ToEmoji()}

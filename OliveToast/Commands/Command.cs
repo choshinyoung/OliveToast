@@ -168,7 +168,7 @@ namespace OliveToast.Commands
 
             await msg.ModifyAsync(m =>
             {
-                m.Embed = emb.Build();
+                m.Embeds = new[] { emb.Build() };
                 m.Components = component.Build();
             });
         }
@@ -261,7 +261,7 @@ namespace OliveToast.Commands
 
             await msg.ModifyAsync(m =>
             {
-                m.Embed = emb.Build();
+                m.Embeds = new[] { emb.Build() };
                 m.Components = component.Build();
             });
         }

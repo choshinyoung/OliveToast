@@ -60,7 +60,7 @@ namespace OliveToast.Managements
 
                     await session.Message.ModifyAsync(msg => 
                     { 
-                        msg.Embed = emb.Build();
+                        msg.Embeds = new[] { emb.Build() };
                         msg.Components = component.Build();
                     });
 
@@ -79,7 +79,7 @@ namespace OliveToast.Managements
 
                     await session.Message.ModifyAsync(msg =>
                     {
-                        msg.Embed = emb.Build();
+                        msg.Embeds = new[] { emb.Build() };
                         msg.Components = component.Build();
                     });
 
@@ -178,7 +178,7 @@ namespace OliveToast.Managements
 
                     await session.Message.ModifyAsync(msg =>
                     {
-                        msg.Embed = emb.Build();
+                        msg.Embeds = new[] { emb.Build() };
                         msg.Components = component.Build();
                     });
 
