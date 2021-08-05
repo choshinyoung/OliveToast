@@ -93,7 +93,7 @@ namespace OliveToast.Managements
 
                 Match match = new Regex(command.Key).Match(context.Message.Content);
 
-                if (!match.Success)
+                if (!match.Success || match.Value.Length != context.Message.Content.Length)
                 {
                     continue;
                 }
