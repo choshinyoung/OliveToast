@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Toast.Nodes;
 
@@ -47,10 +48,28 @@ namespace OliveToast.Managements
             switch (session.SessionStatus)
             {
                 case Status.CommandInput:
+                    EmbedBuilder emb;
+
+                    if (session.CustomCommand.IsRegex)
+                    {
+                        try
+                        {
+                            new Regex(content).Match("");
+                        }
+                        catch
+                        {
+                            emb = session.UserMessageContext.CreateEmbed(description: "유효하지 않은 정규식 입력이에요");
+                            await session.UserMessageContext.MsgReplyEmbedAsync(emb.Build());
+
+                            return true;
+                        }
+                        Console.WriteLine("a");
+                    }
+
                     session.Command = content;
                     session.SessionStatus = Status.AnswerInput;
 
-                    EmbedBuilder emb = session.Message.Embeds.First().ToEmbedBuilder();
+                    emb = session.Message.Embeds.First().ToEmbedBuilder();
                     emb.Description = "응답을 입력해주세요";
                     emb.AddField("커맨드", content, true);
 
@@ -141,14 +160,16 @@ namespace OliveToast.Managements
 
                     break;
                 case ResponseType.Complete:
+                    EmbedBuilder emb;
                     if (session.CustomCommand.Answer is null && session.CustomCommand.RawToastLines.Count == 0)
                     {
-                        await session.UserMessageContext.MsgReplyEmbedAsync("응답이 없는 커맨드는 토스트 커맨드가 한 줄 이상 있어야돼요");
+                        emb = session.UserMessageContext.CreateEmbed(description: "응답이 없는 커맨드는 토스트 커맨드가 한 줄 이상 있어야돼요");
+                        await session.UserMessageContext.Channel.SendMessageAsync(embed: emb.Build());
 
                         break;
                     }
 
-                    EmbedBuilder emb = session.UserMessageContext.CreateEmbed(title: "커맨드 생성 완료");
+                    emb = session.UserMessageContext.CreateEmbed(title: "커맨드 생성 완료");
 
                     emb.AddField("커맨드", session.Command, true);
                     if (session.CustomCommand.Answer is not null)
