@@ -45,6 +45,12 @@ namespace OliveToast.Managements
             {
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
 
+                var user = ctx.DiscordContext.Guild.Users.ToList().Find(u => u.Username == x || (u.Nickname is not null && u.Nickname == x));
+                if (user is not null)
+                {
+                    return user;
+                }
+
                 Match match = new Regex("<@!([0-9]+)>").Match(x);
                 if (match.Success)
                 {
@@ -56,8 +62,7 @@ namespace OliveToast.Managements
                     return ctx.DiscordContext.Guild.GetUser(ulong.Parse(x));
                 }
 
-                var users = ctx.DiscordContext.Guild.Users.ToList();
-                return users.Find(u => u.Username == x || (u.Nickname is not null && u.Nickname == x));
+                return null;
             }));
             toaster.AddConverter(ToastConverter.Create<ulong, SocketGuildUser>((_ctx, x) =>
             {

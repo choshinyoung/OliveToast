@@ -87,6 +87,26 @@ namespace OliveToast.Managements
                 case Status.ExecuteLinesInput:
                     session.CustomCommand.RawToastLines.Add(content);
 
+                    emb = session.Message.Embeds.First().ToEmbedBuilder();
+                    if (emb.Fields.Find(e => e.Name == "토스트 커맨드") is var field and not null)
+                    {
+                        field.Value = string.Concat(session.CustomCommand.RawToastLines.Select(l => $"```\n{l}\n```"));
+                    }
+                    else
+                    {
+                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.RawToastLines.Select(l => $"```\n{l}\n```")));
+                    }
+
+                    await session.Message.ModifyAsync(msg =>
+                    {
+                        msg.Embeds = new[] { emb.Build() };
+                    });
+
+                    if (session.CustomCommand.RawToastLines.Count >= 5)
+                    {
+                        await ButtonResponse(userId, ResponseType.Complete);
+                    }
+
                     break;
                 default:
                     return false;
