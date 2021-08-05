@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Toast;
-using Toast.Nodes;
 
 namespace OliveToast.Managements
 {
@@ -23,13 +23,38 @@ namespace OliveToast.Managements
             toaster.AddCommand(BasicCommands.Lists);
             toaster.AddCommand(BasicCommands.If, BasicCommands.Else, BasicCommands.Assign);
 
+            toaster.AddConverter(BasicConverters.All);
+
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) =>
             {
                 ctx.DiscordContext.Channel.SendMessageAsync(x).Wait();
             }, -1));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("username", (ctx, user) => user.Username));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("id", (ctx, user) => user.Id));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, int>("tag", (ctx, user) => user.DiscriminatorValue));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, user) => user.GetName(false)));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, user) => user.IsBot));
 
-            toaster.AddConverter(BasicConverters.All);
+            toaster.AddConverter(ToastConverter.Create<string, SocketGuildUser>((_ctx, x) =>
+            {
+                CustomCommandContext ctx = (CustomCommandContext)_ctx;
+
+                Match match = new Regex("<@!([0-9]+)>").Match(x);
+                if (match.Success)
+                {
+                    return ctx.DiscordContext.Guild.GetUser(ulong.Parse(match.Groups[1].Value));
+                }
+
+                var users = ctx.DiscordContext.Guild.Users.ToList();
+                return users.Find(u => u.Username == x || (u.Nickname is not null && u.Nickname == x));
+            }));
+            toaster.AddConverter(ToastConverter.Create<ulong, SocketGuildUser>((_ctx, x) =>
+            {
+                CustomCommandContext ctx = (CustomCommandContext)_ctx;
+
+                return ctx.DiscordContext.Guild.GetUser(x);
+            }));
 
             return toaster;
         }
