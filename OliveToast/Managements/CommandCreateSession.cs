@@ -121,7 +121,7 @@ namespace OliveToast.Managements
                         msg.Embeds = new[] { emb.Build() };
                     });
 
-                    if (session.CustomCommand.RawToastLines.Count >= 5)
+                    if (session.CustomCommand.RawToastLines.Count >= 15)
                     {
                         await ButtonResponse(userId, ResponseType.Complete);
                     }
