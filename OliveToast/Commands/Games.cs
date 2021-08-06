@@ -220,8 +220,6 @@ namespace OliveToast.Commands
 
                 if (session.Context.Channel.Id == context.Channel.Id)
                 {
-                    session.LastActiveTime = DateTime.Now;
-
                     string content = context.Message.Content;
                     EmbedBuilder emb = context.CreateEmbed(title: "타자 연습");
 
