@@ -26,8 +26,26 @@ namespace OliveToast.Managements
 
             toaster.AddConverter(BasicConverters.All);
 
-            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) => ctx.DiscordContext.Channel.SendMessageAsync(x).Wait(), -1));
-            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("reply", (ctx, x) => ctx.DiscordContext.MsgReplyAsync(x).Wait(), -1));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) =>
+            {
+                if (ctx.SendCount >= 5)
+                {
+                    throw new Exception("메시지를 너무 많이 보내고있어요!");
+                }
+
+                ctx.DiscordContext.Channel.SendMessageAsync(x).Wait();
+                ctx.SendCount++;
+            }, -1));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("reply", (ctx, x) =>
+            {
+                if (ctx.SendCount >= 5)
+                {
+                    throw new Exception("메시지를 너무 많이 보내고있어요!");
+                }
+
+                ctx.DiscordContext.MsgReplyAsync(x).Wait();
+                ctx.SendCount++;
+            }, -1));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext>("delete", (ctx) => ctx.DiscordContext.Message.DeleteAsync().Wait()));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("react", (ctx, x) 
                 => ctx.DiscordContext.Message.AddReactionAsync(Emote.TryParse(x, out var result) ? result : new Emoji(x)), -1));
@@ -149,10 +167,13 @@ namespace OliveToast.Managements
         public readonly SocketCommandContext DiscordContext;
         public readonly string[] Groups;
 
+        public int SendCount;
+
         public CustomCommandContext(SocketCommandContext context, string[] groups)
         {
             DiscordContext = context;
             Groups = groups;
+            SendCount = 0;
         }
     }
 }
