@@ -33,7 +33,7 @@ namespace OliveToast.Managements
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ctx.DiscordContext.Channel.SendMessageAsync(x).Wait();
+                ctx.DiscordContext.Channel.SendMessageAsync(x, allowedMentions: AllowedMentions.None).Wait();
                 ctx.SendCount++;
             }, -1));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("reply", (ctx, x) =>
