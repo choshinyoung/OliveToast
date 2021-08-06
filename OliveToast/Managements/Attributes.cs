@@ -59,7 +59,7 @@ namespace OliveToast.Managements
                 }
                 else
                 {
-                    if (Permission is PermissionType.UseBot or PermissionType.SpeakByBot or PermissionType.ManageCommand)
+                    if (Permission is PermissionType.UseBot or PermissionType.SpeakByBot)
                     {
                         return Task.FromResult(PreconditionResult.FromSuccess());
                     }

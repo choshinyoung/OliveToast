@@ -101,16 +101,14 @@ namespace OliveToast.Managements
             public string Answer;
 
             public bool IsRegex;
-            public List<string> RawToastLines;
-            public List<INode> ToastLines;
+            public List<string> ToastLines;
 
             public ulong CreatedBy;
 
-            public CustomCommand(string answer, bool isRegex, List<string> rawLines, List<INode> lines, ulong createdBy)
+            public CustomCommand(string answer, bool isRegex, List<string> lines, ulong createdBy)
             {
                 Answer = answer;
                 IsRegex = isRegex;
-                RawToastLines = rawLines;
                 ToastLines = lines;
                 CreatedBy = createdBy;
             }

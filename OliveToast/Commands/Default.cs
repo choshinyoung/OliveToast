@@ -57,8 +57,8 @@ namespace OliveToast.Commands
         [Summary("인공지능 올리브토스트와 대화할 수 있습니다")]
         public async Task PingPong([Remainder, Name("문장")] string text)
         {
-            using HttpClient httpClient = new HttpClient();
-            using HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("POST"), $"https://builder.pingpong.us/api/builder/60a1d801e4b091a94bc5294d/integration/v0.2/custom/{Context.User.Id}");
+            using HttpClient httpClient = new();
+            using HttpRequestMessage request = new(new HttpMethod("POST"), $"https://builder.pingpong.us/api/builder/60a1d801e4b091a94bc5294d/integration/v0.2/custom/{Context.User.Id}");
 
             request.Headers.TryAddWithoutValidation("Authorization", ConfigManager.Get("PINGPONG_TOKEN"));
             request.Content = new StringContent("{\"request\": {\"query\": \"" + text + "\"}}");
@@ -93,7 +93,7 @@ namespace OliveToast.Commands
         [Summary("주어진 수식을 계산합니다\n[이곳](https://github.com/ncalc/ncalc/wiki)에서 사용방법을 확인할 수 있습니다")]
         public async Task Calc([Remainder, Name("수식")] string input)
         {
-            Expression exp = new Expression(input, EvaluateOptions.IgnoreCase);
+            Expression exp = new(input, EvaluateOptions.IgnoreCase);
 
             if (exp.HasErrors())
             {

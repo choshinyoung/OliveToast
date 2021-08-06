@@ -29,11 +29,11 @@ namespace OliveToast.Commands
 
             if (commands.ContainsKey(command))
             {
-                commands[command].Add(new(answer, false, new(), new(), Context.User.Id));
+                commands[command].Add(new(answer, false, new(), Context.User.Id));
             }
             else 
             {
-                commands.Add(command, new() { new(answer, false, new(), new(), Context.User.Id) });
+                commands.Add(command, new() { new(answer, false, new(), Context.User.Id) });
             }
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
@@ -57,7 +57,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            OliveGuild.CustomCommand command = new(null, false, new(), new(), Context.User.Id);
+            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id);
 
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ChangeRegex}")
@@ -211,7 +211,7 @@ namespace OliveToast.Commands
                 SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer[i].CreatedBy);
                 string username = user is null ? answer[i].CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}";
                 string isRegex = answer[i].IsRegex ? "- 정규식" : "";
-                string toastCommands = answer[i].RawToastLines.Any() ? $"\n토스트 커맨드 {answer[i].RawToastLines.Count}줄" : "";
+                string toastCommands = answer[i].ToastLines.Any() ? $"\n토스트 커맨드 {answer[i].ToastLines.Count}줄" : "";
 
                 emb.AddField($"*{i} {isRegex} {toastCommands}\n{username}*", answer[i].Answer ?? "응답이 없어요", true);
             }
@@ -254,7 +254,7 @@ namespace OliveToast.Commands
                 SocketGuildUser user = guild.Users.ToList().Find(u => u.Id == answer[index].CreatedBy);
                 string username = user is null ? answer[index].CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}";
                 string isRegex = answer[index].IsRegex ? "- 정규식" : "";
-                string toastCommands = answer[index].RawToastLines.Any() ? $"\n토스트 커맨드 {answer[index].RawToastLines.Count}줄" : "";
+                string toastCommands = answer[index].ToastLines.Any() ? $"\n토스트 커맨드 {answer[index].ToastLines.Count}줄" : "";
 
                 emb.AddField($"*{index} {isRegex} {toastCommands}\n{username}*", answer[index].Answer ?? "응답이 없어요", true);
             }
@@ -274,9 +274,16 @@ namespace OliveToast.Commands
         [Command("토스트")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("토스트 커맨드를 실행합니다")]
-        public async Task ExecuteToast([Name("입력"), Remainder] string line)
+        public async Task ExecuteToast([Name("입력"), Remainder] string lines)
         {
-            object result = CustomCommandExecutor.ExecuteToastCommand(line, Context, new[] { Context.Message.Content });
+            Toaster toaster = CustomCommandExecutor.GetToaster();
+
+            object result = null;
+
+            foreach (string line in lines.Split('\n'))
+            {
+                result = toaster.Execute(line, new CustomCommandContext(Context, new[] { Context.Message.Content }));
+            }
 
             if (result is not null)
             {

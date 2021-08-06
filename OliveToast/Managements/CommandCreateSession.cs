@@ -104,16 +104,16 @@ namespace OliveToast.Managements
 
                     break;
                 case Status.ExecuteLinesInput:
-                    session.CustomCommand.RawToastLines.Add(content);
+                    session.CustomCommand.ToastLines.Add(content);
 
                     emb = session.Message.Embeds.First().ToEmbedBuilder();
                     if (emb.Fields.Find(e => e.Name == "토스트 커맨드") is var field and not null)
                     {
-                        field.Value = string.Concat(session.CustomCommand.RawToastLines.Select(l => $"```\n{l}\n```"));
+                        field.Value = string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```"));
                     }
                     else
                     {
-                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.RawToastLines.Select(l => $"```\n{l}\n```")));
+                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
                     }
 
                     await session.Message.ModifyAsync(msg =>
@@ -121,7 +121,7 @@ namespace OliveToast.Managements
                         msg.Embeds = new[] { emb.Build() };
                     });
 
-                    if (session.CustomCommand.RawToastLines.Count >= 15)
+                    if (session.CustomCommand.ToastLines.Count >= 15)
                     {
                         await ButtonResponse(userId, ResponseType.Complete);
                     }
@@ -161,7 +161,7 @@ namespace OliveToast.Managements
                     break;
                 case ResponseType.Complete:
                     EmbedBuilder emb;
-                    if (session.CustomCommand.Answer is null && session.CustomCommand.RawToastLines.Count == 0)
+                    if (session.CustomCommand.Answer is null && session.CustomCommand.ToastLines.Count == 0)
                     {
                         emb = session.UserMessageContext.CreateEmbed(description: "응답이 없는 커맨드는 토스트 커맨드가 한 줄 이상 있어야돼요");
                         await session.UserMessageContext.Channel.SendMessageAsync(embed: emb.Build());
@@ -178,9 +178,9 @@ namespace OliveToast.Managements
                     }
                     emb.AddField("정규식 사용 여부", session.CustomCommand.IsRegex.ToEmoji(), true);
 
-                    if (session.CustomCommand.RawToastLines.Count > 0)
+                    if (session.CustomCommand.ToastLines.Count > 0)
                     {
-                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.RawToastLines.Select(l => $"```\n{l}\n```")));
+                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
                     }
 
                     Sessions.Remove(userId);

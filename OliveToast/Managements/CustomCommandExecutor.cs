@@ -22,7 +22,7 @@ namespace OliveToast.Managements
             toaster.AddCommand(BasicCommands.Operators);
             toaster.AddCommand(BasicCommands.Strings);
             toaster.AddCommand(BasicCommands.Lists);
-            toaster.AddCommand(BasicCommands.If, BasicCommands.Else, BasicCommands.Assign);
+            toaster.AddCommand(BasicCommands.If, BasicCommands.Else, BasicCommands.Foreach, BasicCommands.Assign, BasicCommands.Random, BasicCommands.RandomChoice);
 
             toaster.AddConverter(BasicConverters.All);
 
@@ -50,6 +50,7 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("react", (ctx, x) 
                 => ctx.DiscordContext.Message.AddReactionAsync(Emote.TryParse(x, out var result) ? result : new Emoji(x)), -1));
 
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.DiscordContext.Guild.Users.Select(u => (object)u).ToArray()));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.DiscordContext.User as SocketGuildUser));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("username", (ctx, user) => user.Username));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("id", (ctx, user) => user.Id));
@@ -135,11 +136,14 @@ namespace OliveToast.Managements
                     await context.MsgReplyAsync(command.command.Answer);
                 }
 
-                foreach (string line in command.command.RawToastLines)
+                Toaster toaster = GetToaster();
+                CustomCommandContext toastContext = new(context, command.groups);
+
+                foreach (string line in command.command.ToastLines)
                 {
                     try
                     {
-                        ExecuteToastCommand(line, context, command.groups);
+                        toaster.Execute(line, toastContext);
                     }
                     catch (Exception e)
                     {
@@ -154,11 +158,6 @@ namespace OliveToast.Managements
             {
                 await context.Message.AddReactionAsync(new Emoji("🚫"));
             }
-        }
-
-        public static object ExecuteToastCommand(string line, SocketCommandContext context, string[] groups)
-        {
-            return GetToaster().Execute(line, new CustomCommandContext(context, groups));
         }
     }
 
