@@ -2,13 +2,14 @@
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Toast.Nodes;
 
 namespace OliveToast.Managements
 {
@@ -54,7 +55,15 @@ namespace OliveToast.Managements
                     {
                         try
                         {
-                            new Regex(content).Match("");
+                            Regex regex = new(content);
+                            
+                            foreach (string str in RegexTextStrings.Strings)
+                            {
+                                if (regex.IsMatch(str))
+                                {
+                                    throw new Exception();
+                                }
+                            }
                         }
                         catch
                         {
@@ -63,7 +72,6 @@ namespace OliveToast.Managements
 
                             return true;
                         }
-                        Console.WriteLine("a");
                     }
 
                     session.Command = content;
@@ -225,6 +233,18 @@ namespace OliveToast.Managements
 
                     break;
             }
+        }
+    }
+
+    class RegexTextStrings
+    {
+        public static readonly List<string> Strings;
+
+        static RegexTextStrings()
+        {
+            string content = File.ReadAllText("Configs/regexTestStrings.json");
+
+            Strings = JsonConvert.DeserializeObject<List<string>>(content);
         }
     }
 }
