@@ -60,7 +60,16 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("mention", (ctx, user) => user.Mention));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
-            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) => Task.Delay(x * 1000).Wait()));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
+            {
+                if (ctx.HowLongWaited + x is var a && (a > 10 * 60 * 1000 || a < 0))
+                {
+                    throw new Exception("대기 시간이 너무 길어요!");
+                }
+
+                ctx.HowLongWaited += x;
+                Task.Delay(x * 1000).Wait();
+            }));
 
             toaster.AddConverter(ToastConverter.Create<string, SocketGuildUser>((_ctx, x) =>
             {
@@ -167,12 +176,15 @@ namespace OliveToast.Managements
         public readonly string[] Groups;
 
         public int SendCount;
+        public int HowLongWaited;
 
         public CustomCommandContext(SocketCommandContext context, string[] groups)
         {
             DiscordContext = context;
             Groups = groups;
+
             SendCount = 0;
+            HowLongWaited = 0;
         }
     }
 }
