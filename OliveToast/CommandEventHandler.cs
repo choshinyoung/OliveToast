@@ -206,7 +206,7 @@ namespace OliveToast
                 guild.Levels.Add(UserId, new OliveGuild.UserLevel());
                 guild.Levels[UserId].Xp++;
             }
-
+            
             OliveGuild.Set(context.Guild.Id, g => g.Levels, guild.Levels);
             #endregion
         }

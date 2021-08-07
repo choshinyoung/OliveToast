@@ -31,7 +31,7 @@ namespace OliveToast.Commands
             {
                 commands[command].Add(new(answer, false, new(), Context.User.Id));
             }
-            else 
+            else
             {
                 commands.Add(command, new() { new(answer, false, new(), Context.User.Id) });
             }

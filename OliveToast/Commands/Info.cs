@@ -28,16 +28,12 @@ namespace OliveToast.Commands
             emb.AddField("생성일", g.CreatedAt.ToKSTString(), true);
             emb.AddEmptyField();
 
-            emb.AddField("기본 채널", g.DefaultChannel != null ? g.DefaultChannel.Mention : "-", true);
             emb.AddField("시스템 메시지 채널", g.SystemChannel != null ? g.SystemChannel.Mention : "-", true);
-            emb.AddEmptyField();
+            emb.AddField("채널 규칙 및 지침", g.RulesChannel != null ? g.RulesChannel.Mention : "-", true);
+            emb.AddField("커뮤니티 업데이트 채널", g.PublicUpdatesChannel != null ? g.PublicUpdatesChannel.Mention : "-", true);
 
             emb.AddField("잠수 채널", g.AFKChannel != null ? $"<#{g.AFKChannel.Id}>" : "-", true);
             emb.AddField("비활성화 시간 제한", $"{g.AFKTimeout / 60}분", true);
-            emb.AddEmptyField();
-
-            emb.AddField("채널 규칙 및 지침", g.RulesChannel != null ? g.RulesChannel.Mention : "-", true);
-            emb.AddField("커뮤니티 업데이트 채널", g.PublicUpdatesChannel != null ? g.PublicUpdatesChannel.Mention : "-", true);
             emb.AddEmptyField();
 
             emb.AddField("서버 주인", g.Owner.Mention, true);
@@ -66,7 +62,7 @@ namespace OliveToast.Commands
                 ExplicitContentFilterLevel.AllMembers => "모든 맴버",
                 _ => "-"
             }, true);
-            emb.AddField("2단계 인증", (g.MfaLevel == MfaLevel.Disabled).ToEmoji(), true);
+            emb.AddField("2단계 인증", (g.MfaLevel == MfaLevel.Enabled).ToEmoji(), true);
 
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
