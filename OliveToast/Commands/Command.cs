@@ -277,12 +277,13 @@ namespace OliveToast.Commands
         public async Task ExecuteToast([Name("입력"), Remainder] string lines)
         {
             Toaster toaster = CustomCommandExecutor.GetToaster();
+            CustomCommandContext context = new(Context, new[] { Context.Message.Content });
 
             object result = null;
 
             foreach (string line in lines.Split('\n'))
             {
-                result = toaster.Execute(line, new CustomCommandContext(Context, new[] { Context.Message.Content }));
+                result = toaster.Execute(line, context);
             }
 
             if (result is not null)

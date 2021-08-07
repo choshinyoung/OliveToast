@@ -62,12 +62,13 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
             {
-                if (ctx.HowLongWaited + x is var a && (a > 10 * 60 * 1000 || a < 0))
+                if ((ctx.HowLongWaited + x) is var a && (a > 600 || a < 0))
                 {
                     throw new Exception("대기 시간이 너무 길어요!");
                 }
 
-                ctx.HowLongWaited += x;
+                ctx.HowLongWaited = a;
+                Console.WriteLine(ctx.HowLongWaited);
                 Task.Delay(x * 1000).Wait();
             }));
 
