@@ -191,6 +191,23 @@ namespace OliveToast.Commands
                 return;
             }
 
+            await AnswerList(commands.Keys.ToList().IndexOf(command));
+        }
+
+        [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
+        public async Task AnswerList([Name("번호")] int index)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= index)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[index];
             var answer = commands[command];
 
             int count = answer.Count;
@@ -217,23 +234,6 @@ namespace OliveToast.Commands
             }
 
             await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
-        }
-
-        [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
-        [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
-        public async Task AnswerList([Name("번호")] int index)
-        {
-            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
-
-            if (commands.Count <= index)
-            {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
-                return;
-            }
-
-            string command = commands.Keys.ToList()[index];
-            await AnswerList(command);
         }
 
         public static async Task ChangeAnswerListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, string command, int page)
@@ -269,6 +269,105 @@ namespace OliveToast.Commands
                 m.Embeds = new[] { emb.Build() };
                 m.Components = component.Build();
             });
+        }
+
+        [Command("커맨드 정보"), Alias("응답 정보")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        public async Task CommandInfo([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (!commands.ContainsKey(command) || !commands[command].Any(c => c.Answer == answer))
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await CommandInfo(commands.Keys.ToList().IndexOf(command), commands[command].IndexOf(commands[command].Find(c => c.Answer == answer)));
+        }
+
+        [Command("커맨드 정보"), Alias("응답 정보")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        public async Task CommandInfo([Name("커맨드 번호")] int cIndex, [Name("응답"), Remainder] string answer)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= cIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[cIndex];
+
+            if (!commands[command].Any(c => c.Answer == answer))
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await CommandInfo(cIndex, commands[command].IndexOf(commands[command].Find(c => c.Answer == answer)));
+        }
+
+        [Command("커맨드 정보"), Alias("응답 정보")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        public async Task CommandInfo([Name("커맨드")] string command, [Name("응답 번호")] int aIndex)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (!commands.ContainsKey(command) || commands[command].Count <= aIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await CommandInfo(commands.Keys.ToList().IndexOf(command), aIndex);
+        }
+
+        [Command("커맨드 정보"), Alias("응답 목록"), Priority(1)]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        public async Task CommandInfo([Name("커맨드 번호")] int cIndex, [Name("응답 번호")] int aIndex)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= cIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[cIndex];
+
+            if (commands[command].Count <= aIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            var answer = commands[command][aIndex];
+
+            EmbedBuilder emb = Context.CreateEmbed("", $"커맨드 정보");
+
+            emb.AddField("커맨드", command, true);
+            if (answer.Answer is not null)
+            {
+                emb.AddField("응답", answer.Answer, true);
+            }
+            emb.AddField("정규식 사용 여부", answer.IsRegex.ToEmoji(), true);
+
+            if (answer.ToastLines.Count > 0)
+            {
+                emb.AddField("토스트 커맨드", string.Concat(answer.ToastLines.Select(l => $"```\n{l}\n```")));
+            }
+
+            SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer.CreatedBy);
+            emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
         [Command("토스트")]
