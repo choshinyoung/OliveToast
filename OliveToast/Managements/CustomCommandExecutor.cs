@@ -76,6 +76,16 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isMentionable", (ctx, role) => role.IsMentionable));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleMention", (ctx, role) => role.Mention));
 
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, string>("serverName", (ctx) => ctx.DiscordContext.Guild.Name));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, ulong>("serverId", (ctx) => ctx.DiscordContext.Guild.Id));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("systemChannel", (ctx) => ctx.DiscordContext.Guild.SystemChannel));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("ruleChannel", (ctx) => ctx.DiscordContext.Guild.RulesChannel));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("publicUpdateChannel", (ctx) => ctx.DiscordContext.Guild.PublicUpdatesChannel));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("owner", (ctx) => ctx.DiscordContext.Guild.Owner));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int>("boostCount", (ctx) => ctx.DiscordContext.Guild.PremiumSubscriptionCount));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int>("boostLevel", (ctx) => (int)ctx.DiscordContext.Guild.PremiumTier));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, bool>("isMfaEnabled", (ctx) => ctx.DiscordContext.Guild.MfaLevel == MfaLevel.Enabled));
+
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
             {
