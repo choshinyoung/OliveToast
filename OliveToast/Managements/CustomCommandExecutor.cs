@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -53,11 +54,20 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.DiscordContext.Guild.Users.Select(u => (object)u).ToArray()));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.DiscordContext.User as SocketGuildUser));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("username", (ctx, user) => user.Username));
-            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("id", (ctx, user) => user.Id));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("userId", (ctx, user) => user.Id));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, int>("tag", (ctx, user) => user.DiscriminatorValue));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, user) => user.GetName(false)));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, user) => user.IsBot));
-            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("mention", (ctx, user) => user.Mention));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, user) => user.Mention));
+
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.DiscordContext.Guild.TextChannels.Select(u => (object)u).ToArray()));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.DiscordContext.Channel as SocketTextChannel));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelName", (ctx, channel) => channel.Name));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, ulong>("channelId", (ctx, channel) => channel.Id));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("category", (ctx, channel) => channel.Category is not null ? channel.Category.Name : "-"));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, bool>("isNsfw", (ctx, channel) => channel.IsNsfw));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelMention", (ctx, channel) => channel.Mention));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, int>("slowMode", (ctx, channel) => channel.SlowModeInterval));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
@@ -100,6 +110,36 @@ namespace OliveToast.Managements
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
 
                 return ctx.DiscordContext.Guild.GetUser(x);
+            }));
+
+            toaster.AddConverter(ToastConverter.Create<string, SocketTextChannel>((_ctx, x) =>
+            {
+                CustomCommandContext ctx = (CustomCommandContext)_ctx;
+
+                var channel = ctx.DiscordContext.Guild.TextChannels.ToList().Find(u => u.Name == x);
+                if (channel is not null)
+                {
+                    return channel;
+                }
+
+                Match match = new Regex("<#([0-9]+)>").Match(x);
+                if (match.Success)
+                {
+                    return ctx.DiscordContext.Guild.GetTextChannel(ulong.Parse(match.Groups[1].Value));
+                }
+
+                if (x.All(c => char.IsDigit(c)))
+                {
+                    return ctx.DiscordContext.Guild.GetTextChannel(ulong.Parse(x));
+                }
+
+                return null;
+            }));
+            toaster.AddConverter(ToastConverter.Create<ulong, SocketTextChannel>((_ctx, x) =>
+            {
+                CustomCommandContext ctx = (CustomCommandContext)_ctx;
+
+                return ctx.DiscordContext.Guild.GetTextChannel(x);
             }));
 
             return toaster;
