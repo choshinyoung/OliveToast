@@ -67,7 +67,7 @@ namespace OliveToast.Managements
                         }
                         catch
                         {
-                            emb = session.UserMessageContext.CreateEmbed(description: "유효하지 않은 정규식 입력이에요");
+                            emb = session.UserMessageContext.CreateEmbed(title: "오류 발생!", description: "유효하지 않은 정규식 입력이에요");
                             await session.UserMessageContext.MsgReplyEmbedAsync(emb.Build());
 
                             return true;
@@ -112,6 +112,18 @@ namespace OliveToast.Managements
 
                     break;
                 case Status.ExecuteLinesInput:
+                    try
+                    {
+                        CustomCommandExecutor.GetToaster().Parse(content);
+                    }
+                    catch (Exception e)
+                    {
+                        emb = session.UserMessageContext.CreateEmbed(title: "오류 발생!", description: e.Message);
+                        await session.UserMessageContext.MsgReplyEmbedAsync(emb.Build());
+
+                        return true;
+                    }
+
                     session.CustomCommand.ToastLines.Add(content);
 
                     emb = session.Message.Embeds.First().ToEmbedBuilder();
