@@ -69,6 +69,13 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelMention", (ctx, channel) => channel.Mention));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, int>("slowMode", (ctx, channel) => channel.SlowModeInterval));
 
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.DiscordContext.Guild.TextChannels.Select(u => (object)u).ToArray()));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleName", (ctx, role) => role.Name));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketRole, ulong>("roleId", (ctx, role) => role.Id));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isHoisted", (ctx, role) => role.IsHoisted));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isMentionable", (ctx, role) => role.IsMentionable));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleMention", (ctx, role) => role.Mention));
+
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
             {
@@ -140,6 +147,36 @@ namespace OliveToast.Managements
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
 
                 return ctx.DiscordContext.Guild.GetTextChannel(x);
+            }));
+
+            toaster.AddConverter(ToastConverter.Create<string, SocketRole>((_ctx, x) =>
+            {
+                CustomCommandContext ctx = (CustomCommandContext)_ctx;
+
+                var channel = ctx.DiscordContext.Guild.Roles.ToList().Find(u => u.Name.ToLower() == x.ToLower());
+                if (channel is not null)
+                {
+                    return channel;
+                }
+
+                Match match = new Regex("<#([0-9]+)>").Match(x);
+                if (match.Success)
+                {
+                    return ctx.DiscordContext.Guild.GetRole(ulong.Parse(match.Groups[1].Value));
+                }
+
+                if (x.All(c => char.IsDigit(c)))
+                {
+                    return ctx.DiscordContext.Guild.GetRole(ulong.Parse(x));
+                }
+
+                return null;
+            }));
+            toaster.AddConverter(ToastConverter.Create<ulong, SocketRole>((_ctx, x) =>
+            {
+                CustomCommandContext ctx = (CustomCommandContext)_ctx;
+
+                return ctx.DiscordContext.Guild.GetRole(x);
             }));
 
             return toaster;
