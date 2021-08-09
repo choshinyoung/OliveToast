@@ -63,7 +63,6 @@ namespace OliveToast.Managements
 
                                 if (match.Success && match.Value.Length == str.Length)
                                 {
-                                    Console.WriteLine(str);
                                     throw new Exception();
                                 }
                             }

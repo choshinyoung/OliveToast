@@ -442,14 +442,33 @@ namespace OliveToast.Commands
         [Summary("토스트 커맨드를 실행합니다")]
         public async Task ExecuteToast([Name("입력"), Remainder] string lines)
         {
+            if (CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
+            {
+                await Context.MsgReplyEmbedAsync("이미 다른 커맨드를 실행중이에요");
+
+                return;
+            }
+
             Toaster toaster = CustomCommandExecutor.GetToaster();
             CustomCommandContext context = new(Context, new[] { Context.Message.Content });
 
             object result = null;
 
+            CommandExecuteSession.Sessions.Add(Context.User.Id, new(Context));
+
             foreach (string line in lines.Split('\n'))
             {
                 result = toaster.Execute(line, context);
+
+                if (!CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
+                {
+                    break;
+                }
+            }
+
+            if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
+            {
+                CommandCreateSession.Sessions.Remove(Context.User.Id);
             }
 
             if (result is not null)

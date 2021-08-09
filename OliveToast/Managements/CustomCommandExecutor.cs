@@ -97,8 +97,15 @@ namespace OliveToast.Managements
                 }
 
                 ctx.HowLongWaited = a;
-                Console.WriteLine(ctx.HowLongWaited);
                 Task.Delay(x * 1000).Wait();
+            }));
+
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext>("exit", (ctx) =>
+            {
+                if (CommandExecuteSession.Sessions.ContainsKey(ctx.DiscordContext.User.Id))
+                {
+                    CommandExecuteSession.Sessions.Remove(ctx.DiscordContext.User.Id);
+                }
             }));
 
             toaster.AddConverter(ToastConverter.Create<string, SocketGuildUser>((_ctx, x) =>
@@ -204,8 +211,6 @@ namespace OliveToast.Managements
 
             if (!CommandExecuteSession.Sessions.ContainsKey(context.User.Id) && CommandRateLimit.AddCount(context.User.Id))
             {
-                CommandExecuteSession.Sessions.Add(context.User.Id, new(context));
-
                 var command = answers[new Random().Next(answers.Count)];
 
                 if (command.command.Answer is not null)
@@ -215,6 +220,8 @@ namespace OliveToast.Managements
 
                 Toaster toaster = GetToaster();
                 CustomCommandContext toastContext = new(context, command.groups);
+
+                CommandExecuteSession.Sessions.Add(context.User.Id, new(context));
 
                 foreach (string line in command.command.ToastLines)
                 {
@@ -232,6 +239,11 @@ namespace OliveToast.Managements
                             CommandExecuteSession.Sessions.Remove(context.User.Id);
                         }
 
+                        return;
+                    }
+
+                    if (!CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
+                    {
                         return;
                     }
                 }
