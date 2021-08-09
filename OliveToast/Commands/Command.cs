@@ -122,7 +122,7 @@ namespace OliveToast.Commands
         {
             List<string> commands = OliveGuild.Get(Context.Guild.Id).Commands.Keys.ToList();
 
-            EmbedBuilder emb = Context.CreateEmbed("", "커맨드 목록");
+            EmbedBuilder emb = Context.CreateEmbed(title: "커맨드 목록");
 
             if (commands.Count == 0)
             {
@@ -368,6 +368,73 @@ namespace OliveToast.Commands
             emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
 
             await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("커맨드 검색")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("`메시지`를 보냈을 때 어떤 커맨드가 실행될지 확인할 수 있습니다")]
+        public async Task SearchCommand([Name("메시지"), Remainder] string content)
+        {
+            EmbedBuilder emb = Context.CreateEmbed(title: "커맨드 검색");
+
+            List<string> commands = CustomCommandExecutor.FindCommands(OliveGuild.Get(Context.Guild.Id), content);
+
+            if (commands.Count == 0)
+            {
+                emb.Description = "커맨드가 없어요";
+            }
+
+            int count = commands.Count;
+
+            ComponentBuilder component = new();
+            if (count > MaxListCommandCount)
+            {
+                count = MaxListCommandCount;
+                component.WithButton("<", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CommandSearch}.{Context.Guild.Id}.{0}", disabled: true);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary);
+                component.WithButton(">", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CommandSearch}.{Context.Guild.Id}.{2}");
+            }
+
+            var keys = OliveGuild.Get(Context.Guild.Id).Commands.Keys.ToList();
+
+            for (int i = 0; i < count; i++)
+            {
+                emb.AddField(keys.IndexOf(commands[i]).ToString(), commands[i], true);
+            }
+
+            await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
+        }
+
+        public static async Task ChangeSearchPage(SocketGuild guild, ulong userId, SocketUserMessage msg, string content, int page)
+        {
+            EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
+            emb.Fields = new List<EmbedFieldBuilder>();
+
+            List<string> commands = CustomCommandExecutor.FindCommands(OliveGuild.Get(guild.Id), content);
+
+            var keys = OliveGuild.Get(guild.Id).Commands.Keys.ToList();
+
+            int startIndex = MaxListCommandCount * (page - 1);
+
+            for (int i = 0; i < MaxListCommandCount; i++)
+            {
+                int index = startIndex + i;
+
+                if (commands.Count <= index) break;
+
+                emb.AddField(keys.IndexOf(commands[index]).ToString(), commands[index], true);
+            }
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("<", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandSearch}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
+                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)CommandEventHandler.InteractionType.None}", ButtonStyle.Secondary)
+                .WithButton(">", $"{userId}.{(int)CommandEventHandler.InteractionType.CommandSearch}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= commands.Count);
+
+            await msg.ModifyAsync(m =>
+            {
+                m.Embeds = new[] { emb.Build() };
+                m.Components = component.Build();
+            });
         }
 
         [Command("토스트")]

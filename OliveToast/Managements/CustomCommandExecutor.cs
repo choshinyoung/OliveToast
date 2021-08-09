@@ -196,31 +196,7 @@ namespace OliveToast.Managements
 
         public static async Task Execute(SocketCommandContext context, OliveGuild guild)
         {
-            var commands = guild.Commands;
-
-            List<(string[] groups, OliveGuild.CustomCommand command)> answers = new();
-
-            if (commands.ContainsKey(context.Message.Content) && commands[context.Message.Content].Any(c => !c.IsRegex))
-            {
-                answers.AddRange(commands[context.Message.Content].Where(c => !c.IsRegex).Select(c => (new[] { context.Message.Content }, c)));
-            }
-            foreach (var command in commands)
-            {
-                if (!command.Value.Any(a => a.IsRegex))
-                {
-                    continue;
-                }
-
-                Match match = new Regex(command.Key).Match(context.Message.Content);
-
-                if (!match.Success || match.Value.Length != context.Message.Content.Length)
-                {
-                    continue;
-                }
-
-                answers.AddRange(command.Value.Where(a => a.IsRegex).Select(c => (match.Groups.Values.Select(v => v.Value).ToArray(), c)));
-            }
-
+            List<(string[] groups, OliveGuild.CustomCommand command)> answers = FindAnswers(guild, context.Message.Content);
             if (!answers.Any())
             {
                 return;
@@ -257,6 +233,66 @@ namespace OliveToast.Managements
             {
                 await context.Message.AddReactionAsync(new Emoji("🚫"));
             }
+        }
+
+        public static List<(string[] groups, OliveGuild.CustomCommand command)> FindAnswers(OliveGuild guild, string command)
+        {
+            var commands = guild.Commands;
+
+            List<(string[] groups, OliveGuild.CustomCommand command)> answers = new();
+
+            if (commands.ContainsKey(command) && commands[command].Any(c => !c.IsRegex))
+            {
+                answers.AddRange(commands[command].Where(c => !c.IsRegex).Select(c => (new[] { command }, c)));
+            }
+            foreach (var cmd in commands)
+            {
+                if (!cmd.Value.Any(a => a.IsRegex))
+                {
+                    continue;
+                }
+
+                Match match = new Regex(cmd.Key).Match(command);
+
+                if (!match.Success || match.Value.Length != command.Length)
+                {
+                    continue;
+                }
+
+                answers.AddRange(cmd.Value.Where(a => a.IsRegex).Select(c => (match.Groups.Values.Select(v => v.Value).ToArray(), c)));
+            }
+
+            return answers;
+        }
+
+        public static List<string> FindCommands(OliveGuild guild, string command)
+        {
+            var commands = guild.Commands;
+
+            List<string> answers = new();
+
+            if (commands.ContainsKey(command) && commands[command].Any(c => !c.IsRegex))
+            {
+                answers.Add(command);
+            }
+            foreach (var cmd in commands)
+            {
+                if (!cmd.Value.Any(a => a.IsRegex))
+                {
+                    continue;
+                }
+
+                Match match = new Regex(cmd.Key).Match(command);
+
+                if (!match.Success || match.Value.Length != command.Length)
+                {
+                    continue;
+                }
+
+                answers.Add(cmd.Key);
+            }
+
+            return answers;
         }
     }
 

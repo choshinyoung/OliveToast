@@ -15,7 +15,7 @@ namespace OliveToast
     {
         public enum InteractionType
         {
-            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList
+            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearch
         }
 
         public static readonly string prefix = ConfigManager.Get("PREFIX");
