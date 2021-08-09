@@ -202,8 +202,10 @@ namespace OliveToast.Managements
                 return;
             }
 
-            if (CommandRateLimit.AddCount(context.User.Id))
+            if (!CommandExecuteSession.Sessions.ContainsKey(context.User.Id) && CommandRateLimit.AddCount(context.User.Id))
             {
+                CommandExecuteSession.Sessions.Add(context.User.Id, new(context));
+
                 var command = answers[new Random().Next(answers.Count)];
 
                 if (command.command.Answer is not null)
@@ -225,8 +227,18 @@ namespace OliveToast.Managements
                         EmbedBuilder emb = context.CreateEmbed(title: "오류 발생!", description: e.Message);
                         await context.MsgReplyEmbedAsync(emb.Build());
 
+                        if (CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
+                        {
+                            CommandExecuteSession.Sessions.Remove(context.User.Id);
+                        }
+
                         return;
                     }
+                }
+
+                if (CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
+                {
+                    CommandExecuteSession.Sessions.Remove(context.User.Id);
                 }
             }
             else
@@ -296,6 +308,18 @@ namespace OliveToast.Managements
             }
 
             return answers;
+        }
+    }
+    
+    class CommandExecuteSession
+    {
+        public static readonly Dictionary<ulong, CommandExecuteSession> Sessions = new();
+
+        public static SocketCommandContext Context;
+
+        public CommandExecuteSession(SocketCommandContext context)
+        {
+            Context = context;
         }
     }
 
