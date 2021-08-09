@@ -69,7 +69,7 @@ namespace OliveToast.Commands
 
                     foreach (CommandInfo info in commandInfos)
                     {
-                        string cmdName = info.Aliases.Count > 1 ? string.Join("/", info.Aliases) : info.Name;
+                        string aliases = info.Aliases.Count > 1 ? string.Join(" ", info.Aliases.Where(a => a != info.Name).Select(a => $"`-{a}`")) + "\n" : "";
 
                         string param = "";
                         foreach (ParameterInfo paramInfo in info.Parameters)
@@ -113,7 +113,7 @@ namespace OliveToast.Commands
                         }
                         permission = permission != null ? $"\n - 이 커맨드를 실행하려면 `<{permission}>` 권한이 필요해요" : "";
 
-                        emb.AddField($"{CommandEventHandler.prefix}{cmdName} {param}", $"{info.Summary}{permission}");
+                        emb.AddField($"{CommandEventHandler.prefix}{info.Name} {param}", $"{aliases}\n{info.Summary}{permission}");
                     }
 
                     await Context.MsgReplyEmbedAsync(emb.Build());
