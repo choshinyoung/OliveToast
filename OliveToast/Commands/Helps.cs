@@ -109,7 +109,12 @@ namespace OliveToast.Commands
                         string permission = null;
                         if (info.HavePrecondition<RequirePermission>())
                         {
-                            permission = PermissionToString(((RequirePermission)info.Preconditions.Where(p => p.GetType() == typeof(RequirePermission)).FirstOrDefault()).Permission);
+                            PermissionType pms = ((RequirePermission)info.Preconditions.Where(p => p.GetType() == typeof(RequirePermission)).FirstOrDefault()).Permission;
+
+                            if (pms != PermissionType.UseBot)
+                            {
+                                permission = PermissionToString(pms);
+                            }
                         }
                         permission = permission != null ? $"\n - 이 커맨드를 실행하려면 `<{permission}>` 권한이 필요해요" : "";
 
