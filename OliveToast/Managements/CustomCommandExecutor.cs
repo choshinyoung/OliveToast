@@ -289,7 +289,10 @@ namespace OliveToast.Managements
                     continue;
                 }
 
-                answers.Add(cmd.Key);
+                if (!answers.Contains(cmd.Key))
+                {
+                    answers.Add(cmd.Key);
+                }
             }
 
             return answers;

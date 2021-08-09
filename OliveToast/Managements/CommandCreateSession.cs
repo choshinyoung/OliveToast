@@ -59,8 +59,11 @@ namespace OliveToast.Managements
                             
                             foreach (string str in RegexTextStrings.Strings)
                             {
-                                if (regex.IsMatch(str))
+                                Match match = regex.Match(str);
+
+                                if (match.Success && match.Value.Length == str.Length)
                                 {
+                                    Console.WriteLine(str);
                                     throw new Exception();
                                 }
                             }
