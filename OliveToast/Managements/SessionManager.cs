@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Discord;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,13 @@ namespace OliveToast.Managements
     class SessionManager
     {
         public const int ExpireMinute = 5;
+        public const int CommandExecuteSessionExpireMinute = 1;
 
         public static async Task CollectExpiredSessions()
         {
             while (true)
             {
-                await Task.Delay(1000 * 30);
+                await Task.Delay(1000 * 15);
 
                 foreach (var session in WordSession.Sessions)
                 {
@@ -43,6 +45,16 @@ namespace OliveToast.Managements
                         CommandCreateSession.Sessions.Remove(session.Key);
 
                         await session.Value.UserMessageContext.MsgReplyEmbedAsync("커맨드 생성이 자동으로 종료됐어요");
+                    }
+                }
+
+                foreach (var session in CommandExecuteSession.Sessions)
+                {
+                    if ((DateTime.Now - session.Value.StartTime).TotalMinutes >= CommandExecuteSessionExpireMinute)
+                    {
+                        CommandExecuteSession.Sessions.Remove(session.Key);
+
+                        await session.Value.Context.DiscordContext.Message.AddReactionAsync(new Emoji("⚠️"));
                     }
                 }
             }

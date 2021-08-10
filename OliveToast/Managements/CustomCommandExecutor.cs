@@ -91,12 +91,11 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
             {
-                if ((ctx.HowLongWaited + x) is var a && (a > 600 || a < 0))
+                if (x > 600 || x < 0)
                 {
                     throw new Exception("대기 시간이 너무 길어요!");
                 }
 
-                ctx.HowLongWaited = a;
                 Task.Delay(x * 1000).Wait();
             }));
 
@@ -221,7 +220,7 @@ namespace OliveToast.Managements
                 Toaster toaster = GetToaster();
                 CustomCommandContext toastContext = new(context, command.groups);
 
-                CommandExecuteSession.Sessions.Add(context.User.Id, new(context));
+                CommandExecuteSession.Sessions.Add(context.User.Id, new(toastContext));
 
                 foreach (string line in command.command.ToastLines)
                 {
@@ -327,11 +326,13 @@ namespace OliveToast.Managements
     {
         public static readonly Dictionary<ulong, CommandExecuteSession> Sessions = new();
 
-        public static SocketCommandContext Context;
+        public readonly CustomCommandContext Context;
+        public readonly DateTime StartTime;
 
-        public CommandExecuteSession(SocketCommandContext context)
+        public CommandExecuteSession(CustomCommandContext context)
         {
             Context = context;
+            StartTime = DateTime.Now;
         }
     }
 
@@ -341,7 +342,6 @@ namespace OliveToast.Managements
         public readonly string[] Groups;
 
         public int SendCount;
-        public int HowLongWaited;
 
         public CustomCommandContext(SocketCommandContext context, string[] groups)
         {
@@ -349,7 +349,6 @@ namespace OliveToast.Managements
             Groups = groups;
 
             SendCount = 0;
-            HowLongWaited = 0;
         }
     }
 }

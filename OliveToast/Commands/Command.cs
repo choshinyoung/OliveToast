@@ -454,7 +454,7 @@ namespace OliveToast.Commands
 
             object result = null;
 
-            CommandExecuteSession.Sessions.Add(Context.User.Id, new(Context));
+            CommandExecuteSession.Sessions.Add(Context.User.Id, new(context));
 
             foreach (string line in lines.Split('\n'))
             {
