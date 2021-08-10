@@ -10,7 +10,7 @@ namespace OliveToast.Managements
     class SessionManager
     {
         public const int ExpireMinute = 5;
-        public const int CommandExecuteSessionExpireMinute = 1;
+        public const int CommandExecuteSessionExpireMinute = 10;
 
         public static async Task CollectExpiredSessions()
         {
