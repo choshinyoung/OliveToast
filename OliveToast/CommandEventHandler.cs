@@ -133,7 +133,7 @@ namespace OliveToast
 
             SocketCommandContext context = new(Program.Client, userMsg);
 
-            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content))
+            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content) || CustomCommandExecutor.OnMessageReceived(context))
             {
                 return;
             }

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Toast;
+using Toast.Nodes;
 
 namespace OliveToast.Managements
 {
@@ -104,6 +105,17 @@ namespace OliveToast.Managements
                 if (CommandExecuteSession.Sessions.ContainsKey(ctx.DiscordContext.User.Id))
                 {
                     CommandExecuteSession.Sessions.Remove(ctx.DiscordContext.User.Id);
+                }
+            }));
+
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string, FunctionNode>("addEventListener", (ctx, x, y) =>
+            {
+                switch (x)
+                {
+                    case "messageReceive":
+                        ctx.OnMessageReceived = y;
+
+                        break;
                 }
             }));
 
@@ -320,6 +332,24 @@ namespace OliveToast.Managements
 
             return answers;
         }
+
+        public static bool OnMessageReceived(SocketCommandContext context)
+        {
+            if (!CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
+            {
+                return false;
+            }
+
+            var session = CommandExecuteSession.Sessions[context.User.Id];
+            if (session.Context.DiscordContext.Channel.Id != context.Channel.Id || session.Context.OnMessageReceived is null)
+            {
+                return false;
+            }
+
+            session.Context.Toaster.ExecuteFunction(session.Context.OnMessageReceived, new object[] { context.Message.Content }, session.Context);
+
+            return true;
+        }
     }
     
     class CommandExecuteSession
@@ -342,6 +372,7 @@ namespace OliveToast.Managements
         public readonly string[] Groups;
 
         public int SendCount;
+        public FunctionNode OnMessageReceived;
 
         public CustomCommandContext(SocketCommandContext context, string[] groups)
         {
