@@ -17,7 +17,7 @@ namespace OliveToast
 
         public static DateTime Uptime;
 
-        public static bool IsDebugMode = ConfigManager.Get("DEBUG_MODE") == "true";
+        public static bool IsDebugMode = ConfigManager.Get("DEBUG_MODE") == "True";
 
         private static readonly DiscordSocketConfig clientConfig = new()
         {
