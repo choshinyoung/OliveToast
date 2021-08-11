@@ -95,7 +95,7 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync($"`{target}` 커맨드를 삭제했어요");
         }
 
-        [Command("커맨드 삭제"), Alias("커맨드 제거")]
+        [Command("커맨드 삭제"), Alias("커맨드 제거"), Priority(-1)]
         [RequirePermission(PermissionType.ManageCommand)]
         [Summary("커스텀 커맨드를 제거합니다")]
         public async Task DeleteCommand([Name("커맨드"), Remainder] string command)
@@ -108,11 +108,126 @@ namespace OliveToast.Commands
                 return;
             }
 
-            int count = commands[command].Count;
             commands.Remove(command);
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
             
-            await Context.MsgReplyEmbedAsync($"해당 커맨드 {count}개를 삭제했어요");
+            await Context.MsgReplyEmbedAsync($"`{command}` 커맨드를 삭제했어요");
+        }
+
+        [Command("커맨드 삭제"), Alias("커맨드 제거")]
+        [RequirePermission(PermissionType.ManageCommand)]
+        [Summary("커스텀 커맨드를 제거합니다")]
+        public async Task DeleteCommand([Name("번호"), Remainder] int index)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= index)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[index];
+
+            await DeleteCommand(command);
+        }
+
+        [Command("커맨드 삭제"), Alias("커맨드 제거")]
+        [RequirePermission(PermissionType.ManageCommand)]
+        [Summary("커스텀 커맨드를 제거합니다")]
+        public async Task DeleteCommand([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (!commands.ContainsKey(command) || !commands[command].Any(c => c.Answer == answer))
+            {
+                Console.WriteLine("응애님");
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            commands[command].RemoveAll(c => c.Answer == answer);
+            if (!commands[command].Any())
+            {
+                commands.Remove(command);
+            }
+
+            OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
+
+            await Context.MsgReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
+        }
+
+        [Command("커맨드 삭제"), Alias("커맨드 제거")]
+        [RequirePermission(PermissionType.ManageCommand)]
+        [Summary("커스텀 커맨드를 제거합니다")]
+        public async Task DeleteCommand([Name("커맨드 번호")] int cIndex, [Name("응답"), Remainder] string answer)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= cIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[cIndex];
+
+            if (!commands[command].Any(c => c.Answer == answer))
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await DeleteCommand(command, answer);
+        }
+
+        [Command("커맨드 삭제"), Alias("커맨드 제거")]
+        [RequirePermission(PermissionType.ManageCommand)]
+        [Summary("커스텀 커맨드를 제거합니다")]
+        public async Task DeleteCommand([Name("커맨드")] string command, [Name("응답 번호"), Remainder] int aIndex)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (!commands.ContainsKey(command) || commands[command].Count <= aIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await DeleteCommand(commands.Keys.ToList().IndexOf(command), aIndex);
+        }
+
+        [Command("커맨드 삭제"), Alias("커맨드 제거")]
+        [RequirePermission(PermissionType.ManageCommand)]
+        [Summary("커스텀 커맨드를 제거합니다")]
+        public async Task DeleteCommand([Name("커맨드 번호")] int cIndex, [Name("응답 번호"), Remainder] int aIndex)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= cIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[cIndex];
+
+            if (commands[command].Count <= aIndex)
+            {
+                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string answer = commands[command][aIndex].Answer;
+
+            commands[command].RemoveAt(aIndex);
+            if (!commands[command].Any())
+            {
+                commands.Remove(command);
+            }
+            OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
+
+            await Context.MsgReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
         }
 
         [Command("커맨드 목록")]
