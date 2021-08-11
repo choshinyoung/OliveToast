@@ -1,0 +1,10 @@
+{
+  "PREFIX": "+",
+  "DEBUG_MODE": "false",
+
+  "TOKEN": "YOUR_TOKEN",
+
+  "PINGPONG_TOKEN": "YOUR_TOKEN",
+  "AIOPEN_TOKEN": "YOUR_TOKEN",
+  "KOREANBOTS_TOKEN": "YOUR_TOKEN"
+}
