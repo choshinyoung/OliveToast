@@ -38,19 +38,23 @@ namespace OliveToast.Managements
                 ctx.DiscordContext.Channel.SendMessageAsync(x, allowedMentions: AllowedMentions.None).Wait();
                 ctx.SendCount++;
             }, -1));
-            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("reply", (ctx, x) =>
+
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userMessage", (ctx) => ctx.DiscordContext.Message));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botMessage", (ctx) => ctx.BotMessage));
+
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("reply", (ctx, x, y) =>
             {
                 if (ctx.SendCount >= 5)
                 {
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ctx.DiscordContext.MsgReplyAsync(x).Wait();
+                x.ReplyAsync(y, allowedMentions: AllowedMentions.None).Wait();
                 ctx.SendCount++;
             }, -1));
-            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext>("delete", (ctx) => ctx.DiscordContext.Message.DeleteAsync().Wait()));
-            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("react", (ctx, x) 
-                => ctx.DiscordContext.Message.AddReactionAsync(Emote.TryParse(x, out var result) ? result : new Emoji(x)), -1));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage>("delete", (ctx, x) => x.DeleteAsync().Wait()));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("react", (ctx, x, y) 
+                => x.AddReactionAsync(Emote.TryParse(y, out var result) ? result : new Emoji(y)), -1));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.DiscordContext.Guild.Users.Select(u => (object)u).ToArray()));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.DiscordContext.User as SocketGuildUser));
@@ -224,13 +228,14 @@ namespace OliveToast.Managements
             {
                 var command = answers[new Random().Next(answers.Count)];
 
+                SocketUserMessage botMessage = null;
                 if (command.command.Answer is not null)
                 {
-                    await context.MsgReplyAsync(command.command.Answer);
+                    botMessage = await context.Channel.GetMessageAsync((await context.MsgReplyAsync(command.command.Answer)).Id) as SocketUserMessage;
                 }
 
                 Toaster toaster = GetToaster();
-                CustomCommandContext toastContext = new(context, command.groups);
+                CustomCommandContext toastContext = new(context, command.groups, botMessage);
 
                 CommandExecuteSession.Sessions.Add(context.User.Id, new(toastContext));
 
@@ -371,15 +376,19 @@ namespace OliveToast.Managements
         public readonly SocketCommandContext DiscordContext;
         public readonly string[] Groups;
 
+        public readonly SocketUserMessage BotMessage;
+
         public int SendCount;
         public FunctionNode OnMessageReceived;
 
-        public CustomCommandContext(SocketCommandContext context, string[] groups)
+        public CustomCommandContext(SocketCommandContext context, string[] groups, SocketUserMessage botMessage = null)
         {
             DiscordContext = context;
             Groups = groups;
 
-            SendCount = 0;
+            BotMessage = botMessage;
+
+            SendCount = 0;            
         }
     }
 }
