@@ -54,7 +54,7 @@ namespace OliveToast.Managements
             }, -1));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage>("delete", (ctx, x) => x.DeleteAsync().Wait()));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("react", (ctx, x, y) 
-                => x.AddReactionAsync(Emote.TryParse(y, out var result) ? result : new Emoji(y)), -1));
+                => x.AddReactionAsync(Emote.TryParse(y, out var result) ? result : new Emoji(y)).Wait(), -1));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.DiscordContext.Guild.Users.Select(u => (object)u).ToArray()));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.DiscordContext.User as SocketGuildUser));

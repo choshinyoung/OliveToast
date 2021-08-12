@@ -575,15 +575,15 @@ namespace OliveToast.Commands
             {
                 result = toaster.Execute(line, context);
 
-                if (!CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
+                if (!CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
                 {
                     break;
                 }
             }
 
-            if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
+            if (CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
             {
-                CommandCreateSession.Sessions.Remove(Context.User.Id);
+                CommandExecuteSession.Sessions.Remove(Context.User.Id);
             }
 
             if (result is not null)
