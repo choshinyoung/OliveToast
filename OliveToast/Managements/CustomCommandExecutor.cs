@@ -35,12 +35,16 @@ namespace OliveToast.Managements
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ctx.DiscordContext.Channel.SendMessageAsync(x, allowedMentions: AllowedMentions.None).Wait();
+                ulong msgId = ctx.DiscordContext.Channel.SendMessageAsync(x, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ctx.BotLastMessage = ctx.DiscordContext.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
+
                 ctx.SendCount++;
             }, -1));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userMessage", (ctx) => ctx.DiscordContext.Message));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botMessage", (ctx) => ctx.BotMessage));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userLastMessage", (ctx) => ctx.UserLastMessage));
+            toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botLastMessage", (ctx) => ctx.BotLastMessage));
 
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("reply", (ctx, x, y) =>
             {
@@ -49,7 +53,7 @@ namespace OliveToast.Managements
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                x.ReplyAsync(y, allowedMentions: AllowedMentions.None).Wait();
+                ctx.BotLastMessage = x.ReplyAsync(y, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult() as SocketUserMessage;
                 ctx.SendCount++;
             }, -1));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage>("delete", (ctx, x) => x.DeleteAsync().Wait()));
@@ -346,7 +350,13 @@ namespace OliveToast.Managements
             }
 
             var session = CommandExecuteSession.Sessions[context.User.Id];
-            if (session.Context.DiscordContext.Channel.Id != context.Channel.Id || session.Context.OnMessageReceived is null)
+            if (session.Context.DiscordContext.Channel.Id != context.Channel.Id)
+            {
+                return false;
+            }
+
+            session.Context.UserLastMessage = context.Message;
+            if (session.Context.OnMessageReceived is null)
             {
                 return false;
             }
@@ -377,6 +387,8 @@ namespace OliveToast.Managements
         public readonly string[] Groups;
 
         public readonly SocketUserMessage BotMessage;
+        public SocketUserMessage UserLastMessage;
+        public SocketUserMessage BotLastMessage;
 
         public int SendCount;
         public FunctionNode OnMessageReceived;
@@ -386,7 +398,9 @@ namespace OliveToast.Managements
             DiscordContext = context;
             Groups = groups;
 
+            UserLastMessage = context.Message;
             BotMessage = botMessage;
+            BotLastMessage = botMessage;
 
             SendCount = 0;            
         }
