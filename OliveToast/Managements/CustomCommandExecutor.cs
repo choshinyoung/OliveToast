@@ -21,12 +21,32 @@ namespace OliveToast.Managements
             Toaster toaster = new();
 
             toaster.AddCommand(BasicCommands.Literals);
-            toaster.AddCommand(BasicCommands.Operators);
+            toaster.AddCommand(BasicCommands.Operators.Except(new List<ToastCommand>() { BasicCommands.Equal }).ToArray());
             toaster.AddCommand(BasicCommands.Strings);
             toaster.AddCommand(BasicCommands.Lists);
             toaster.AddCommand(BasicCommands.If, BasicCommands.Else, BasicCommands.Foreach, BasicCommands.Assign, BasicCommands.Random, BasicCommands.RandomChoice);
 
-            toaster.AddConverter(BasicConverters.All);
+            toaster.AddCommand(ToastCommand.CreateFunc<object, ToastContext, object, bool>("is", (x, ctx, y) => 
+            {
+                if (x.GetType() == typeof(SocketTextChannel) && y.GetType() == typeof(SocketTextChannel))
+                {
+                    return ((SocketTextChannel)x).Id == ((SocketTextChannel)y).Id;
+                }
+                if (x.GetType() == typeof(SocketUserMessage) && y.GetType() == typeof(SocketUserMessage))
+                {
+                    return ((SocketUserMessage)x).Id == ((SocketUserMessage)y).Id;
+                }
+                if (x.GetType() == typeof(SocketGuildUser) && y.GetType() == typeof(SocketGuildUser))
+                {
+                    return ((SocketGuildUser)x).Id == ((SocketGuildUser)y).Id;
+                }
+                if (x.GetType() == typeof(SocketRole) && y.GetType() == typeof(SocketRole))
+                {
+                    return ((SocketRole)x).Id == ((SocketRole)y).Id;
+                }
+
+                return x.Equals(y);
+            }, 9));
 
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) =>
             {
@@ -128,6 +148,7 @@ namespace OliveToast.Managements
                 }
             }));
 
+            toaster.AddConverter(BasicConverters.All);
             toaster.AddConverter(ToastConverter.Create<string, SocketGuildUser>((_ctx, x) =>
             {
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
