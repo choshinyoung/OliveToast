@@ -573,7 +573,15 @@ namespace OliveToast.Commands
 
             foreach (string line in lines.Split('\n'))
             {
-                result = toaster.Execute(line, context);
+                try
+                {
+                    result = toaster.Execute(line, context);
+                }
+                catch (Exception e)
+                {
+                    EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
+                    await Context.MsgReplyEmbedAsync(emb.Build());
+                }
 
                 if (!CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
                 {
