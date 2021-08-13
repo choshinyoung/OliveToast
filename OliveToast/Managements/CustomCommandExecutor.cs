@@ -79,6 +79,15 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage>("delete", (ctx, x) => x.DeleteAsync().Wait()));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("react", (ctx, x, y) 
                 => x.AddReactionAsync(Emote.TryParse(y, out var result) ? result : new Emoji(y)).Wait(), -1));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("edit", (ctx, x, y) =>
+            {
+                if (x.Author.Id != Program.Client.CurrentUser.Id)
+                {
+                    throw new Exception("다른 유저가 보낸 메시지는 수정할 수 없어요");
+                }
+
+                x.ModifyAsync(msg => msg.Content = y).Wait();
+            }));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.DiscordContext.Guild.Users.Select(u => (object)u).ToArray()));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.DiscordContext.User as SocketGuildUser));
