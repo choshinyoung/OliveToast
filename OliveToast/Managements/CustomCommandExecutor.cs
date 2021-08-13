@@ -70,6 +70,7 @@ namespace OliveToast.Managements
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, user) => user.Mention));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, user) => user.KickAsync().Wait()));
             toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("ban", (ctx, user) => user.BanAsync().Wait()));
+            toaster.AddCommand(ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, user, msg) => user.SendMessageAsync(msg).Wait()));
 
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.DiscordContext.Guild.TextChannels.Select(u => (object)u).ToArray()));
             toaster.AddCommand(ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.DiscordContext.Channel as SocketTextChannel));
