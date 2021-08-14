@@ -43,7 +43,7 @@ namespace OliveToast.Managements
                 OliveGuild.GuildSetting setting = OliveGuild.Get(context.Guild.Id).Setting;
                 SocketGuildUser user = context.User as SocketGuildUser;
 
-                if (context.Guild.OwnerId == user.Id)
+                if (user.GuildPermissions.Administrator)
                 {
                     return Task.FromResult(PreconditionResult.FromSuccess());
                 }
