@@ -88,7 +88,17 @@ namespace OliveToast.Managements
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, x) => x.GetName(false)),
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, x) => x.IsBot),
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, x) => x.Mention),
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, x, y) => x.SendMessageAsync(y).Wait()),
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, x, y) =>
+            {
+                if (ctx.SendCount >= 5)
+                {
+                    throw new Exception("메시지를 너무 많이 보내고있어요!");
+                }
+
+                x.SendMessageAsync(y).Wait();
+
+                ctx.SendCount++;
+            }),
             ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, x) =>
             {
                 if (!ctx.CanKickUser)
