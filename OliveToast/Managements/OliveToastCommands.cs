@@ -85,8 +85,24 @@ namespace OliveToast.Managements
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, user) => user.GetName(false)),
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, user) => user.IsBot),
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, user) => user.Mention),
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, user) => user.KickAsync().Wait()),
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("ban", (ctx, user) => user.BanAsync().Wait()),
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, user) =>
+            {
+                if (!ctx.AcceptedPermissions.KickMembers)
+                {
+                    throw new Exception("권한이 없어 kick 커맨드를 사용할 수 없어요");
+                }
+
+                user.KickAsync().Wait();
+            }),
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("ban", (ctx, user) =>
+            {
+                if (!ctx.AcceptedPermissions.BanMembers)
+                {
+                    throw new Exception("권한이 없어 kick 커맨드를 사용할 수 없어요");
+                }
+
+                user.BanAsync().Wait();
+            }),
             ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, user, msg) => user.SendMessageAsync(msg).Wait()),
 
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.DiscordContext.Guild.TextChannels.Select(u => (object) u).ToArray()),

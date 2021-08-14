@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Discord;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -104,13 +105,15 @@ namespace OliveToast.Managements
             public List<string> ToastLines;
 
             public ulong CreatedBy;
+            public GuildPermissions AcceptedPermissions;
 
-            public CustomCommand(string answer, bool isRegex, List<string> lines, ulong createdBy)
+            public CustomCommand(string answer, bool isRegex, List<string> lines, ulong createdBy, GuildPermissions acceptedPermissions)
             {
                 Answer = answer;
                 IsRegex = isRegex;
                 ToastLines = lines;
                 CreatedBy = createdBy;
+                AcceptedPermissions = acceptedPermissions;
             }
         }
     }

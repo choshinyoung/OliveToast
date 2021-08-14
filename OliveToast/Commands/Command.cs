@@ -29,11 +29,11 @@ namespace OliveToast.Commands
 
             if (commands.ContainsKey(command))
             {
-                commands[command].Add(new(answer, false, new(), Context.User.Id));
+                commands[command].Add(new(answer, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions));
             }
             else
             {
-                commands.Add(command, new() { new(answer, false, new(), Context.User.Id) });
+                commands.Add(command, new() { new(answer, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions) });
             }
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
@@ -57,7 +57,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id);
+            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions);
 
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ChangeRegex}")
@@ -565,7 +565,7 @@ namespace OliveToast.Commands
             }
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            CustomCommandContext context = new(Context, new[] { Context.Message.Content });
+            CustomCommandContext context = new(Context, new[] { Context.Message.Content }, (Context.User as SocketGuildUser).GuildPermissions);
 
             object result = null;
 

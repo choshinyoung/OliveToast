@@ -52,7 +52,7 @@ namespace OliveToast.Managements
                 }
 
                 Toaster toaster = GetToaster();
-                CustomCommandContext toastContext = new(context, command.groups, botMessage);
+                CustomCommandContext toastContext = new(context, command.groups, command.command.AcceptedPermissions, botMessage);
 
                 CommandExecuteSession.Sessions.Add(context.User.Id, new(toastContext));
 
@@ -206,10 +206,14 @@ namespace OliveToast.Managements
         public int SendCount;
         public FunctionNode OnMessageReceived;
 
-        public CustomCommandContext(SocketCommandContext context, string[] groups, SocketUserMessage botMessage = null)
+        public readonly GuildPermissions AcceptedPermissions;
+
+        public CustomCommandContext(SocketCommandContext context, string[] groups, GuildPermissions acceptedPermissions, SocketUserMessage botMessage = null)
         {
             DiscordContext = context;
             Groups = groups;
+
+            AcceptedPermissions = acceptedPermissions;
 
             UserLastMessage = context.Message;
             BotMessage = botMessage;
