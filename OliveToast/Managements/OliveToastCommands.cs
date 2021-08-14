@@ -87,7 +87,7 @@ namespace OliveToast.Managements
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, user) => user.Mention),
             ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, user) =>
             {
-                if (!ctx.AcceptedPermissions.KickMembers)
+                if (!ctx.CanKickUser)
                 {
                     throw new Exception("권한이 없어 kick 커맨드를 사용할 수 없어요");
                 }
@@ -96,9 +96,9 @@ namespace OliveToast.Managements
             }),
             ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("ban", (ctx, user) =>
             {
-                if (!ctx.AcceptedPermissions.BanMembers)
+                if (!ctx.CanBanUser)
                 {
-                    throw new Exception("권한이 없어 kick 커맨드를 사용할 수 없어요");
+                    throw new Exception("권한이 없어 ban 커맨드를 사용할 수 없어요");
                 }
 
                 user.BanAsync().Wait();

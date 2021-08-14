@@ -52,7 +52,7 @@ namespace OliveToast.Managements
                 }
 
                 Toaster toaster = GetToaster();
-                CustomCommandContext toastContext = new(context, command.groups, command.command.AcceptedPermissions, botMessage);
+                CustomCommandContext toastContext = new(context, command.groups, command.command.CanKickUser, command.command.CanBanUser, command.command.CanManageRole, botMessage);
 
                 CommandExecuteSession.Sessions.Add(context.User.Id, new(toastContext));
 
@@ -206,14 +206,18 @@ namespace OliveToast.Managements
         public int SendCount;
         public FunctionNode OnMessageReceived;
 
-        public readonly GuildPermissions AcceptedPermissions;
+        public bool CanKickUser;
+        public bool CanBanUser;
+        public bool CanManageRole;
 
-        public CustomCommandContext(SocketCommandContext context, string[] groups, GuildPermissions acceptedPermissions, SocketUserMessage botMessage = null)
+        public CustomCommandContext(SocketCommandContext context, string[] groups, bool canKickUser, bool canBanUser, bool canManageeRole, SocketUserMessage botMessage = null)
         {
             DiscordContext = context;
             Groups = groups;
 
-            AcceptedPermissions = acceptedPermissions;
+            CanKickUser = canKickUser;
+            CanBanUser = canBanUser;
+            CanManageRole = canManageeRole;
 
             UserLastMessage = context.Message;
             BotMessage = botMessage;

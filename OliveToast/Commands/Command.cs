@@ -565,7 +565,8 @@ namespace OliveToast.Commands
             }
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            CustomCommandContext context = new(Context, new[] { Context.Message.Content }, (Context.User as SocketGuildUser).GuildPermissions);
+            var perm = (Context.User as SocketGuildUser).GuildPermissions;
+            CustomCommandContext context = new(Context, new[] { Context.Message.Content }, perm.KickMembers, perm.BanMembers, perm.ManageRoles);
 
             object result = null;
 

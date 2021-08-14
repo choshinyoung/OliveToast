@@ -105,7 +105,10 @@ namespace OliveToast.Managements
             public List<string> ToastLines;
 
             public ulong CreatedBy;
-            public GuildPermissions AcceptedPermissions;
+
+            public bool CanKickUser;
+            public bool CanBanUser;
+            public bool CanManageRole;
 
             public CustomCommand(string answer, bool isRegex, List<string> lines, ulong createdBy, GuildPermissions acceptedPermissions)
             {
@@ -113,7 +116,10 @@ namespace OliveToast.Managements
                 IsRegex = isRegex;
                 ToastLines = lines;
                 CreatedBy = createdBy;
-                AcceptedPermissions = acceptedPermissions;
+
+                CanKickUser = acceptedPermissions.KickMembers;
+                CanBanUser = acceptedPermissions.BanMembers;
+                CanManageRole = acceptedPermissions.ManageRoles;
             }
         }
     }
