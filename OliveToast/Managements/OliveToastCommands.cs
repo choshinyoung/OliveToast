@@ -79,48 +79,66 @@ namespace OliveToast.Managements
 
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.DiscordContext.Guild.Users.Select(u => (object)u).ToArray()),
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.DiscordContext.User as SocketGuildUser),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("username", (ctx, user) => user.Username),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("userId", (ctx, user) => user.Id),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, int>("tag", (ctx, user) => user.DiscriminatorValue),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, user) => user.GetName(false)),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, user) => user.IsBot),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, user) => user.Mention),
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, user) =>
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("username", (ctx, x) => x.Username),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("userId", (ctx, x) => x.Id),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, int>("tag", (ctx, x) => x.DiscriminatorValue),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, x) => x.GetName(false)),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, x) => x.IsBot),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, x) => x.Mention),
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, x, y) => x.SendMessageAsync(y).Wait()),
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, x) =>
             {
                 if (!ctx.CanKickUser)
                 {
                     throw new Exception("권한이 없어 kick 커맨드를 사용할 수 없어요");
                 }
 
-                user.KickAsync().Wait();
+                x.KickAsync().Wait();
             }),
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("ban", (ctx, user) =>
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("ban", (ctx, x) =>
             {
                 if (!ctx.CanBanUser)
                 {
                     throw new Exception("권한이 없어 ban 커맨드를 사용할 수 없어요");
                 }
 
-                user.BanAsync().Wait();
+                x.BanAsync().Wait();
             }),
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, user, msg) => user.SendMessageAsync(msg).Wait()),
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, SocketRole>("addRole", (ctx, x, y) =>
+            {
+                if (!ctx.CanManageRole)
+                {
+                    throw new Exception("권한이 없어 addRole 커맨드를 사용할 수 없어요");
+                }
+
+                x.AddRoleAsync(y).Wait();
+            }),
+            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, SocketRole>("removeRole", (ctx, x, y) =>
+            {
+                if (!ctx.CanManageRole)
+                {
+                    throw new Exception("권한이 없어 removeRole 커맨드를 사용할 수 없어요");
+                }
+
+                x.RemoveRoleAsync(y).Wait();
+            }),
 
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.DiscordContext.Guild.TextChannels.Select(u => (object) u).ToArray()),
             ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.DiscordContext.Channel as SocketTextChannel),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelName", (ctx, channel) => channel.Name),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, ulong>("channelId", (ctx, channel) => channel.Id),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("category", (ctx, channel) => channel.Category is not null ? channel.Category.Name : "-"),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, bool>("isNsfw", (ctx, channel) => channel.IsNsfw),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelMention", (ctx, channel) => channel.Mention),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, int>("slowMode", (ctx, channel) => channel.SlowModeInterval),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelName", (ctx, x) => x.Name),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, ulong>("channelId", (ctx, x) => x.Id),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("category", (ctx, x) => x.Category is not null ? x.Category.Name : "-"),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, bool>("isNsfw", (ctx, x) => x.IsNsfw),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelMention", (ctx, x) => x.Mention),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, int>("slowMode", (ctx, x) => x.SlowModeInterval),
 
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.DiscordContext.Guild.Roles.Select(u => (object) u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, user) => user.Roles.Select(u => (object) u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleName", (ctx, role) => role.Name),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, ulong>("roleId", (ctx, role) => role.Id),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isHoisted", (ctx, role) => role.IsHoisted),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isMentionable", (ctx, role) => role.IsMentionable),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleMention", (ctx, role) => role.Mention),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, x) => x.Roles.Select(u => (object) u).ToArray()),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleName", (ctx, x) => x.Name),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, ulong>("roleId", (ctx, x) => x.Id),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isHoisted", (ctx, x) => x.IsHoisted),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isMentionable", (ctx, x) => x.IsMentionable),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleMention", (ctx, x) => x.Mention),
 
             ToastCommand.CreateFunc<CustomCommandContext, string>("serverName", (ctx) => ctx.DiscordContext.Guild.Name),
             ToastCommand.CreateFunc<CustomCommandContext, ulong>("serverId", (ctx) => ctx.DiscordContext.Guild.Id),
