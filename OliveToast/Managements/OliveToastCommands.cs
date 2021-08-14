@@ -46,6 +46,7 @@ namespace OliveToast.Managements
 
                 ulong msgId = ctx.DiscordContext.Channel.SendMessageAsync(x, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
                 ctx.BotLastMessage = ctx.DiscordContext.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
+                ctx.ContextMessages.Add(msgId);
 
                 ctx.SendCount++;
             }, -1),
@@ -56,7 +57,9 @@ namespace OliveToast.Managements
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ctx.BotLastMessage = x.ReplyAsync(y, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult() as SocketUserMessage;
+                ulong msgId = x.ReplyAsync(y, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ctx.BotLastMessage = ctx.DiscordContext.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
+                ctx.ContextMessages.Add(msgId);
                 ctx.SendCount++;
             }, -1),
             ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("edit", (ctx, x, y) =>
@@ -175,6 +178,10 @@ namespace OliveToast.Managements
                 {
                     case "messageReceive":
                         ctx.OnMessageReceived = y;
+
+                        break;
+                    case "reactionAdd":
+                        ctx.OnReactionAdded = y;
 
                         break;
                 }

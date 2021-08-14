@@ -141,7 +141,6 @@ namespace OliveToast.Commands
 
             if (!commands.ContainsKey(command) || !commands[command].Any(c => c.Answer == answer))
             {
-                Console.WriteLine("응애님");
                 await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }

@@ -5,7 +5,6 @@ using MongoDB.Driver;
 using OliveToast.Commands;
 using OliveToast.Managements;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,6 +25,8 @@ namespace OliveToast
             command.Log += OnCommandLog;
 
             client.MessageReceived += OnMessageReceived;
+            client.ReactionAdded += OnReactionAdded;
+
             command.CommandExecuted += OnCommandExecuted;
 
             client.InteractionCreated += OnInteractionCreated;
@@ -34,65 +35,6 @@ namespace OliveToast
             client.LeftGuild += OnLeftGuild;
 
             client.Ready += OnReady;
-        }
-
-        private static async Task OnInteractionCreated(SocketInteraction arg)
-        {
-            SocketMessageComponent component = arg as SocketMessageComponent;
-            string[] args = component.Data.CustomId.Split('.');
-
-            ulong userId = ulong.Parse(args[0]);
-            InteractionType type = (InteractionType)int.Parse(args[1]);
-
-            if (component.User.Id != userId) return;
-
-            switch (type)
-            {
-                case InteractionType.CreateCommand:
-                    CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
-                    await CommandCreateSession.ButtonResponse(userId, response);
-
-                    break;
-                case InteractionType.CancelTypingGame:
-                    if (!TypingSession.Sessions.ContainsKey(userId))
-                    {
-                        break;
-                    }
-
-                    SocketCommandContext context = TypingSession.Sessions[userId].Context;
-
-                    TypingSession.Sessions.Remove(userId);
-                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
-
-                    break;
-                case InteractionType.CancelWordGame:
-                    if (!WordSession.Sessions.ContainsKey(userId))
-                    {
-                        break;
-                    }
-
-                    context = WordSession.Sessions[userId].Context;
-
-                    WordSession.Sessions.Remove(userId);
-                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
-
-                    break;
-                case InteractionType.CommandList:
-                    SocketGuild guild = Program.Client.GetGuild(ulong.Parse(args[2]));
-                    int page = int.Parse(args[3]);
-
-                    await Command.ChangeListPage(guild, userId, component.Message, page);
-
-                    break;
-                case InteractionType.CommandAnswerList:
-                    guild = Program.Client.GetGuild(ulong.Parse(args[2]));
-                    string command = args[3];
-                    page = int.Parse(args[4]);
-
-                    await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
-
-                    break;
-            }
         }
 
         public static async Task OnLog(LogMessage msg)
@@ -133,7 +75,7 @@ namespace OliveToast
 
             SocketCommandContext context = new(Program.Client, userMsg);
 
-            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content) || CustomCommandExecutor.OnMessageReceived(context))
+            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content) || await CustomCommandExecutor.OnMessageReceived(context))
             {
                 return;
             }
@@ -209,6 +151,70 @@ namespace OliveToast
             
             OliveGuild.Set(context.Guild.Id, g => g.Levels, guild.Levels);
             #endregion
+        }
+
+        private static async Task OnInteractionCreated(SocketInteraction arg)
+        {
+            SocketMessageComponent component = arg as SocketMessageComponent;
+            string[] args = component.Data.CustomId.Split('.');
+
+            ulong userId = ulong.Parse(args[0]);
+            InteractionType type = (InteractionType)int.Parse(args[1]);
+
+            if (component.User.Id != userId) return;
+
+            switch (type)
+            {
+                case InteractionType.CreateCommand:
+                    CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
+                    await CommandCreateSession.ButtonResponse(userId, response);
+
+                    break;
+                case InteractionType.CancelTypingGame:
+                    if (!TypingSession.Sessions.ContainsKey(userId))
+                    {
+                        break;
+                    }
+
+                    SocketCommandContext context = TypingSession.Sessions[userId].Context;
+
+                    TypingSession.Sessions.Remove(userId);
+                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
+
+                    break;
+                case InteractionType.CancelWordGame:
+                    if (!WordSession.Sessions.ContainsKey(userId))
+                    {
+                        break;
+                    }
+
+                    context = WordSession.Sessions[userId].Context;
+
+                    WordSession.Sessions.Remove(userId);
+                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
+
+                    break;
+                case InteractionType.CommandList:
+                    SocketGuild guild = Program.Client.GetGuild(ulong.Parse(args[2]));
+                    int page = int.Parse(args[3]);
+
+                    await Command.ChangeListPage(guild, userId, component.Message, page);
+
+                    break;
+                case InteractionType.CommandAnswerList:
+                    guild = Program.Client.GetGuild(ulong.Parse(args[2]));
+                    string command = args[3];
+                    page = int.Parse(args[4]);
+
+                    await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
+
+                    break;
+            }
+        }
+
+        private static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
+        {
+            await CustomCommandExecutor.OnReactionAdded(reaction);
         }
 
         public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)

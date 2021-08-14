@@ -155,7 +155,7 @@ namespace OliveToast.Managements
             return answers;
         }
 
-        public static bool OnMessageReceived(SocketCommandContext context)
+        public static async Task<bool> OnMessageReceived(SocketCommandContext context)
         {
             if (!CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
             {
@@ -169,14 +169,59 @@ namespace OliveToast.Managements
             }
 
             session.Context.UserLastMessage = context.Message;
+            session.Context.ContextMessages.Add(context.Message.Id);
             if (session.Context.OnMessageReceived is null)
             {
                 return false;
             }
 
-            session.Context.Toaster.ExecuteFunction(session.Context.OnMessageReceived, new object[] { context.Message.Content }, session.Context);
+            try
+            {
+                session.Context.Toaster.ExecuteFunction(session.Context.OnMessageReceived, new object[] { context.Message.Content }, session.Context);
+            }
+            catch (Exception e)
+            {
+                EmbedBuilder emb = context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
+                await context.MsgReplyEmbedAsync(emb.Build());
+
+                if (CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
+                {
+                    CommandExecuteSession.Sessions.Remove(context.User.Id);
+                }
+            }
 
             return true;
+        }
+
+        public static async Task OnReactionAdded(SocketReaction reaction)
+        {
+            var session = CommandExecuteSession.Sessions.Values.ToList().Find(s => s.Context.ContextMessages.Contains(reaction.MessageId));
+
+            if (session is null || session.Context.OnReactionAdded is null)
+            {
+                return;
+            }
+
+            try {
+                session.Context.Toaster.ExecuteFunction(session.Context.OnReactionAdded,
+                    new object[] {
+                        reaction.Message,
+                        (reaction.Channel as SocketTextChannel).Guild.GetUser(reaction.UserId),
+                        reaction.Emote.Name
+                    }, session.Context);
+            }
+            catch (Exception e)
+            {
+                var context = session.Context.DiscordContext;
+
+                EmbedBuilder emb = context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
+                await context.MsgReplyEmbedAsync(emb.Build());
+
+                if (CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
+                {
+                    CommandExecuteSession.Sessions.Remove(context.User.Id);
+                }
+            }
         }
     }
     
@@ -204,11 +249,15 @@ namespace OliveToast.Managements
         public SocketUserMessage BotLastMessage;
 
         public int SendCount;
+
         public FunctionNode OnMessageReceived;
+        public FunctionNode OnReactionAdded;
 
         public bool CanKickUser;
         public bool CanBanUser;
         public bool CanManageRole;
+
+        public readonly List<ulong> ContextMessages;
 
         public CustomCommandContext(SocketCommandContext context, string[] groups, bool canKickUser, bool canBanUser, bool canManageeRole, SocketUserMessage botMessage = null)
         {
@@ -223,7 +272,13 @@ namespace OliveToast.Managements
             BotMessage = botMessage;
             BotLastMessage = botMessage;
 
-            SendCount = 0;            
+            SendCount = 0;
+
+            ContextMessages = new() { context.Message.Id };
+            if (BotMessage is not null)
+            {
+                ContextMessages.Add(BotMessage.Id);
+            }
         }
     }
 }
