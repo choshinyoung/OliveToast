@@ -177,7 +177,7 @@ namespace OliveToast.Managements
 
             try
             {
-                session.Context.Toaster.ExecuteFunction(session.Context.OnMessageReceived, new object[] { context.Message.Content }, session.Context);
+                session.Context.Toaster.ExecuteFunction(session.Context.OnMessageReceived, new object[] { context.Message }, session.Context);
             }
             catch (Exception e)
             {
