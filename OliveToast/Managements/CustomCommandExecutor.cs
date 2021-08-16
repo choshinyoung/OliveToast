@@ -35,7 +35,7 @@ namespace OliveToast.Managements
 
         public static async Task Execute(SocketCommandContext context, OliveGuild guild)
         {
-            if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Command))
+            if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Command) || !OliveUser.Get(context.User.Id).IsCommandEnabled)
             {
                 return;
             }

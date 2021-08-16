@@ -551,8 +551,46 @@ namespace OliveToast.Commands
             });
         }
 
-        [Command("토스트")]
+        [Command("커맨드 사용 중지")]
         [RequirePermission(PermissionType.UseBot)]
+        [Summary("자신의 메시지에 커스텀 커맨드가 실행되지 않게 만듭니다")]
+        public async Task DoNotUseCommand()
+        {
+            OliveUser user = OliveUser.Get(Context.User.Id);
+
+            if (!user.IsCommandEnabled)
+            {
+                await Context.MsgReplyEmbedAsync("이미 커맨드 사용이 비활성화돼있어요");
+
+                return;
+            }
+
+            OliveUser.Set(Context.User.Id, u => u.IsCommandEnabled, false);
+
+            await Context.MsgReplyEmbedAsync("커맨드 사용을 중지했어요");
+        }
+
+        [Command("커맨드 사용")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("자신의 메시지에 커스텀 커맨드가 다시 실행되게 만듭니다")]
+        public async Task UseCommand()
+        {
+            OliveUser user = OliveUser.Get(Context.User.Id);
+
+            if (user.IsCommandEnabled)
+            {
+                await Context.MsgReplyEmbedAsync("이미 커맨드 사용이 활성화돼있어요");
+
+                return;
+            }
+
+            OliveUser.Set(Context.User.Id, u => u.IsCommandEnabled, true);
+
+            await Context.MsgReplyEmbedAsync("커맨드 사용을 활성화했어요");
+        }
+
+        [Command("토스트")]
+        [RequirePermission(PermissionType.ManageCommand)]
         [Summary("토스트 커맨드를 실행합니다")]
         public async Task ExecuteToast([Name("입력"), Remainder] string lines)
         {

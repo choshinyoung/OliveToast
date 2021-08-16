@@ -19,6 +19,7 @@ namespace OliveToast.Managements
         public static MongoDatabaseBase Db = (MongoDatabaseBase)Client.GetDatabase("oliveDb");
 
         public static IMongoCollection<OliveGuild> Guilds = Db.GetCollection<OliveGuild>("Guilds");
+        public static IMongoCollection<OliveUser> Users = Db.GetCollection<OliveUser>("Users");
     }
 
     public class OliveGuild
@@ -132,6 +133,39 @@ namespace OliveToast.Managements
 
     class OliveUser
     {
+        public ObjectId Id;
 
+        public ulong UserId;
+
+        public bool IsCommandEnabled;
+
+
+        public OliveUser(ulong id)
+        {
+            UserId = id;
+            IsCommandEnabled = true;
+        }
+
+        public static OliveUser Get(ulong id)
+        {
+            var searchResult = DbManager.Users.Find(u => u.UserId == id);
+
+            if (searchResult.Any())
+            {
+                return searchResult.Single();
+            }
+            else
+            {
+                OliveUser user = new(id);
+                DbManager.Users.InsertOne(user);
+
+                return user;
+            }
+        }
+
+        public static void Set(ulong id, Expression<Func<OliveUser, object>> field, object value)
+        {
+            DbManager.Users.UpdateOne(u => u.UserId == id, Builders<OliveUser>.Update.Set(field, value));
+        }
     }
 }
