@@ -98,7 +98,7 @@ namespace OliveToast.Managements
                 NonXpChannels = new List<ulong>();
                 LevelRoles = new Dictionary<string, ulong>();
 
-                JoinMessage = "{mention user}님, {name server}에 오신 것을 환영합니다! :tada:";
+                JoinMessage = "{userMention user}님, {serverName}에 오신 것을 환영합니다! :tada:";
                 LeaveMessage = "{username user}님이 서버를 나가셨습니다 ㅠ.ㅠ";
             }
         }

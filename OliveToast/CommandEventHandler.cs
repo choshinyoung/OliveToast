@@ -65,6 +65,13 @@ namespace OliveToast
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
         }
 
+        public static async Task OnReady()
+        {
+            await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
+
+            await Task.Factory.StartNew(SessionManager.CollectExpiredSessions);
+        }
+
         public static async Task OnUserJoined(SocketGuildUser arg)
         {
             SocketGuild guild = arg.Guild;
@@ -76,7 +83,7 @@ namespace OliveToast
             string joinMessage = OliveGuild.Get(guild.Id).Setting.JoinMessage;
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            string output = (string)toaster.Execute($"\"{joinMessage}\"");
+            string output = (string)toaster.Execute($"\"{joinMessage}\"", new CustomCommandContext(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true));
 
             await guild.SystemChannel.SendMessageAsync(output);
         }
@@ -92,16 +99,9 @@ namespace OliveToast
             string leaveMessage = OliveGuild.Get(guild.Id).Setting.LeaveMessage;
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            string output = (string)toaster.Execute($"\"{leaveMessage}\"");
+            string output = (string)toaster.Execute($"\"{leaveMessage}\"", new CustomCommandContext(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true));
 
             await guild.SystemChannel.SendMessageAsync(output);
-        }
-
-        public static async Task OnReady()
-        {
-            await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
-
-            await Task.Factory.StartNew(SessionManager.CollectExpiredSessions);
         }
 
         public static async Task OnMessageReceived(SocketMessage msg)

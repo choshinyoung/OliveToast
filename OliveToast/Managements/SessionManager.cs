@@ -54,7 +54,7 @@ namespace OliveToast.Managements
                     {
                         CommandExecuteSession.Sessions.Remove(session.Key);
 
-                        await session.Value.Context.DiscordContext.Message.AddReactionAsync(new Emoji("⚠️"));
+                        await session.Value.Context.Message.AddReactionAsync(new Emoji("⚠️"));
                     }
                 }
             }

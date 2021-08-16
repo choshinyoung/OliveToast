@@ -163,7 +163,7 @@ namespace OliveToast.Managements
             }
 
             var session = CommandExecuteSession.Sessions[context.User.Id];
-            if (session.Context.DiscordContext.Channel.Id != context.Channel.Id)
+            if (session.Context.Channel.Id != context.Channel.Id)
             {
                 return false;
             }
@@ -212,14 +212,12 @@ namespace OliveToast.Managements
             }
             catch (Exception e)
             {
-                var context = session.Context.DiscordContext;
+                EmbedBuilder emb = session.Context.User.CreateEmbed(true, title: "오류 발생!", description: e.GetBaseException().Message);
+                await session.Context.Message.ReplyAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None);
 
-                EmbedBuilder emb = context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
-                await context.MsgReplyEmbedAsync(emb.Build());
-
-                if (CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
+                if (CommandExecuteSession.Sessions.ContainsKey(session.Context.User.Id))
                 {
-                    CommandExecuteSession.Sessions.Remove(context.User.Id);
+                    CommandExecuteSession.Sessions.Remove(session.Context.User.Id);
                 }
             }
         }
@@ -241,7 +239,11 @@ namespace OliveToast.Managements
 
     class CustomCommandContext : ToastContext
     {
-        public readonly SocketCommandContext DiscordContext;
+        public readonly SocketGuild Guild;
+        public readonly SocketTextChannel Channel;
+        public readonly SocketUserMessage Message;
+        public readonly SocketGuildUser User;
+
         public readonly string[] Groups;
 
         public readonly SocketUserMessage BotMessage;
@@ -259,26 +261,40 @@ namespace OliveToast.Managements
 
         public readonly List<ulong> ContextMessages;
 
-        public CustomCommandContext(SocketCommandContext context, string[] groups, bool canKickUser, bool canBanUser, bool canManageeRole, SocketUserMessage botMessage = null)
+        public CustomCommandContext(SocketGuild guild, SocketTextChannel channel, SocketUserMessage message, SocketGuildUser user, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
         {
-            DiscordContext = context;
+            Guild = guild;
+            Channel = channel;
+            Message = message;
+            User = user;
+
             Groups = groups;
 
             CanKickUser = canKickUser;
             CanBanUser = canBanUser;
             CanManageRole = canManageeRole;
 
-            UserLastMessage = context.Message;
+            UserLastMessage = message;
             BotMessage = botMessage;
             BotLastMessage = botMessage;
 
             SendCount = 0;
 
-            ContextMessages = new() { context.Message.Id };
+            ContextMessages = new();
+            if (message is not null)
+            {
+                ContextMessages.Add(message.Id);
+            }
             if (BotMessage is not null)
             {
                 ContextMessages.Add(BotMessage.Id);
             }
+        }
+
+        public CustomCommandContext(SocketCommandContext context, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
+            : this(context.Guild, context.Channel as SocketTextChannel, context.Message, context.User as SocketGuildUser, groups, canKickUser, canBanUser, canManageeRole, botMessage)
+        {
+
         }
     }
 }

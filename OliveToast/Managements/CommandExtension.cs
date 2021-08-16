@@ -35,14 +35,19 @@ namespace OliveToast.Managements
 
         public static EmbedBuilder CreateEmbed(this SocketCommandContext context, object description = null, string title = null, string imgUrl = null, string url = null, string thumbnailUrl = null, Color? color = null)
         {
+            return CreateEmbed(context.User, context.IsPrivate, description, title, imgUrl, url, thumbnailUrl, color);
+        }
+
+        public static EmbedBuilder CreateEmbed(this SocketUser user, bool isPrivate, object description = null, string title = null, string imgUrl = null, string url = null, string thumbnailUrl = null, Color? color = null)
+        {
             EmbedBuilder emb = new()
             {
                 Title = title,
                 Color = color ?? new Color(255, 200, 0),
                 Footer = new()
                 {
-                    Text = context.User.GetName(context.IsPrivate),
-                    IconUrl = context.User.GetAvatar()
+                    Text = user.GetName(isPrivate),
+                    IconUrl = user.GetAvatar()
                 },
                 Description = description?.ToString(),
                 ImageUrl = imgUrl,
