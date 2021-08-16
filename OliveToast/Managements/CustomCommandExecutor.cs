@@ -35,6 +35,11 @@ namespace OliveToast.Managements
 
         public static async Task Execute(SocketCommandContext context, OliveGuild guild)
         {
+            if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Command))
+            {
+                return;
+            }
+
             List<(string[] groups, OliveGuild.CustomCommand command)> answers = FindAnswers(guild, context.Message.Content);
             if (!answers.Any())
             {
