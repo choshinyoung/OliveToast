@@ -7,6 +7,7 @@ using OliveToast.Managements;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Toast;
 
 namespace OliveToast
 {
@@ -34,6 +35,9 @@ namespace OliveToast
             client.JoinedGuild += OnJoinGuild;
             client.LeftGuild += OnLeftGuild;
 
+            client.UserJoined += OnUserJoined;
+            client.UserLeft += OnUserLeft;
+
             client.Ready += OnReady;
         }
 
@@ -51,17 +55,49 @@ namespace OliveToast
             await Task.CompletedTask;
         }
 
-        private static async Task OnJoinGuild(SocketGuild guild)
+        public static async Task OnJoinGuild(SocketGuild guild)
         {
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
         }
 
-        private static async Task OnLeftGuild(SocketGuild arg)
+        public static async Task OnLeftGuild(SocketGuild arg)
         {
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
         }
 
-        private static async Task OnReady()
+        public static async Task OnUserJoined(SocketGuildUser arg)
+        {
+            SocketGuild guild = arg.Guild;
+            if (guild.SystemChannel is null)
+            {
+                return;
+            }
+
+            string joinMessage = OliveGuild.Get(guild.Id).Setting.JoinMessage;
+
+            Toaster toaster = CustomCommandExecutor.GetToaster();
+            string output = (string)toaster.Execute($"\"{joinMessage}\"");
+
+            await guild.SystemChannel.SendMessageAsync(output);
+        }
+
+        public static async Task OnUserLeft(SocketGuildUser arg)
+        {
+            SocketGuild guild = arg.Guild;
+            if (guild.SystemChannel is null)
+            {
+                return;
+            }
+
+            string leaveMessage = OliveGuild.Get(guild.Id).Setting.LeaveMessage;
+
+            Toaster toaster = CustomCommandExecutor.GetToaster();
+            string output = (string)toaster.Execute($"\"{leaveMessage}\"");
+
+            await guild.SystemChannel.SendMessageAsync(output);
+        }
+
+        public static async Task OnReady()
         {
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
 
@@ -153,7 +189,7 @@ namespace OliveToast
             #endregion
         }
 
-        private static async Task OnInteractionCreated(SocketInteraction arg)
+        public static async Task OnInteractionCreated(SocketInteraction arg)
         {
             SocketMessageComponent component = arg as SocketMessageComponent;
             string[] args = component.Data.CustomId.Split('.');
@@ -212,7 +248,7 @@ namespace OliveToast
             }
         }
 
-        private static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
+        public static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
             await CustomCommandExecutor.OnReactionAdded(reaction);
         }

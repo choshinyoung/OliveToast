@@ -47,7 +47,7 @@ namespace OliveToast.Managements
                 Description = description?.ToString(),
                 ImageUrl = imgUrl,
                 Url = url,
-                ThumbnailUrl = thumbnailUrl
+                ThumbnailUrl = thumbnailUrl,
             };
 
             return emb;

@@ -147,7 +147,6 @@ namespace OliveToast.Commands
             await Context.MsgReplyEmbedAsync(emb.Build());
         }
 
-
         [Command("권한 제거"), Alias("권한 설정 취소")]
         [RequirePermission(PermissionType.ServerAdmin)]
         [Summary("봇 사용 권한을 제거합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
@@ -183,6 +182,66 @@ namespace OliveToast.Commands
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
             await Context.MsgReplyEmbedAsync($"이제 {permission} 제거돼서 기본값으로 작동해요");
+        }
+
+        [Command("환영 메시지 설정"), Alias("환영메시지 설정")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("유저가 입장할 때 보내는 메시지를 설정합니다")]
+        public async Task SetJoinMessage([Name("메시지"), Remainder] string msg)
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            string prv = setting.JoinMessage;
+
+            setting.JoinMessage = msg;
+
+            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            EmbedBuilder emb = Context.CreateEmbed("환영메시지를 설정했어요");
+            emb.AddField("이전 메시지", prv);
+            emb.AddField("새 메시지", msg);
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("환영 메시지 보기"), Alias("환영메시지 보기", "환영 메시지 확인", "환영메시지 확인")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("환영 메시지를 확인합니다")]
+        public async Task CheckJoinMessage()
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            await Context.MsgReplyEmbedAsync(setting.JoinMessage);
+        }
+
+        [Command("퇴장 메시지 설정"), Alias("퇴장메시지 설정")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("유저가 서버를 나갔을 때 보내는 메시지를 설정합니다")]
+        public async Task SetLeaveMessage([Name("메시지"), Remainder] string msg)
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            string prv = setting.LeaveMessage;
+
+            setting.LeaveMessage = msg;
+
+            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            EmbedBuilder emb = Context.CreateEmbed("퇴장메시지를 설정했어요");
+            emb.AddField("이전 메시지", prv);
+            emb.AddField("새 메시지", msg);
+
+            await Context.MsgReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("퇴장 메시지 보기"), Alias("퇴장메시지 보기", "퇴장 메시지 확인", "퇴장메시지 확인")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("퇴장 메시지를 확인합니다")]
+        public async Task CheckLeaveMessage()
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+
+            await Context.MsgReplyEmbedAsync(setting.LeaveMessage);
         }
     }
 }
