@@ -5,6 +5,7 @@ using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -115,7 +116,9 @@ namespace OliveToast.Commands
             Graphics g = Graphics.FromImage(output);
 
             // draw palette
-            using (Font font = new(new FontFamily("Noto Sans KR"), 13f))
+            PrivateFontCollection collection = new();
+            collection.AddFontFile(@"Configs\NotoSansKR.otf");
+            using (Font font = new(new FontFamily("Noto Sans KR", collection), 13f))
             using (StringFormat format = new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far })
             {
                 for (int i = 0; i < slicedColorList.Count; i++)
