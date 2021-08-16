@@ -21,7 +21,7 @@ namespace OliveToast.Commands
             List<ModuleInfo> modules = Program.Command.Modules.Where(m => m.HavePrecondition<RequireCategoryEnable>()).ToList();
             modules.Sort((m1, m2) => RequireCategoryEnable.GetCategory(m1).CompareTo(RequireCategoryEnable.GetCategory(m2)));
 
-            foreach (ModuleInfo module in modules.Where(m => m.Commands.Count > 0))
+            foreach (ModuleInfo module in modules.Where(m => m.Commands.Count > 0 && m.GetType() != typeof(Admin)))
             {
                 List<CommandInfo> cmds = new();
                 foreach (CommandInfo cmd in module.Commands)
