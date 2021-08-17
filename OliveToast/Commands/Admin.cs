@@ -90,7 +90,7 @@ namespace OliveToast.Commands
             SpecialListManager.WhiteList.Remove(user.Id);
             SpecialListManager.Update();
 
-            await Context.ReplyEmbedAsync("해당 유저가 화이트리스트에 추가됐어요");
+            await Context.ReplyEmbedAsync("해당 유저가 화이트리스트에서 제거됐어요");
         }
 
         [Command("블랙리스트")]
@@ -134,7 +134,7 @@ namespace OliveToast.Commands
             SpecialListManager.BlackList.Remove(user.Id);
             SpecialListManager.Update();
 
-            await Context.ReplyEmbedAsync("해당 유저가 블랙리스트에 추가됐어요");
+            await Context.ReplyEmbedAsync("해당 유저가 블랙리스트에서 제거됐어요");
         }
     }
 }
