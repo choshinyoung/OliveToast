@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using Microsoft.VisualBasic;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,6 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using static OliveToast.Managements.RequireCategoryEnable;

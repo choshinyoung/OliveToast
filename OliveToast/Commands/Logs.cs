@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using MongoDB.Driver;
 using OliveToast.Managements;
 using System;
 using System.Collections.Generic;

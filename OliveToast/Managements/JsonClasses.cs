@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace OliveToast.Managements
 {
+#pragma warning disable IDE1006 // 명명 스타일
     public class PingPongResult
     {
         public Response response { get; set; }
@@ -375,4 +376,6 @@ namespace OliveToast.Managements
             public long lastVote { get; set; }
         }
     }
+
+#pragma warning restore IDE1006 // 명명 스타일
 }

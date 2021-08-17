@@ -114,7 +114,7 @@ namespace OliveToast.Managements
 
         public static MemoryStream ToStream(this string content)
         {
-            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+            MemoryStream stream = new(Encoding.UTF8.GetBytes(content));
 
             return stream;
         }
@@ -157,7 +157,7 @@ namespace OliveToast.Managements
 
         public static string 으로(this string content, string suffix = "")
         {
-            HangulChar hc = new HangulChar(content.Last());
+            HangulChar hc = new(content.Last());
             bool canSplit = hc.TrySplitSyllable(out char[] syllables);
 
             return content + suffix + (canSplit && syllables[2] != '\u0000' && syllables[2] != 'ㄹ' ? "으로" : "로");
@@ -165,7 +165,7 @@ namespace OliveToast.Managements
 
         private static bool HaveJongsung(char c)
         {
-            HangulChar hc = new HangulChar(c);
+            HangulChar hc = new(c);
             bool canSplit = hc.TrySplitSyllable(out char[] syllables);
 
             if (canSplit)
