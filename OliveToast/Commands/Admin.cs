@@ -20,6 +20,12 @@ namespace OliveToast.Commands
         [Summary("C# 코드를 실행합니다")]
         public async Task Eval([Name("코드"), Remainder] string code)
         {
+            code = code.Trim();
+            if (code.StartsWith("```cs") && code.EndsWith("```"))
+            {
+                code = code[5..^3];
+            }
+
             try
             {
                 var result = await CSharpScript.EvaluateAsync(code, ScriptOptions.Default.WithReferences(typeof(Program).Assembly).WithImports(
