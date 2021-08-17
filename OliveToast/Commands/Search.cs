@@ -46,12 +46,12 @@ namespace OliveToast.Commands
             if (answers.Count >= 1 && answers.First().answer != "정의를 찾지 못했습니다.")
             {
                 EmbedBuilder emb = Context.CreateEmbed(title: "위키백과", description: answers.First().answer);
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
             }
             else
             {
                 EmbedBuilder emb = Context.CreateEmbed(title: "검색 실패", description: $"\"그, `{input}` 혹시 보신 적이 있으십니까?\"\n\"아니, 잘 몰라요\"");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
             }
         }
 
@@ -93,12 +93,12 @@ namespace OliveToast.Commands
                     }
                 }
 
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
             }
             else
             {
                 EmbedBuilder emb = Context.CreateEmbed(title: "검색 실패", description: $"어휘가 없네요");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
             }
         }
 
@@ -119,7 +119,7 @@ namespace OliveToast.Commands
             catch
             {
                 emb = Context.CreateEmbed(title: "검색 실패", description: "해당 봇을 찾을 수 없어요");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace OliveToast.Commands
             emb.AddField("하트 수", $":heart: {b.votes}", true);
             emb.AddField("초대하기", $"[초대 링크]({b.url})", true);
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("스크래치 유저")]
@@ -173,7 +173,7 @@ namespace OliveToast.Commands
             catch (WebException)
             {
                 emb = Context.CreateEmbed(title: "검색 실패", description: "404. 오 이런! 올리브토스트가 머리를 스크래칭하고 있군요");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
                 return;
             }
 
@@ -197,7 +197,7 @@ namespace OliveToast.Commands
             emb.AddField("내 소개", $"```\n{apiResult.profile.bio}```");
             emb.AddField("내가 하고 있는 일", $"```\n{apiResult.profile.status}```");
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("스크래치 프로젝트")]
@@ -213,7 +213,7 @@ namespace OliveToast.Commands
             if (projects.Count == 0)
             {
                 emb = Context.CreateEmbed(title: "검색 실패", description: "404. 오 이런! 올리브토스트가 머리를 스크래칭하고 있군요");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
                 return;
             }
 
@@ -232,7 +232,7 @@ namespace OliveToast.Commands
             emb.AddField("사용 방법", $"```\n{p.instructions}```");
             emb.AddField("참고사항 및 참여자", $"```\n{p.description}```");
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("마크 유저"), Alias("마인크래프트 유저", "마인크래프트", "마크", "마크 정보")]
@@ -259,7 +259,7 @@ namespace OliveToast.Commands
             catch
             {
                 emb = Context.CreateEmbed(title: "검색 실패", description: "해당 유저를 찾을 수 없어요");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
                 return;
             }
 
@@ -272,7 +272,7 @@ namespace OliveToast.Commands
 
             emb.AddField("닉네임 변경 역사", string.Join('\n', names.Select(n => $"`{n.name}`: {(n.changedToAt != null ? DateTimeOffset.FromUnixTimeMilliseconds(n.changedToAt.Value).ToShortKSTString() : "?")}")));
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
     }
 }

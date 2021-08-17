@@ -20,7 +20,7 @@ namespace OliveToast.Commands
         [Summary("주사위를 굴립니다\n`면 수`는 생략할 수 있습니다")]
         public async Task Dice([Name("면 수")] int count = 6)
         {
-            await Context.MsgReplyEmbedAsync($"{new Random().Next(1, count + 1)}!");
+            await Context.ReplyEmbedAsync($"{new Random().Next(1, count + 1)}!");
         }
 
         public enum Rcp { 가위, 바위, 보 }
@@ -32,13 +32,13 @@ namespace OliveToast.Commands
             switch(new Random().Next(3))
             {
                 case 0:
-                    await Context.MsgReplyEmbedAsync($"{input}! 무승부!");
+                    await Context.ReplyEmbedAsync($"{input}! 무승부!");
                     break;
                 case 1:
-                    await Context.MsgReplyEmbedAsync($"{(Rcp)((int)(input + 1) % 3)}! 올리브토스트 승리!");
+                    await Context.ReplyEmbedAsync($"{(Rcp)((int)(input + 1) % 3)}! 올리브토스트 승리!");
                     break;
                 case 2:
-                    await Context.MsgReplyEmbedAsync($"{(Rcp)((int)(input - 1 + 3) % 3)}! {Context.User.Username} 승리!");
+                    await Context.ReplyEmbedAsync($"{(Rcp)((int)(input - 1 + 3) % 3)}! {Context.User.Username} 승리!");
                     break;
             }
         }
@@ -53,7 +53,7 @@ namespace OliveToast.Commands
                 WordSession.Sessions.Add(Context.User.Id, new(Context, new List<string>(), DateTime.Now));
 
                 ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelWordGame}", ButtonStyle.Danger);
-                await Context.MsgReplyEmbedAsync("끝말잇기 시작!", component: component.Build());
+                await Context.ReplyEmbedAsync("끝말잇기 시작!", component: component.Build());
 
                 if (word != null)
                 {
@@ -62,7 +62,7 @@ namespace OliveToast.Commands
             }
             else
             {
-                await Context.MsgReplyEmbedAsync("게임이 이미 진행중이에요");
+                await Context.ReplyEmbedAsync("게임이 이미 진행중이에요");
             }
         }
 
@@ -81,20 +81,20 @@ namespace OliveToast.Commands
 
                     if (!WordsManager.Words.Contains(word))
                     {
-                        await context.MsgReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
+                        await context.ReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
                         return true;
                     }
                     List<string> usedWords = WordSession.Sessions[context.User.Id].Words;
 
                     if (usedWords.Count != 0 && !word.StartsWith(usedWords.Last().Last()))
                     {
-                        await context.MsgReplyEmbedAsync($"'{usedWords.Last().Last().ToString().으로("'")} 시작해야돼요");
+                        await context.ReplyEmbedAsync($"'{usedWords.Last().Last().ToString().으로("'")} 시작해야돼요");
                         return true;
                     }
 
                     if (usedWords.Contains(word))
                     {
-                        await context.MsgReplyEmbedAsync($"{word.은는()} 이미 사용한 단어에요");
+                        await context.ReplyEmbedAsync($"{word.은는()} 이미 사용한 단어에요");
                         return true;
                     }
                     usedWords.Add(word);
@@ -102,7 +102,7 @@ namespace OliveToast.Commands
                     List<string> wordList = WordsManager.Words.Where(w => w.StartsWith(word.Last())).ToList();
                     if (wordList.Count == 0)
                     {
-                        await context.MsgReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
+                        await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
                         WordSession.Sessions.Remove(context.User.Id);
                         return true;
                     }
@@ -112,7 +112,7 @@ namespace OliveToast.Commands
                     {
                         if (wordList.Count == 0)
                         {
-                            await context.MsgReplyEmbedAsync($"{Program.Client.CurrentUser.Username} 승리!\n게임이 종료됐어요");
+                            await context.ReplyEmbedAsync($"{Program.Client.CurrentUser.Username} 승리!\n게임이 종료됐어요");
                             WordSession.Sessions.Remove(context.User.Id);
                             return true;
                         }
@@ -124,12 +124,12 @@ namespace OliveToast.Commands
 
                     usedWords.Add(nextWord);
 
-                    await context.MsgReplyAsync(nextWord);
+                    await context.ReplyAsync(nextWord);
 
                     wordList = WordsManager.Words.Where(w => w.StartsWith(nextWord.Last())).ToList();
                     if (wordList.Count == 0)
                     {
-                        await context.MsgReplyEmbedAsync($"{Program.Client.CurrentUser.Username} 승리!\n게임이 종료됐어요");
+                        await context.ReplyEmbedAsync($"{Program.Client.CurrentUser.Username} 승리!\n게임이 종료됐어요");
                         WordSession.Sessions.Remove(context.User.Id);
                     }
 
@@ -151,11 +151,11 @@ namespace OliveToast.Commands
             }
             else if (users.Length < 2)
             {
-                await Context.MsgReplyEmbedAsync("2명 이상의 유저를 선택해주세요");
+                await Context.ReplyEmbedAsync("2명 이상의 유저를 선택해주세요");
                 return;
             }
 
-            await Context.MsgReplyEmbedAsync($"||{users[new Random().Next(users.Length)].Mention}||님이 당첨됐어요! :tada:");
+            await Context.ReplyEmbedAsync($"||{users[new Random().Next(users.Length)].Mention}||님이 당첨됐어요! :tada:");
         }
 
         [Command("추첨")]
@@ -167,7 +167,7 @@ namespace OliveToast.Commands
 
             if (users.Length < 2)
             {
-                await Context.MsgReplyEmbedAsync("2명 이상의 유저를 선택해주세요");
+                await Context.ReplyEmbedAsync("2명 이상의 유저를 선택해주세요");
                 return;
             }
 
@@ -183,12 +183,12 @@ namespace OliveToast.Commands
 
             if (TypingSession.Sessions.ContainsKey(Context.User.Id))
             {
-                await Context.MsgReplyEmbedAsync("게임이 이미 진행중이에요");
+                await Context.ReplyEmbedAsync("게임이 이미 진행중이에요");
                 return;
             }
 
             ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
-            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
+            await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
             TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
         }
@@ -202,12 +202,12 @@ namespace OliveToast.Commands
 
             if (TypingSession.Sessions.ContainsKey(Context.User.Id))
             {
-                await Context.MsgReplyEmbedAsync("게임이 이미 진행중이에요");
+                await Context.ReplyEmbedAsync("게임이 이미 진행중이에요");
                 return;
             }
 
             ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
-            await Context.MsgReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
+            await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
             TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
         }
@@ -226,7 +226,7 @@ namespace OliveToast.Commands
                     if (content.Contains("\u200B"))
                     {
                         emb.Description = $"복붙이 감지되었어요\n게임을 정정당당하게 플레이해주세요!";
-                        await context.MsgReplyEmbedAsync(emb.Build());
+                        await context.ReplyEmbedAsync(emb.Build());
 
                         TypingSession.Sessions.Remove(context.User.Id);
                         return true;
@@ -240,7 +240,7 @@ namespace OliveToast.Commands
                     int accuracy = (int)(a * 100);
 
                     emb.Description = $"타수: {speed}\n정확도: {accuracy}%";
-                    await context.MsgReplyEmbedAsync(emb.Build());
+                    await context.ReplyEmbedAsync(emb.Build());
 
                     TypingSession.Sessions.Remove(context.User.Id);
 

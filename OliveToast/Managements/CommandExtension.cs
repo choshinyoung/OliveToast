@@ -14,20 +14,20 @@ namespace OliveToast.Managements
 {
     public static class CommandExtension
     {
-        public static async Task<RestUserMessage> MsgReplyAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
+        public static async Task<RestUserMessage> ReplyAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
         {
             MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
             return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
         }
 
-        public static async Task<RestUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
+        public static async Task<RestUserMessage> ReplyEmbedAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
         {
             Embed emb = context.CreateEmbed(content.ToString()).Build();
             MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
             return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
         }
 
-        public static async Task<RestUserMessage> MsgReplyEmbedAsync(this SocketCommandContext context, Embed emb, bool disalbeMention = true, MessageComponent component = null)
+        public static async Task<RestUserMessage> ReplyEmbedAsync(this SocketCommandContext context, Embed emb, bool disalbeMention = true, MessageComponent component = null)
         {
             MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
             return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);

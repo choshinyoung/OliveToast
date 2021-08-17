@@ -170,7 +170,7 @@ namespace OliveToast
                     }
                     else
                     {
-                        await context.MsgReplyEmbedAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
+                        await context.ReplyEmbedAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
                     }
 
                     if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
@@ -215,7 +215,7 @@ namespace OliveToast
                     SocketCommandContext context = TypingSession.Sessions[userId].Context;
 
                     TypingSession.Sessions.Remove(userId);
-                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
+                    await context.ReplyEmbedAsync("게임이 취소됐어요");
 
                     break;
                 case InteractionType.CancelWordGame:
@@ -227,7 +227,7 @@ namespace OliveToast
                     context = WordSession.Sessions[userId].Context;
 
                     WordSession.Sessions.Remove(userId);
-                    await context.MsgReplyEmbedAsync("게임이 취소됐어요");
+                    await context.ReplyEmbedAsync("게임이 취소됐어요");
 
                     break;
                 case InteractionType.CommandList:
@@ -262,7 +262,7 @@ namespace OliveToast
                 if (Program.IsDebugMode)
                 {
                     EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
-                    await ctx.MsgReplyEmbedAsync(emb.Build());
+                    await ctx.ReplyEmbedAsync(emb.Build());
                 }
                 else
                 {
@@ -273,7 +273,7 @@ namespace OliveToast
             {
                 if (new Random().Next(0, 10) == 0 && await KoreanBots.IsVotedAsync(context.User.Id))
                 {
-                    await (context as SocketCommandContext).MsgReplyEmbedAsync("[KOREANBOTS](https://koreanbots.dev/bots/495209098929766400)에서 올리브토스트에게 하트를 추가해주세요!\n(하트는 12시간마다 한번씩 추가할 수 있어요)");
+                    await (context as SocketCommandContext).ReplyEmbedAsync("[KOREANBOTS](https://koreanbots.dev/bots/495209098929766400)에서 올리브토스트에게 하트를 추가해주세요!\n(하트는 12시간마다 한번씩 추가할 수 있어요)");
                 }
             }
         }

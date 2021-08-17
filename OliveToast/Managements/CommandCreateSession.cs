@@ -70,7 +70,7 @@ namespace OliveToast.Managements
                         catch
                         {
                             emb = session.UserMessageContext.CreateEmbed(title: "오류 발생!", description: "유효하지 않은 정규식 입력이에요");
-                            await session.UserMessageContext.MsgReplyEmbedAsync(emb.Build());
+                            await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
 
                             return true;
                         }
@@ -121,7 +121,7 @@ namespace OliveToast.Managements
                     catch (Exception e)
                     {
                         emb = session.UserMessageContext.CreateEmbed(title: "오류 발생!", description: e.Message);
-                        await session.UserMessageContext.MsgReplyEmbedAsync(emb.Build());
+                        await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
 
                         return true;
                     }
@@ -219,13 +219,13 @@ namespace OliveToast.Managements
                     }
                     OliveGuild.Set(session.UserMessageContext.Guild.Id, g => g.Commands, commands);
 
-                    await session.UserMessageContext.MsgReplyEmbedAsync(emb.Build());
+                    await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
 
                     break;
                 case ResponseType.Cancel:
                     Sessions.Remove(userId);
 
-                    await session.UserMessageContext.MsgReplyEmbedAsync("커맨드 생성을 취소했어요");
+                    await session.UserMessageContext.ReplyEmbedAsync("커맨드 생성을 취소했어요");
 
                     break;
                 case ResponseType.ContinueWithoutAnswer:

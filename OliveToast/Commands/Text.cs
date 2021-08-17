@@ -24,7 +24,7 @@ namespace OliveToast.Commands
         {
             if (input.Length > 500)
             {
-                await Context.MsgReplyEmbedAsync("도배 방지를 위해 500자 이하만 입력할 수 있어요");
+                await Context.ReplyEmbedAsync("도배 방지를 위해 500자 이하만 입력할 수 있어요");
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace OliveToast.Commands
         {
             if (input.Length > 500)
             {
-                await Context.MsgReplyEmbedAsync("도배 방지를 위해 500자 이하만 입력할 수 있어요");
+                await Context.ReplyEmbedAsync("도배 방지를 위해 500자 이하만 입력할 수 있어요");
                 return;
             }
 
@@ -199,7 +199,7 @@ namespace OliveToast.Commands
             }
 
             EmbedBuilder emb = Context.CreateEmbed(title: "안드로어", description: HangulString.JoinPhonemes(result));
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("역안드로어"), Alias("역안", "durdksemfhdj", "durdks")]
@@ -218,7 +218,7 @@ namespace OliveToast.Commands
             string result = string.Join("", splited.Select(c => ko.Contains(c.ToString()) ? en[Array.IndexOf(ko, c.ToString())] : c.ToString()));
 
             EmbedBuilder emb = Context.CreateEmbed(title: "역안드로어", description: result);
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("인코딩"), Alias("Base64")]
@@ -229,7 +229,7 @@ namespace OliveToast.Commands
             byte[] bytes = Encoding.UTF8.GetBytes(input);
             string result = Convert.ToBase64String(bytes);
 
-            await Context.MsgReplyEmbedAsync(result);
+            await Context.ReplyEmbedAsync(result);
         }
 
         [Command("디코딩")]
@@ -242,12 +242,12 @@ namespace OliveToast.Commands
                 byte[] bytes = Convert.FromBase64String(input);
                 string result = Encoding.UTF8.GetString(bytes);
 
-                await Context.MsgReplyEmbedAsync(result);
+                await Context.ReplyEmbedAsync(result);
             }
             catch
             {
                 EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: "해당 문자열을 디코딩 할 수 없어요");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
             }
         }
 
@@ -258,7 +258,7 @@ namespace OliveToast.Commands
         {
             if (from > 36 || to > 36 || from < 2 || to < 2)
             {
-                await Context.MsgReplyEmbedAsync("36 이하, 2 이상의 진법을 입력해주세요");
+                await Context.ReplyEmbedAsync("36 이하, 2 이상의 진법을 입력해주세요");
                 return;
             }
 
@@ -267,12 +267,12 @@ namespace OliveToast.Commands
             num = new string(num.Where(n => n != ' ').ToArray()).ToUpper();
             if (num.Any(c => !numLetters.Contains(c)))
             {
-                await Context.MsgReplyEmbedAsync("0-9, a-z와 공백으로만 이루어진 문자열을 입력해주세요");
+                await Context.ReplyEmbedAsync("0-9, a-z와 공백으로만 이루어진 문자열을 입력해주세요");
                 return;
             }
             if (num.Any(c => Array.IndexOf(numLetters, c) >= from))
             {
-                await Context.MsgReplyEmbedAsync($"{from}진법에서 사용할 수 없는 문자가 있어요");
+                await Context.ReplyEmbedAsync($"{from}진법에서 사용할 수 없는 문자가 있어요");
                 return;
             }
 
@@ -298,7 +298,7 @@ namespace OliveToast.Commands
             result = result.Slice(2048);
 
             EmbedBuilder emb = Context.CreateEmbed(title: $"{from}진수 => {to}진수", description: result);
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
     }
 }

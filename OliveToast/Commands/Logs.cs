@@ -28,7 +28,7 @@ namespace OliveToast.Commands
 
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"로그 채널을 {channel.Name.으로()} 설정했어요");
+            await Context.ReplyEmbedAsync($"로그 채널을 {channel.Name.으로()} 설정했어요");
         }
         
         [Command("로그 채널 확인"), Alias("로그 설정 보기", "로그 채널 보기", "로그 채널")]
@@ -50,7 +50,7 @@ namespace OliveToast.Commands
                 emb.Description = $"현재 로그 채널은 {Context.Guild.GetTextChannel(id.Value).Name.이()}에요";
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
     }
 }

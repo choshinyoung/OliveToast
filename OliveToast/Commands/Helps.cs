@@ -33,7 +33,7 @@ namespace OliveToast.Commands
                 emb.AddField(module.Name, string.Join(' ', cmds.Select(c => $"`{CommandEventHandler.prefix}{c.Name}`")));
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("도움"), Alias("도움말")]
@@ -58,7 +58,7 @@ namespace OliveToast.Commands
                     emb.AddField($"{CommandEventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Where(p => p.Name != "").Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
                 }
 
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
             }
             else
             {
@@ -121,11 +121,11 @@ namespace OliveToast.Commands
                         emb.AddField($"{CommandEventHandler.prefix}{info.Name} {param}", $"{aliases}\n{info.Summary}{permission}");
                     }
 
-                    await Context.MsgReplyEmbedAsync(emb.Build());
+                    await Context.ReplyEmbedAsync(emb.Build());
                 }
                 else
                 {
-                    await Context.MsgReplyEmbedAsync("해당 커맨드 또는 카테고리가 없어요");
+                    await Context.ReplyEmbedAsync("해당 커맨드 또는 카테고리가 없어요");
                 }
             }
         }

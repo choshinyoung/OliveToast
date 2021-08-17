@@ -44,7 +44,7 @@ namespace OliveToast.Commands
             int totalXp = Utility.GetLevelXp(guild.Levels[UserId].Level);
             emb.AddField($"레벨업까지 남은 xp: {totalXp - guild.Levels[UserId].Xp}", $"{(int)((float)guild.Levels[UserId].Xp / totalXp * 100)}% | {new string(Enumerable.Repeat('█', (int)Math.Round(guild.Levels[UserId].Xp / (float)totalXp * 10)).ToArray())}{new string(Enumerable.Repeat(' ', (int)Math.Round((totalXp - guild.Levels[UserId].Xp) / (float)totalXp * 10)).ToArray())} | {totalXp}");
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("순위")]
@@ -78,7 +78,7 @@ namespace OliveToast.Commands
                 emb.AddField($"{users.IndexOf(u) + 1}위: {u.Value.Level}/{u.Value.Xp}", $"{Context.Guild.GetUser(ulong.Parse(u.Key)).Mention}");
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("레벨 역할 추가"), Alias("레벨 역할 설정", "레벨 역할")]
@@ -90,14 +90,14 @@ namespace OliveToast.Commands
 
             if (setting.LevelRoles.ContainsKey(level.ToString()))
             {
-                await Context.MsgReplyEmbedAsync("해당 레벨의 역할이 이미 설정돼있어요");
+                await Context.ReplyEmbedAsync("해당 레벨의 역할이 이미 설정돼있어요");
                 return;
             }
 
             setting.LevelRoles.Add(level.ToString(), role.Id);
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"이제 {level} 레벨이 되면 {role.Mention} 역할을 얻을 수 있어요");
+            await Context.ReplyEmbedAsync($"이제 {level} 레벨이 되면 {role.Mention} 역할을 얻을 수 있어요");
         }
 
         [Command("레벨 역할 제거"), Alias("레벨 역할 삭제")]
@@ -109,14 +109,14 @@ namespace OliveToast.Commands
 
             if (!setting.LevelRoles.ContainsKey(level.ToString()))
             {
-                await Context.MsgReplyEmbedAsync("해당 레벨에 설정된 역할이 없어요");
+                await Context.ReplyEmbedAsync("해당 레벨에 설정된 역할이 없어요");
                 return;
             }
 
             setting.LevelRoles.Remove(level.ToString());
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"{level} 레벨의 역할을 제거했어요");
+            await Context.ReplyEmbedAsync($"{level} 레벨의 역할을 제거했어요");
         }
 
         [Command("레벨업 채널 설정"), Alias("레벨업 채널")]
@@ -129,7 +129,7 @@ namespace OliveToast.Commands
             setting.LevelUpChannelId = channel.Id;
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"이제 레벨업 메시지가 {channel.Mention} 채널에 보내져요");
+            await Context.ReplyEmbedAsync($"이제 레벨업 메시지가 {channel.Mention} 채널에 보내져요");
         }
 
         [Command("레벨업 채널 초기화"), Alias("레벨업 채널 제거", "레벨업 채널 삭제")]
@@ -141,14 +141,14 @@ namespace OliveToast.Commands
 
             if (!setting.LevelUpChannelId.HasValue)
             {
-                await Context.MsgReplyEmbedAsync("레벨업 채널이 설정되지 않아서 초기화 할 수 없어요");
+                await Context.ReplyEmbedAsync("레벨업 채널이 설정되지 않아서 초기화 할 수 없어요");
                 return;
             }
 
             setting.LevelUpChannelId = null;
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"레벨업 채널을 초기화했어요");
+            await Context.ReplyEmbedAsync($"레벨업 채널을 초기화했어요");
         }
 
         [Command("레벨업 불가 채널 추가"), Alias("레벨업 불가 채널 설정", "레벨업 불가 채널")]
@@ -160,14 +160,14 @@ namespace OliveToast.Commands
 
             if (setting.NonXpChannels.Contains(channel.Id))
             {
-                await Context.MsgReplyEmbedAsync("해당 채널은 이미 레벨업 불가 채널이에요");
+                await Context.ReplyEmbedAsync("해당 채널은 이미 레벨업 불가 채널이에요");
                 return;
             }
 
             setting.NonXpChannels.Add(channel.Id);
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"이제 {channel.Mention} 채널에서는 xp가 오르지 않아요");
+            await Context.ReplyEmbedAsync($"이제 {channel.Mention} 채널에서는 xp가 오르지 않아요");
         }
 
         [Command("레벨업 불가 채널 제거"), Alias("레벨업 불가 채널 삭제")]
@@ -179,14 +179,14 @@ namespace OliveToast.Commands
 
             if (!setting.NonXpChannels.Contains(channel.Id))
             {
-                await Context.MsgReplyEmbedAsync("해당 채널은 레벨업 불가 채널이 아니에요");
+                await Context.ReplyEmbedAsync("해당 채널은 레벨업 불가 채널이 아니에요");
                 return;
             }
 
             setting.NonXpChannels.Remove(channel.Id);
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.MsgReplyEmbedAsync($"이제 {channel.Mention}에서 메시지를 보내면 xp가 올라요");
+            await Context.ReplyEmbedAsync($"이제 {channel.Mention}에서 메시지를 보내면 xp가 올라요");
         }
 
         [Command("레벨 설정 확인"), Alias("레벨 설정 보기", "레벨업 채널 확인", "레벨업 채널 보기", "레벨업 채널", "레벨 역할 확인", "레벨 역할 보기", "레벨 역할", "레벨업 불가 채널 확인", "레벨업 불가 채널 보기", "레벨업 불가 채널")]
@@ -241,7 +241,7 @@ namespace OliveToast.Commands
                 emb.AddField("레벨 역할", "설정된 레벨 역할이 없어요");
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
     }
 }

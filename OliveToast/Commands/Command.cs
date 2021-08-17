@@ -42,7 +42,7 @@ namespace OliveToast.Commands
             emb.AddField("응답", answer, true);
             emb.AddField("정규식 사용 여부", false.ToEmoji(), true);
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("커맨드 만들기"), Alias("커맨드 생성")]
@@ -52,7 +52,7 @@ namespace OliveToast.Commands
         {
             if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
             {
-                await Context.MsgReplyEmbedAsync("이미 커맨드를 만드는 중이에요");
+                await Context.ReplyEmbedAsync("이미 커맨드를 만드는 중이에요");
 
                 return;
             }
@@ -63,7 +63,7 @@ namespace OliveToast.Commands
                 .WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ChangeRegex}")
                 .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger);
 
-            RestUserMessage msg = await Context.MsgReplyEmbedAsync("커맨드를 입력해주세요", component: component.Build());
+            RestUserMessage msg = await Context.ReplyEmbedAsync("커맨드를 입력해주세요", component: component.Build());
 
             CommandCreateSession.Sessions.Add(Context.User.Id, new()
             {
@@ -84,7 +84,7 @@ namespace OliveToast.Commands
 
             if (commands.Count <= index)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace OliveToast.Commands
             commands.Remove(target);
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
             
-            await Context.MsgReplyEmbedAsync($"`{target}` 커맨드를 삭제했어요");
+            await Context.ReplyEmbedAsync($"`{target}` 커맨드를 삭제했어요");
         }
 
         [Command("커맨드 삭제"), Alias("커맨드 제거"), Priority(-1)]
@@ -104,14 +104,14 @@ namespace OliveToast.Commands
 
             if (!commands.ContainsKey(command))
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
             commands.Remove(command);
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
             
-            await Context.MsgReplyEmbedAsync($"`{command}` 커맨드를 삭제했어요");
+            await Context.ReplyEmbedAsync($"`{command}` 커맨드를 삭제했어요");
         }
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
@@ -123,7 +123,7 @@ namespace OliveToast.Commands
 
             if (commands.Count <= index)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -141,7 +141,7 @@ namespace OliveToast.Commands
 
             if (!commands.ContainsKey(command) || !commands[command].Any(c => c.Answer == answer))
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace OliveToast.Commands
 
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
-            await Context.MsgReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
+            await Context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
         }
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
@@ -165,7 +165,7 @@ namespace OliveToast.Commands
 
             if (commands.Count <= cIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -173,7 +173,7 @@ namespace OliveToast.Commands
 
             if (!commands[command].Any(c => c.Answer == answer))
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -189,7 +189,7 @@ namespace OliveToast.Commands
 
             if (!commands.ContainsKey(command) || commands[command].Count <= aIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -205,7 +205,7 @@ namespace OliveToast.Commands
 
             if (commands.Count <= cIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -213,7 +213,7 @@ namespace OliveToast.Commands
 
             if (commands[command].Count <= aIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -226,7 +226,7 @@ namespace OliveToast.Commands
             }
             OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
-            await Context.MsgReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
+            await Context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
         }
 
         [Command("커맨드 목록")]
@@ -259,7 +259,7 @@ namespace OliveToast.Commands
                 emb.AddField(i.ToString(), commands[i], true);
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
         }
 
         public static async Task ChangeListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, int page)
@@ -301,7 +301,7 @@ namespace OliveToast.Commands
 
             if (!commands.ContainsKey(command))
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -317,7 +317,7 @@ namespace OliveToast.Commands
 
             if (commands.Count <= index)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -347,7 +347,7 @@ namespace OliveToast.Commands
                 emb.AddField($"{i} {isRegex} {toastCommands}", answer[i].Answer ?? "응답이 없어요", true);
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
         }
 
         public static async Task ChangeAnswerListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, string command, int page)
@@ -394,7 +394,7 @@ namespace OliveToast.Commands
 
             if (!commands.ContainsKey(command) || !commands[command].Any(c => c.Answer == answer))
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -410,7 +410,7 @@ namespace OliveToast.Commands
 
             if (commands.Count <= cIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -418,7 +418,7 @@ namespace OliveToast.Commands
 
             if (!commands[command].Any(c => c.Answer == answer))
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -434,7 +434,7 @@ namespace OliveToast.Commands
 
             if (!commands.ContainsKey(command) || commands[command].Count <= aIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -450,7 +450,7 @@ namespace OliveToast.Commands
 
             if (commands.Count <= cIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -458,7 +458,7 @@ namespace OliveToast.Commands
 
             if (commands[command].Count <= aIndex)
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 커맨드에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
                 return;
             }
 
@@ -481,7 +481,7 @@ namespace OliveToast.Commands
             SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer.CreatedBy);
             emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("커맨드 검색")]
@@ -516,7 +516,7 @@ namespace OliveToast.Commands
                 emb.AddField(keys.IndexOf(commands[i]).ToString(), commands[i], true);
             }
 
-            await Context.MsgReplyEmbedAsync(emb.Build(), component: component.Build());
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
         }
 
         public static async Task ChangeSearchPage(SocketGuild guild, ulong userId, SocketUserMessage msg, string content, int page)
@@ -560,14 +560,14 @@ namespace OliveToast.Commands
 
             if (!user.IsCommandEnabled)
             {
-                await Context.MsgReplyEmbedAsync("이미 커맨드 사용이 비활성화돼있어요");
+                await Context.ReplyEmbedAsync("이미 커맨드 사용이 비활성화돼있어요");
 
                 return;
             }
 
             OliveUser.Set(Context.User.Id, u => u.IsCommandEnabled, false);
 
-            await Context.MsgReplyEmbedAsync("커맨드 사용을 중지했어요");
+            await Context.ReplyEmbedAsync("커맨드 사용을 중지했어요");
         }
 
         [Command("커맨드 사용")]
@@ -579,14 +579,14 @@ namespace OliveToast.Commands
 
             if (user.IsCommandEnabled)
             {
-                await Context.MsgReplyEmbedAsync("이미 커맨드 사용이 활성화돼있어요");
+                await Context.ReplyEmbedAsync("이미 커맨드 사용이 활성화돼있어요");
 
                 return;
             }
 
             OliveUser.Set(Context.User.Id, u => u.IsCommandEnabled, true);
 
-            await Context.MsgReplyEmbedAsync("커맨드 사용을 활성화했어요");
+            await Context.ReplyEmbedAsync("커맨드 사용을 활성화했어요");
         }
 
         [Command("토스트")]
@@ -596,7 +596,7 @@ namespace OliveToast.Commands
         {
             if (CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
             {
-                await Context.MsgReplyEmbedAsync("이미 다른 커맨드를 실행중이에요");
+                await Context.ReplyEmbedAsync("이미 다른 커맨드를 실행중이에요");
 
                 return;
             }
@@ -618,7 +618,7 @@ namespace OliveToast.Commands
                 catch (Exception e)
                 {
                     EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
-                    await Context.MsgReplyEmbedAsync(emb.Build());
+                    await Context.ReplyEmbedAsync(emb.Build());
                 }
 
                 if (!CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
@@ -634,7 +634,7 @@ namespace OliveToast.Commands
 
             if (result is not null)
             {
-                await Context.MsgReplyEmbedAsync(result);
+                await Context.ReplyEmbedAsync(result);
             }
         }
     }

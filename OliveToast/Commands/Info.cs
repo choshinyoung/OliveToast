@@ -64,7 +64,7 @@ namespace OliveToast.Commands
             }, true);
             emb.AddField("2단계 인증", (g.MfaLevel == MfaLevel.Enabled).ToEmoji(), true);
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("채널 정보"), Alias("채널정보", "채널")]
@@ -89,7 +89,7 @@ namespace OliveToast.Commands
 
             emb.AddField("채널 주제", c.Topic ?? "** **");
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("역할 정보"), Alias("역할정보", "역할")]
@@ -150,7 +150,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             ", true);
             emb.AddEmptyField();
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("유저 정보"), Alias("유저정보", "유저")]
@@ -176,7 +176,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             emb.AddField("계정 생성일", u.CreatedAt.ToKSTString());
             emb.AddField("서버 참가일", u.JoinedAt?.ToKSTString());
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("유저 정보"), Alias("유저정보", "유저")]
@@ -201,7 +201,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
 
             emb.AddField("계정 생성일", u.CreatedAt.ToKSTString());
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("봇 정보"), Alias("봇정보", "봇")]
@@ -231,7 +231,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             
             emb.AddField("크레딧", "제작: <@396163884005851137>\n\n도움: <@410260925795270656> <@404891182423080960> <@310247242546151434>\n\n프로필 일러스트: <@679641309010853895>");
 
-            await Context.MsgReplyEmbedAsync(emb.Build());
+            await Context.ReplyEmbedAsync(emb.Build());
         }
     }
 }

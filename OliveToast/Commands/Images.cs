@@ -26,7 +26,7 @@ namespace OliveToast.Commands
             using MemoryStream stream = Context.GetFileStream(ref url);
             if (stream == null)
             {
-                await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
+                await Context.ReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace OliveToast.Commands
             using MemoryStream stream = Context.GetFileStream(ref url);
             if (stream == null)
             {
-                await Context.MsgReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
+                await Context.ReplyEmbedAsync("이미지 url이나 파일을 올려주세요");
                 return;
             }
 
@@ -251,11 +251,11 @@ namespace OliveToast.Commands
             List<GuildEmote> emojis = Context.Guild.Emotes.Where(e => e.Name == name).ToList();
             if (emojis.Any())
             {
-                await Context.MsgReplyEmbedAsync(emojis.First().Id);
+                await Context.ReplyEmbedAsync(emojis.First().Id);
             }
             else
             {
-                await Context.MsgReplyEmbedAsync("존재하지 않는 이모지에요");
+                await Context.ReplyEmbedAsync("존재하지 않는 이모지에요");
             }
         }
     }

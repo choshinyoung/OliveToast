@@ -24,7 +24,7 @@ namespace OliveToast.Managements
                     {
                         WordSession.Sessions.Remove(session.Key);
 
-                        await session.Value.Context.MsgReplyEmbedAsync("게임이 자동으로 중단됐어요");
+                        await session.Value.Context.ReplyEmbedAsync("게임이 자동으로 중단됐어요");
                     }
                 }
 
@@ -34,7 +34,7 @@ namespace OliveToast.Managements
                     {
                         TypingSession.Sessions.Remove(session.Key);
 
-                        await session.Value.Context.MsgReplyEmbedAsync("게임이 자동으로 종료됐어요");
+                        await session.Value.Context.ReplyEmbedAsync("게임이 자동으로 종료됐어요");
                     }
                 }
 
@@ -44,7 +44,7 @@ namespace OliveToast.Managements
                     {
                         CommandCreateSession.Sessions.Remove(session.Key);
 
-                        await session.Value.UserMessageContext.MsgReplyEmbedAsync("커맨드 생성이 자동으로 종료됐어요");
+                        await session.Value.UserMessageContext.ReplyEmbedAsync("커맨드 생성이 자동으로 종료됐어요");
                     }
                 }
 

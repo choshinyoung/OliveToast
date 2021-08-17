@@ -32,13 +32,13 @@ namespace OliveToast.Commands
 
                 if (result is not null)
                 {
-                    await Context.MsgReplyEmbedAsync(result);
+                    await Context.ReplyEmbedAsync(result);
                 }
             }
             catch (Exception e)
             {
                 EmbedBuilder emb = Context.CreateEmbed(e.ToString(), "오류 발생!");
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
             }
         }
     }

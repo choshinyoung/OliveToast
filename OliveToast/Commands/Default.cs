@@ -24,7 +24,7 @@ namespace OliveToast.Commands
         [Summary("올리브토스트와 인사를 할 수 있습니다")]
         public async Task Hello()
         {
-            await Context.MsgReplyEmbedAsync("안녕하세요!");
+            await Context.ReplyEmbedAsync("안녕하세요!");
         }
         
         [Command("핑")]
@@ -32,7 +32,7 @@ namespace OliveToast.Commands
         [Summary("봇의 응답 속도를 확인합니다")]
         public async Task Ping()
         {
-            await Context.MsgReplyEmbedAsync($"{Program.Client.Latency}ms");
+            await Context.ReplyEmbedAsync($"{Program.Client.Latency}ms");
         }
 
         [Command("업타임")]
@@ -41,7 +41,7 @@ namespace OliveToast.Commands
         public async Task Uptime()
         {
             TimeSpan t = DateTime.Now - Program.Uptime;
-            await Context.MsgReplyEmbedAsync($"{t.Days}일 {t.Hours}시간 {t.Minutes}분 {t.Seconds}초");
+            await Context.ReplyEmbedAsync($"{t.Days}일 {t.Hours}시간 {t.Minutes}분 {t.Seconds}초");
         }
 
         [Command("봇 초대 링크"), Alias("초대 링크", "초대", "봇 초대")]
@@ -49,7 +49,7 @@ namespace OliveToast.Commands
         [Summary("올리브토스트를 초대할 수 있는 초대 링크입니다")]
         public async Task BotInvite()
         {
-            await Context.MsgReplyEmbedAsync($"[올리브토스트 초대 링크]({Utility.GetInvite()})");
+            await Context.ReplyEmbedAsync($"[올리브토스트 초대 링크]({Utility.GetInvite()})");
         }
 
         [Command("인공지능"), Alias("핑퐁", "올토야", "올토님")]
@@ -85,7 +85,7 @@ namespace OliveToast.Commands
                 }
             }
 
-            await Context.MsgReplyEmbedAsync(Context.CreateEmbed(description: resTxt, imgUrl: resImg).Build());
+            await Context.ReplyEmbedAsync(Context.CreateEmbed(description: resTxt, imgUrl: resImg).Build());
         }
 
         [Command("계산"), Alias("계산기")]
@@ -100,7 +100,7 @@ namespace OliveToast.Commands
                 EmbedBuilder emb = Context.CreateEmbed();
                 emb.AddField("오류 발생!", $"{exp.Error}\n\n[사용방법 보기](https://github.com/ncalc/ncalc/wiki)");
 
-                await Context.MsgReplyEmbedAsync(emb.Build());
+                await Context.ReplyEmbedAsync(emb.Build());
 
                 return;
             }
@@ -110,7 +110,7 @@ namespace OliveToast.Commands
             {
                 result = Math.Round((double)result, 10, MidpointRounding.AwayFromZero);
             }
-            await Context.MsgReplyEmbedAsync(result);
+            await Context.ReplyEmbedAsync(result);
         }
 
         [Command("팩토리얼"), Alias("팩")]
@@ -120,7 +120,7 @@ namespace OliveToast.Commands
         {
             if (n > 807 || n < 0)
             {
-                await Context.MsgReplyEmbedAsync("0 이상, 807 이하의 정수만 입력할 수 있어요");
+                await Context.ReplyEmbedAsync("0 이상, 807 이하의 정수만 입력할 수 있어요");
                 return;
             }
 
@@ -130,7 +130,7 @@ namespace OliveToast.Commands
                 a *= i;
             }
 
-            await Context.MsgReplyEmbedAsync($"{n}! = {a}");
+            await Context.ReplyEmbedAsync($"{n}! = {a}");
         }
     }
 }

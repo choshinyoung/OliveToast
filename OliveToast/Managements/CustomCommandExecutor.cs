@@ -52,7 +52,7 @@ namespace OliveToast.Managements
                 SocketUserMessage botMessage = null;
                 if (command.command.Answer is not null)
                 {
-                    botMessage = await context.Channel.GetMessageAsync((await context.MsgReplyAsync(command.command.Answer)).Id) as SocketUserMessage;
+                    botMessage = await context.Channel.GetMessageAsync((await context.ReplyAsync(command.command.Answer)).Id) as SocketUserMessage;
                 }
 
                 Toaster toaster = GetToaster();
@@ -69,7 +69,7 @@ namespace OliveToast.Managements
                     catch (Exception e)
                     {
                         EmbedBuilder emb = context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
-                        await context.MsgReplyEmbedAsync(emb.Build());
+                        await context.ReplyEmbedAsync(emb.Build());
 
                         if (CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
                         {
@@ -186,7 +186,7 @@ namespace OliveToast.Managements
             catch (Exception e)
             {
                 EmbedBuilder emb = context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
-                await context.MsgReplyEmbedAsync(emb.Build());
+                await context.ReplyEmbedAsync(emb.Build());
 
                 if (CommandExecuteSession.Sessions.ContainsKey(context.User.Id))
                 {
