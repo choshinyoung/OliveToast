@@ -5,9 +5,6 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using OliveToast.Managements;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static OliveToast.Managements.RequirePermission;
 
@@ -147,6 +144,8 @@ namespace OliveToast.Commands
                 await Task.Delay(5000);
                 await channel.SendMessageAsync(msg);
             }
+
+            await Context.ReplyEmbedAsync("메시지를 전송했어요");
         }
 
         [Command("메시지")]
@@ -161,6 +160,8 @@ namespace OliveToast.Commands
                 await Task.Delay(5000);
                 await channel.SendMessageAsync(msg);
             }
+
+            await Context.ReplyEmbedAsync("메시지를 전송했어요");
         }
 
         [Command("메시지")]
@@ -175,6 +176,8 @@ namespace OliveToast.Commands
                 await Task.Delay(5000);
                 await channel.SendMessageAsync(msg);
             }
+
+            await Context.ReplyEmbedAsync("메시지를 전송했어요");
         }
     }
 }

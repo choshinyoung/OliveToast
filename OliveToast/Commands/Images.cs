@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static OliveToast.Managements.RequireCategoryEnable;
 using static OliveToast.Managements.RequirePermission;

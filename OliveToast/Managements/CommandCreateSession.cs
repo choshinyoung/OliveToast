@@ -1,13 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.Rest;
-using Discord.WebSocket;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 

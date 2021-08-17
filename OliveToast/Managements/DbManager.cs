@@ -5,11 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Toast.Nodes;
 using static OliveToast.Managements.RequireCategoryEnable;
-using static OliveToast.Managements.RequirePermission;
 
 namespace OliveToast.Managements
 {
@@ -131,14 +127,13 @@ namespace OliveToast.Managements
         }
     }
 
-    class OliveUser
+    public class OliveUser
     {
         public ObjectId Id;
 
         public ulong UserId;
 
         public bool IsCommandEnabled;
-
 
         public OliveUser(ulong id)
         {

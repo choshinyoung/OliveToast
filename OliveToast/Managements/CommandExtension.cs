@@ -3,11 +3,9 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OliveToast.Managements
