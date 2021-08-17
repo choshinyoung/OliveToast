@@ -27,8 +27,7 @@ namespace OliveToast.Managements
 
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
-            // whitelist
-            if (context.User.Id == 396163884005851137)
+            if (SpecialListManager.IsWhiteList(context.User.Id))
             {
                 return Task.FromResult(PreconditionResult.FromSuccess());
             }

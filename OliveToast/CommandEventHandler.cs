@@ -107,7 +107,7 @@ namespace OliveToast
         public static async Task OnMessageReceived(SocketMessage msg)
         {
             if (msg is not SocketUserMessage userMsg || userMsg.Content == null ||
-                userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot) return;
+                userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot || SpecialListManager.IsBlackList(msg.Author.Id)) return;
 
             SocketCommandContext context = new(Program.Client, userMsg);
 

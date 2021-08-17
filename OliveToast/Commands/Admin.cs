@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using OliveToast.Managements;
@@ -46,6 +47,94 @@ namespace OliveToast.Commands
                 EmbedBuilder emb = Context.CreateEmbed(e.ToString(), "오류 발생!");
                 await Context.ReplyEmbedAsync(emb.Build());
             }
+        }
+
+        [Command("화이트리스트")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("화이트리스트의 목록입니다")]
+        public async Task WhiteList()
+        {
+            string output = "";
+            foreach (ulong id in SpecialListManager.WhiteList)
+            {
+                try
+                {
+                    var user = Program.Client.GetUser(id);
+                    output += $"{user.Username}#{user.DiscriminatorValue} ({user.Id})\n";
+                }
+                catch
+                {
+                    output += $"({id})";
+                }
+            }
+
+            await Context.ReplyEmbedAsync(output == "" ? "화이트리스트 유저가 없어요" : output);
+        }
+
+        [Command("화이트리스트 추가")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 유저를 봇 관리자로 만듭니다")]
+        public async Task AddWhiteList([Name("유저"), Remainder] SocketUser user)
+        {
+            SpecialListManager.WhiteList.Add(user.Id);
+            SpecialListManager.Update();
+
+            await Context.ReplyEmbedAsync("해당 유저가 화이트리스트에 추가됐어요");
+        }
+
+        [Command("화이트리스트 제거")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 유저를 봇 관리자 목록에서 제거합니다")]
+        public async Task RemoveWhiteList([Name("유저"), Remainder] SocketUser user)
+        {
+            SpecialListManager.WhiteList.Remove(user.Id);
+            SpecialListManager.Update();
+
+            await Context.ReplyEmbedAsync("해당 유저가 화이트리스트에 추가됐어요");
+        }
+
+        [Command("블랙리스트")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("블랙리스트의 목록입니다")]
+        public async Task BlackList()
+        {
+            string output = "";
+            foreach (ulong id in SpecialListManager.BlackList)
+            {
+                try
+                {
+                    var user = Program.Client.GetUser(id);
+                    output += $"{user.Username}#{user.DiscriminatorValue} ({user.Id})\n";
+                }
+                catch
+                {
+                    output += $"({id})";
+                }
+            }
+
+            await Context.ReplyEmbedAsync(output == "" ? "블랙리스트 유저가 없어요" : output);
+        }
+
+        [Command("블랙리스트 추가")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 유저가 봇을 사용할 수 없게 만듭니다")]
+        public async Task AddBlackList([Name("유저"), Remainder] SocketUser user)
+        {
+            SpecialListManager.BlackList.Add(user.Id);
+            SpecialListManager.Update();
+
+            await Context.ReplyEmbedAsync("해당 유저가 블랙리스트에 추가됐어요");
+        }
+
+        [Command("블랙리스트 제거")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 유저를 블랙리스트에서 제거합니다")]
+        public async Task RemoveBlackList([Name("유저"), Remainder] SocketUser user)
+        {
+            SpecialListManager.BlackList.Remove(user.Id);
+            SpecialListManager.Update();
+
+            await Context.ReplyEmbedAsync("해당 유저가 블랙리스트에 추가됐어요");
         }
     }
 }
