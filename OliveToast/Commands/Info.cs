@@ -224,7 +224,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             TimeSpan t = DateTime.Now - Program.Uptime;
             emb.AddField("업타임", $"{t.Days}일 {t.Hours}시간", true);
 
-            emb.AddField("버전", "v6.0.0 beta");
+            emb.AddField("버전", ConfigManager.Get("VERSION"));
 
             emb.AddField(":mailbox_with_mail:", $"· [봇 초대 링크]({Utility.GetInvite()})\n· [UniqueCode 공식 서버](https://discord.gg/ARCdUzC)", true);
             emb.AddField(":page_facing_up:", $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)", true);
