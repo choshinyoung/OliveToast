@@ -136,5 +136,45 @@ namespace OliveToast.Commands
 
             await Context.ReplyEmbedAsync("해당 유저가 블랙리스트에서 제거됐어요");
         }
+
+        [Command("메시지")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 채널에 메시지를 보냅니다")]
+        public async Task SendMessage([Name("채널")] SocketTextChannel channel, [Name("메시지"), Remainder] string msg)
+        {
+            using (channel.EnterTypingState())
+            {
+                await Task.Delay(5000);
+                await channel.SendMessageAsync(msg);
+            }
+        }
+
+        [Command("메시지")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 채널에 메시지를 보냅니다")]
+        public async Task SendMessage([Name("채널")] ulong id, [Name("메시지"), Remainder] string msg)
+        {
+            var channel = Program.Client.GetChannel(id) as SocketTextChannel;
+
+            using (channel.EnterTypingState()) 
+            { 
+                await Task.Delay(5000);
+                await channel.SendMessageAsync(msg);
+            }
+        }
+
+        [Command("메시지")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 유저에게 메시지를 보냅니다")]
+        public async Task SendMessage([Name("유저")] SocketUser user, [Name("메시지"), Remainder] string msg)
+        {
+            var channel = await user.CreateDMChannelAsync();
+
+            using (channel.EnterTypingState())
+            {
+                await Task.Delay(5000);
+                await channel.SendMessageAsync(msg);
+            }
+        }
     }
 }
