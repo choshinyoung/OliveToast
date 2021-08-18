@@ -45,10 +45,10 @@ namespace OliveToast.Managements.CustomCommand
                 }
 
                 ulong msgId = ctx.Channel.SendMessageAsync(x, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ctx.SendCount++;
+
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
                 ctx.ContextMessages.Add(msgId);
-
-                ctx.SendCount++;
             }, -1),
             ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("reply", (ctx, x, y) =>
             {
@@ -58,9 +58,10 @@ namespace OliveToast.Managements.CustomCommand
                 }
 
                 ulong msgId = x.ReplyAsync(y, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ctx.SendCount++;
+
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
                 ctx.ContextMessages.Add(msgId);
-                ctx.SendCount++;
             }, -1),
             ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("edit", (ctx, x, y) =>
             {
