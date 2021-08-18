@@ -3,10 +3,11 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using OliveToast.Managements;
+using OliveToast.Managements.Data;
+using OliveToast.Utilities;
 using System;
 using System.Threading.Tasks;
-using static OliveToast.Managements.RequirePermission;
+using static OliveToast.Utilities.RequirePermission;
 
 namespace OliveToast.Commands
 {

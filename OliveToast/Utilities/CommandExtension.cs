@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace OliveToast.Managements
+namespace OliveToast.Utilities
 {
     public static class CommandExtension
     {

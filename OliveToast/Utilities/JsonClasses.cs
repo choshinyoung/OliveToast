@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OliveToast.Managements
+namespace OliveToast.Utilities
 {
 #pragma warning disable IDE1006 // 명명 스타일
     public class PingPongResult

@@ -1,10 +1,12 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using OliveToast.Managements.data;
+using OliveToast.Managements.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OliveToast.Managements
+namespace OliveToast.Utilities
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class RequirePermission : PreconditionAttribute

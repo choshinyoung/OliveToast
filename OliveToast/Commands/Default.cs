@@ -2,14 +2,15 @@
 using Discord.Commands;
 using NCalc;
 using Newtonsoft.Json;
-using OliveToast.Managements;
+using OliveToast.Managements.Data;
+using OliveToast.Utilities;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Numerics;
 using System.Threading.Tasks;
-using static OliveToast.Managements.RequireCategoryEnable;
-using static OliveToast.Managements.RequirePermission;
+using static OliveToast.Utilities.RequireCategoryEnable;
+using static OliveToast.Utilities.RequirePermission;
 
 namespace OliveToast.Commands
 {

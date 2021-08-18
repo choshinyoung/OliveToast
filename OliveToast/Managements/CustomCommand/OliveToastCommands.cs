@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 using Toast;
 using Toast.Nodes;
 
-namespace OliveToast.Managements
+namespace OliveToast.Managements.CustomCommand
 {
     public class OliveToastCommands
     {

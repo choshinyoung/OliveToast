@@ -1,7 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 using Newtonsoft.Json;
-using OliveToast.Managements;
+using OliveToast.Managements.Data;
+using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,9 +10,9 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using static OliveToast.Managements.KoreanBotsResult;
-using static OliveToast.Managements.RequireCategoryEnable;
-using static OliveToast.Managements.RequirePermission;
+using static OliveToast.Utilities.KoreanBotsResult;
+using static OliveToast.Utilities.RequireCategoryEnable;
+using static OliveToast.Utilities.RequirePermission;
 
 namespace OliveToast.Commands
 {

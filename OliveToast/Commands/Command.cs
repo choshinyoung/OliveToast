@@ -2,14 +2,16 @@
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
-using OliveToast.Managements;
+using OliveToast.Managements.CustomCommand;
+using OliveToast.Managements.data;
+using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Toast;
-using static OliveToast.Managements.RequireCategoryEnable;
-using static OliveToast.Managements.RequirePermission;
+using static OliveToast.Utilities.RequireCategoryEnable;
+using static OliveToast.Utilities.RequirePermission;
 
 namespace OliveToast.Commands
 {

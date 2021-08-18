@@ -2,6 +2,8 @@
 using Discord.Commands;
 using Discord.Rest;
 using Newtonsoft.Json;
+using OliveToast.Managements.data;
+using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +11,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace OliveToast.Managements
+namespace OliveToast.Managements.CustomCommand
 {
     class CommandCreateSession
     {

@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
-using OliveToast.Managements;
+using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,8 +8,8 @@ using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static OliveToast.Managements.RequireCategoryEnable;
-using static OliveToast.Managements.RequirePermission;
+using static OliveToast.Utilities.RequireCategoryEnable;
+using static OliveToast.Utilities.RequirePermission;
 
 namespace OliveToast.Commands
 {

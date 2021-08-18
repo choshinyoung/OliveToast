@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace OliveToast.Managements
+namespace OliveToast.Managements.Data
 {
     class ConfigManager
     {

@@ -1,11 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
-using OliveToast.Managements;
+using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static OliveToast.Managements.RequirePermission;
+using static OliveToast.Utilities.RequirePermission;
 
 namespace OliveToast.Commands
 {

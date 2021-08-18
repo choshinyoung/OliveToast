@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using static OliveToast.Managements.RequireCategoryEnable;
+using static OliveToast.Utilities.RequireCategoryEnable;
 
-namespace OliveToast.Managements
+namespace OliveToast.Managements.data
 {
     class DbManager
     {

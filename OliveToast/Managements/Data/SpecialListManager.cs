@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace OliveToast.Managements
+namespace OliveToast.Managements.Data
 {
     class SpecialListManager
     {

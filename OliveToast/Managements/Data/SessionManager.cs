@@ -1,8 +1,10 @@
 ﻿using Discord;
+using OliveToast.Managements.CustomCommand;
+using OliveToast.Utilities;
 using System;
 using System.Threading.Tasks;
 
-namespace OliveToast.Managements
+namespace OliveToast.Managements.Data
 {
     class SessionManager
     {

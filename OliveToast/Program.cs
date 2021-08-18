@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using OliveToast.Managements;
+using OliveToast.Managements.Data;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
