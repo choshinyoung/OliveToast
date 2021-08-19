@@ -635,7 +635,7 @@ namespace OliveToast.Commands
 
             if (result is not null)
             {
-                await Context.ReplyEmbedAsync(result);
+                await Context.ReplyEmbedAsync(toaster.ExecuteConverter<string>(result, context));
             }
         }
     }
