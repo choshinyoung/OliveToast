@@ -37,6 +37,40 @@ namespace OliveToast.Managements.CustomCommand
                 return x.Equals(y);
             }, 9),
 
+            ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]),
+
+            ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
+            {
+                if (x > 600 || x < 0)
+                {
+                    throw new Exception("대기 시간이 너무 길어요!");
+                }
+
+                Task.Delay(x * 1000).Wait();
+            }),
+
+            ToastCommand.CreateAction<CustomCommandContext>("exit", (ctx) =>
+            {
+                if (CommandExecuteSession.Sessions.ContainsKey(ctx.User.Id))
+                {
+                    CommandExecuteSession.Sessions.Remove(ctx.User.Id);
+                }
+            }),
+
+            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userMessage", (ctx) => ctx.Message),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botMessage", (ctx) => ctx.BotMessage),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userLastMessage", (ctx) => ctx.UserLastMessage),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botLastMessage", (ctx) => ctx.BotLastMessage),
+
+            ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.Guild.Users.Select(u => (object)u).ToArray()),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.User),
+
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.Channel),
+            ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.Guild.TextChannels.Select(u => (object)u).ToArray()),
+
+            ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.Guild.Roles.Select(u => (object)u).ToArray()),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, x) => x.Roles.Select(u => (object)u).ToArray()),
+
             ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) =>
             {
                 if (ctx.SendCount >= 5)
@@ -76,19 +110,50 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("react", (ctx, x, y)
                 => x.AddReactionAsync(Emote.TryParse(y, out var result) ? result : new Emoji(y)).Wait(), -1),
 
-            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userMessage", (ctx) => ctx.Message),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botMessage", (ctx) => ctx.BotMessage),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userLastMessage", (ctx) => ctx.UserLastMessage),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botLastMessage", (ctx) => ctx.BotLastMessage),
+            ToastCommand.CreateFunc<VariableNode, CustomCommandContext, object, object>("of", (x, ctx, y) => y switch
+                {
+                    SocketGuildUser user => x.Name switch
+                    {
+                        "name" => user.Username,
+                        "id" => user.Id,
+                        "tag" => user.DiscriminatorValue,
+                        "nickname" => user.GetName(false),
+                        "isBot" => user.IsBot,
+                        "mention" => user.Mention,
+                        _ => throw new Exception("잘못된 속성 키예요")
+                    },
+                    SocketTextChannel channel => x.Name switch
+                    {
+                        "name" => channel.Name,
+                        "id" => channel.Id,
+                        "category" => channel.Category is not null ? channel.Category.Name : "-",
+                        "isNsfw" => channel.IsNsfw,
+                        "mention" => channel.Mention,
+                        "slowMode" => channel.SlowModeInterval,
+                        _ => throw new Exception("잘못된 속성 키예요")
+                    },
+                    SocketRole role => x.Name switch
+                    {
+                        "name" => role.Name,
+                        "id" => role.Id,
+                        "isHoisted" => role.IsHoisted,
+                        "isMentionable" => role.IsMentionable,
+                        "mention" => role.Mention,
+                        _ => throw new Exception("잘못된 속성 키예요")
+                    },
+                    _ => throw new Exception("알 수 없는 타입이에요"),
+                }),
 
-            ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.Guild.Users.Select(u => (object)u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.User as SocketGuildUser),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("username", (ctx, x) => x.Username),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, ulong>("userId", (ctx, x) => x.Id),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, int>("tag", (ctx, x) => x.DiscriminatorValue),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("nickname", (ctx, x) => x.GetName(false)),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, bool>("isBot", (ctx, x) => x.IsBot),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, string>("userMention", (ctx, x) => x.Mention),
+            ToastCommand.CreateFunc<CustomCommandContext, string>("serverName", (ctx) => ctx.Guild.Name),
+            ToastCommand.CreateFunc<CustomCommandContext, ulong>("serverId", (ctx) => ctx.Guild.Id),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("systemChannel", (ctx) => ctx.Guild.SystemChannel),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("ruleChannel", (ctx) => ctx.Guild.RulesChannel),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("publicUpdateChannel", (ctx) => ctx.Guild.PublicUpdatesChannel),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("owner", (ctx) => ctx.Guild.Owner),
+            ToastCommand.CreateFunc<CustomCommandContext, int>("boostCount", (ctx) => ctx.Guild.PremiumSubscriptionCount),
+            ToastCommand.CreateFunc<CustomCommandContext, int>("boostLevel", (ctx) => (int)ctx.Guild.PremiumTier),
+            ToastCommand.CreateFunc<CustomCommandContext, bool>("isMfaEnabled", (ctx) => ctx.Guild.MfaLevel == MfaLevel.Enabled),
+
             ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, x, y) =>
             {
                 if (ctx.SendCount >= 5)
@@ -135,52 +200,6 @@ namespace OliveToast.Managements.CustomCommand
                 }
 
                 x.RemoveRoleAsync(y).Wait();
-            }),
-
-            ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.Guild.TextChannels.Select(u => (object) u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.Channel as SocketTextChannel),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelName", (ctx, x) => x.Name),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, ulong>("channelId", (ctx, x) => x.Id),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("category", (ctx, x) => x.Category is not null ? x.Category.Name : "-"),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, bool>("isNsfw", (ctx, x) => x.IsNsfw),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, string>("channelMention", (ctx, x) => x.Mention),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel, int>("slowMode", (ctx, x) => x.SlowModeInterval),
-
-            ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.Guild.Roles.Select(u => (object) u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, x) => x.Roles.Select(u => (object) u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleName", (ctx, x) => x.Name),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, ulong>("roleId", (ctx, x) => x.Id),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isHoisted", (ctx, x) => x.IsHoisted),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, bool>("isMentionable", (ctx, x) => x.IsMentionable),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketRole, string>("roleMention", (ctx, x) => x.Mention),
-
-            ToastCommand.CreateFunc<CustomCommandContext, string>("serverName", (ctx) => ctx.Guild.Name),
-            ToastCommand.CreateFunc<CustomCommandContext, ulong>("serverId", (ctx) => ctx.Guild.Id),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("systemChannel", (ctx) => ctx.Guild.SystemChannel),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("ruleChannel", (ctx) => ctx.Guild.RulesChannel),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("publicUpdateChannel", (ctx) => ctx.Guild.PublicUpdatesChannel),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("owner", (ctx) => ctx.Guild.Owner),
-            ToastCommand.CreateFunc<CustomCommandContext, int>("boostCount", (ctx) => ctx.Guild.PremiumSubscriptionCount),
-            ToastCommand.CreateFunc<CustomCommandContext, int>("boostLevel", (ctx) => (int) ctx.Guild.PremiumTier),
-            ToastCommand.CreateFunc<CustomCommandContext, bool>("isMfaEnabled", (ctx) => ctx.Guild.MfaLevel == MfaLevel.Enabled),
-
-            ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]),
-            ToastCommand.CreateAction<CustomCommandContext, int>("wait", (ctx, x) =>
-            {
-                if (x > 600 || x < 0)
-                {
-                    throw new Exception("대기 시간이 너무 길어요!");
-                }
-
-                Task.Delay(x * 1000).Wait();
-            }),
-
-            ToastCommand.CreateAction<CustomCommandContext>("exit", (ctx) =>
-            {
-                if (CommandExecuteSession.Sessions.ContainsKey(ctx.User.Id))
-                {
-                    CommandExecuteSession.Sessions.Remove(ctx.User.Id);
-                }
             }),
 
             ToastCommand.CreateAction<CustomCommandContext, string, FunctionNode>("addEventListener", (ctx, x, y) =>
