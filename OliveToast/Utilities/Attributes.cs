@@ -110,7 +110,7 @@ namespace OliveToast.Utilities
             }
             else
             {
-                return Task.FromResult(PreconditionResult.FromError($"이 커맨드를 실행하려면 {CategoryToString(Category)} 타입의 활성화가 필요해요"));
+                return Task.FromResult(PreconditionResult.FromError($"이 커맨드를 실행하려면 {CategoryToString(Category)} 타입의 활성화가 필요해요\n`{CommandEventHandler.prefix}활성화 {CategoryToString(Category).을를("`")} 입력해보세요"));
             }
         }
 
