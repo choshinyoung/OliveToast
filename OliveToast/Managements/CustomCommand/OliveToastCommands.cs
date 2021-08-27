@@ -84,6 +84,19 @@ namespace OliveToast.Managements.CustomCommand
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
                 ctx.ContextMessages.Add(msgId);
             }, -1),
+            ToastCommand.CreateAction<CustomCommandContext, SocketTextChannel, string>("sendTo", (ctx, x, y) =>
+            {
+                if (ctx.SendCount >= 5)
+                {
+                    throw new Exception("메시지를 너무 많이 보내고있어요!");
+                }
+
+                ulong msgId = x.SendMessageAsync(y, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ctx.SendCount++;
+
+                ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
+                ctx.ContextMessages.Add(msgId);
+            }, -1),
             ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("reply", (ctx, x, y) =>
             {
                 if (ctx.SendCount >= 5)
