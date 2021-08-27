@@ -110,7 +110,33 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("react", (ctx, x, y)
                 => x.AddReactionAsync(Emote.TryParse(y, out var result) ? result : new Emoji(y)).Wait(), -1),
 
-            ToastCommand.CreateFunc<VariableNode, CustomCommandContext, object, object>("of", (x, ctx, y) => y switch
+            ToastCommand.CreateFunc<VariableNode, CustomCommandContext, object, object>("of", (x, ctx, y) =>
+            {
+                if (!(y is SocketGuildUser or SocketTextChannel or SocketRole))
+                {
+                    object converted;
+
+                    converted = ToastExecutor.ExecuteConverter(ctx, Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketGuildUser)), y.ToString());
+
+                    if (converted is null)
+                    {
+                        converted = ToastExecutor.ExecuteConverter(ctx, Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketTextChannel)), y.ToString());
+
+                        if (converted is null)
+                        {
+                            converted = ToastExecutor.ExecuteConverter(ctx, Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketRole)), y.ToString());
+
+                            if (converted is null)
+                            {
+                                throw new Exception("알 수 없는 타입이이에요");
+                            }
+                        }
+                    }
+
+                    y = converted;
+                }
+
+                return y switch
                 {
                     SocketGuildUser user => x.Name switch
                     {
@@ -141,8 +167,10 @@ namespace OliveToast.Managements.CustomCommand
                         "mention" => role.Mention,
                         _ => throw new Exception("잘못된 속성 키예요")
                     },
-                    _ => throw new Exception("알 수 없는 타입이에요"),
-                }),
+                    _ => throw new Exception("알 수 없는 타입이이에요"),
+                };
+                ;
+            }, -1),
 
             ToastCommand.CreateFunc<CustomCommandContext, string>("serverName", (ctx) => ctx.Guild.Name),
             ToastCommand.CreateFunc<CustomCommandContext, ulong>("serverId", (ctx) => ctx.Guild.Id),
@@ -249,6 +277,7 @@ namespace OliveToast.Managements.CustomCommand
 
                 return ctx.Guild.GetUser(x);
             }),
+
             ToastConverter.Create<string, SocketTextChannel>((_ctx, x) =>
             {
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
@@ -278,14 +307,15 @@ namespace OliveToast.Managements.CustomCommand
 
                 return ctx.Guild.GetTextChannel(x);
             }),
+
             ToastConverter.Create<string, SocketRole>((_ctx, x) =>
             {
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
 
-                var channel = ctx.Guild.Roles.ToList().Find(u => u.Name.ToLower() == x.ToLower());
-                if (channel is not null)
+                var role = ctx.Guild.Roles.ToList().Find(u => u.Name.ToLower() == x.ToLower());
+                if (role is not null)
                 {
-                    return channel;
+                    return role;
                 }
 
                 Match match = new Regex("<#([0-9]+)>").Match(x);

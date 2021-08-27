@@ -23,11 +23,15 @@ namespace OliveToast.Managements.CustomCommand
             toaster.AddCommand(BasicCommands.Operators.Except(new List<ToastCommand>() { BasicCommands.Equal }).ToArray());
             toaster.AddCommand(BasicCommands.Strings);
             toaster.AddCommand(BasicCommands.Lists);
-            toaster.AddCommand(BasicCommands.If, BasicCommands.Else, BasicCommands.Foreach, BasicCommands.Assign, BasicCommands.Random, BasicCommands.RandomChoice);
+            toaster.AddCommand(BasicCommands.If, BasicCommands.Else, BasicCommands.Foreach, BasicCommands.Assign, BasicCommands.Random, BasicCommands.RandomChoice, BasicCommands.Convert);
             toaster.AddCommand(OliveToastCommands.Commands.ToArray());
 
             toaster.AddConverter(BasicConverters.All);
             toaster.AddConverter(OliveToastCommands.Converters.ToArray());
+
+            toaster.TypeAliases.Add("user", typeof(SocketGuildUser));
+            toaster.TypeAliases.Add("role", typeof(SocketRole));
+            toaster.TypeAliases.Add("channel", typeof(SocketTextChannel));
 
             return toaster;
         }
