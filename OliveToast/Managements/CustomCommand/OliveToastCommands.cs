@@ -252,7 +252,7 @@ namespace OliveToast.Managements.CustomCommand
             {
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
 
-                var user = ctx.Guild.Users.ToList().Find(u => u.Username == x || (u.Nickname is not null && u.Nickname == x));
+                var user = ctx.Guild.Users.ToList().Find(u => u.Username.ToLower() == x.ToLower() || (u.Nickname is not null && u.Nickname.ToLower() == x.ToLower()));
                 if (user is not null)
                 {
                     return user;
@@ -282,7 +282,7 @@ namespace OliveToast.Managements.CustomCommand
             {
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;
 
-                var channel = ctx.Guild.TextChannels.ToList().Find(u => u.Name == x);
+                var channel = ctx.Guild.TextChannels.ToList().Find(u => u.Name.ToLower() == x.ToLower());
                 if (channel is not null)
                 {
                     return channel;
