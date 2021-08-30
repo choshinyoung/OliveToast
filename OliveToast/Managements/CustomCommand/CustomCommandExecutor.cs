@@ -260,6 +260,7 @@ namespace OliveToast.Managements.CustomCommand
         public SocketUserMessage BotLastMessage;
 
         public int SendCount;
+        public bool isDmSent;
 
         public FunctionNode OnMessageReceived;
         public FunctionNode OnReactionAdded;
@@ -288,6 +289,7 @@ namespace OliveToast.Managements.CustomCommand
             BotLastMessage = botMessage;
 
             SendCount = 0;
+            isDmSent = false;
 
             ContextMessages = new();
             if (message is not null)
