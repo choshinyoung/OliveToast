@@ -23,7 +23,8 @@ namespace OliveToast.Managements.CustomCommand
             toaster.AddCommand(BasicCommands.Operators.Except(new List<ToastCommand>() { BasicCommands.Equal }).ToArray());
             toaster.AddCommand(BasicCommands.Strings);
             toaster.AddCommand(BasicCommands.Lists);
-            toaster.AddCommand(BasicCommands.If, BasicCommands.Else, BasicCommands.Foreach, BasicCommands.Assign, BasicCommands.Random, BasicCommands.RandomChoice, BasicCommands.Convert);
+            toaster.AddCommand(BasicCommands.Statements);
+            toaster.AddCommand(BasicCommands.Assign, BasicCommands.Convert, BasicCommands.Random, BasicCommands.RandomChoice);
             toaster.AddCommand(OliveToastCommands.Commands.ToArray());
 
             toaster.AddConverter(BasicConverters.All);

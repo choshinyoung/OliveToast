@@ -195,7 +195,7 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, int>("boostLevel", (ctx) => (int)ctx.Guild.PremiumTier),
             ToastCommand.CreateFunc<CustomCommandContext, bool>("isMfaEnabled", (ctx) => ctx.Guild.MfaLevel == MfaLevel.Enabled),
 
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, x, y) =>
+            /*ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, x, y) =>
             {
                 if (ctx.SendCount >= 5)
                 {
@@ -205,7 +205,7 @@ namespace OliveToast.Managements.CustomCommand
                 x.SendMessageAsync(y).Wait();
 
                 ctx.SendCount++;
-            }),
+            }),*/
             ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, x) =>
             {
                 if (!ctx.CanKickUser)
