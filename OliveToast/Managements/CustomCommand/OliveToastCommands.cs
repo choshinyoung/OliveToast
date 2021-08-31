@@ -129,15 +129,15 @@ namespace OliveToast.Managements.CustomCommand
                 {
                     object converted;
 
-                    converted = ToastExecutor.ExecuteConverter(ctx, Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketGuildUser)), y.ToString());
+                    converted = ctx.Toaster.ExecuteConverter(Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketGuildUser)), y.ToString(), ctx);
 
                     if (converted is null)
                     {
-                        converted = ToastExecutor.ExecuteConverter(ctx, Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketTextChannel)), y.ToString());
+                        converted = ctx.Toaster.ExecuteConverter(Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketTextChannel)), y.ToString(), ctx);
 
                         if (converted is null)
                         {
-                            converted = ToastExecutor.ExecuteConverter(ctx, Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketRole)), y.ToString());
+                            converted = ctx.Toaster.ExecuteConverter(Converters.First(c => c.From == typeof(string) && c.To == typeof(SocketRole)), y.ToString(), ctx);
 
                             if (converted is null)
                             {
