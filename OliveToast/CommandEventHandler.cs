@@ -88,6 +88,11 @@ namespace OliveToast
             Toaster toaster = CustomCommandExecutor.GetToaster();
             string output = (string)toaster.Execute($"\"{joinMessage}\"", new CustomCommandContext(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true));
 
+            if (output is null or "")
+            {
+                return;
+            }
+
             await guild.SystemChannel.SendMessageAsync(output);
         }
 
@@ -103,6 +108,11 @@ namespace OliveToast
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
             string output = (string)toaster.Execute($"\"{leaveMessage}\"", new CustomCommandContext(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true));
+
+            if (output is null or "")
+            {
+                return;
+            }
 
             await guild.SystemChannel.SendMessageAsync(output);
         }
