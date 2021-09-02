@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
+using OliveToast.Managements.CustomCommand;
 using OliveToast.Managements.data;
 using OliveToast.Utilities;
 using System;
@@ -183,64 +185,155 @@ namespace OliveToast.Commands
             await Context.ReplyEmbedAsync($"이제 {permission} 제거돼서 기본값으로 작동해요");
         }
 
-        [Command("환영 메시지 설정"), Alias("환영메시지 설정")]
+        [Command("입장 메시지 설정"), Alias("입장메시지 설정")]
         [RequirePermission(PermissionType.ManageBotSetting)]
         [Summary("유저가 입장할 때 보내는 메시지를 설정합니다")]
-        public async Task SetJoinMessage([Name("메시지"), Remainder] string msg)
+        public async Task SetJoinMessage([Name("메시지"), Remainder] string answer = null)
         {
-            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+            if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
+            {
+                await Context.ReplyEmbedAsync("이미 커맨드를 만드는 중이에요");
 
-            string prv = setting.JoinMessage;
+                return;
+            }
 
-            setting.JoinMessage = msg;
+            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions);
+            RestUserMessage msg;
 
-            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+            if (answer is null)
+            {
+                ComponentBuilder component = new ComponentBuilder()
+                    .WithButton("응답 없이 계속하기", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ContinueWithoutAnswer}")
+                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
+                    .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
-            EmbedBuilder emb = Context.CreateEmbed("환영메시지를 설정했어요");
-            emb.AddField("이전 메시지", prv);
-            emb.AddField("새 메시지", msg);
+                msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
 
-            await Context.ReplyEmbedAsync(emb.Build());
+                CommandCreateSession.Sessions.Add(Context.User.Id, new()
+                {
+                    SessionStatus = CommandCreateSession.Status.AnswerInput,
+                    CustomCommand = command,
+                    Message = msg,
+                    UserMessageContext = Context,
+                    LastActiveTime = DateTime.Now,
+                    Type = CommandCreateSession.CommandType.JoinMessage,
+                });
+            }
+            else
+            {
+                command.Answer = answer;
+
+                ComponentBuilder component = new ComponentBuilder()
+                    .WithButton("완료", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Complete}", ButtonStyle.Success)
+                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger);
+
+                EmbedBuilder emb = Context.CreateEmbed("토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요");
+                emb.AddField("응답", answer, true);
+                msg = await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+
+                CommandCreateSession.Sessions.Add(Context.User.Id, new()
+                {
+                    SessionStatus = CommandCreateSession.Status.ExecuteLinesInput,
+                    CustomCommand = command,
+                    Message = msg,
+                    UserMessageContext = Context,
+                    LastActiveTime = DateTime.Now,
+                    Type = CommandCreateSession.CommandType.JoinMessage,
+                });
+            }
         }
 
-        [Command("환영 메시지 보기"), Alias("환영메시지 보기", "환영 메시지 확인", "환영메시지 확인")]
+        [Command("입장 메시지 보기"), Alias("입장메시지 보기", "입장 메시지 확인", "입장메시지 확인", "입장메시지")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("환영 메시지를 확인합니다")]
+        [Summary("입장 메시지를 확인합니다")]
         public async Task CheckJoinMessage()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
 
-            await Context.ReplyEmbedAsync(setting.JoinMessage);
+            EmbedBuilder emb = Context.CreateEmbed(title: "입장 메시지");
+
+            if (setting.JoinMessage is not null)
+            {
+                emb.AddField("응답", setting.JoinMessage);
+            }
+
+            if (setting.JoinMessageToastLines.Count > 0)
+            {
+                emb.AddField("토스트 커맨드", string.Concat(setting.JoinMessageToastLines.Select(l => $"```\n{l}\n```")));
+            }
+
+            await Context.ReplyEmbedAsync(emb.Build());
         }
 
         [Command("퇴장 메시지 설정"), Alias("퇴장메시지 설정")]
         [RequirePermission(PermissionType.ManageBotSetting)]
         [Summary("유저가 서버를 나갔을 때 보내는 메시지를 설정합니다")]
-        public async Task SetLeaveMessage([Name("메시지"), Remainder] string msg)
+        public async Task SetLeaveMessage([Name("메시지"), Remainder] string answer = null)
         {
-            OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
+            if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
+            {
+                await Context.ReplyEmbedAsync("이미 커맨드를 만드는 중이에요");
 
-            string prv = setting.LeaveMessage;
+                return;
+            }
 
-            setting.LeaveMessage = msg;
+            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions);
+            RestUserMessage msg;
 
-            OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+            if (answer is null)
+            {
+                ComponentBuilder component = new ComponentBuilder()
+                    .WithButton("응답 없이 계속하기", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ContinueWithoutAnswer}")
+                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
+                    .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
-            EmbedBuilder emb = Context.CreateEmbed("퇴장메시지를 설정했어요");
-            emb.AddField("이전 메시지", prv);
-            emb.AddField("새 메시지", msg);
+                msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
+            }
+            else
+            {
+                command.Answer = answer;
 
-            await Context.ReplyEmbedAsync(emb.Build());
+                ComponentBuilder component = new ComponentBuilder()
+                    .WithButton("완료", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Complete}", ButtonStyle.Success)
+                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
+                    .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
+
+                EmbedBuilder emb = Context.CreateEmbed("토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요");
+                emb.AddField("응답", answer, true);
+                msg = await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+            }
+
+            CommandCreateSession.Sessions.Add(Context.User.Id, new()
+            {
+                SessionStatus = CommandCreateSession.Status.CommandInput,
+                CustomCommand = command,
+                Message = msg,
+                UserMessageContext = Context,
+                LastActiveTime = DateTime.Now,
+                Type = CommandCreateSession.CommandType.LeaveMessage,
+            });
         }
 
-        [Command("퇴장 메시지 보기"), Alias("퇴장메시지 보기", "퇴장 메시지 확인", "퇴장메시지 확인")]
+        [Command("퇴장 메시지 보기"), Alias("퇴장메시지 보기", "퇴장 메시지 확인", "퇴장메시지 확인", "퇴장메시지")]
         [RequirePermission(PermissionType.ManageBotSetting)]
         [Summary("퇴장 메시지를 확인합니다")]
         public async Task CheckLeaveMessage()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
 
-            await Context.ReplyEmbedAsync(setting.LeaveMessage);
+            EmbedBuilder emb = Context.CreateEmbed(title: "퇴장 메시지");
+
+            if (setting.LeaveMessage is not null)
+            {
+                emb.AddField("응답", setting.LeaveMessage);
+            }
+
+            if (setting.LeaveMessageToastLines.Count > 0)
+            {
+                emb.AddField("토스트 커맨드", string.Concat(setting.LeaveMessageToastLines.Select(l => $"```\n{l}\n```")));
+            }
+
+            await Context.ReplyEmbedAsync(emb.Build());
         }
     }
 }

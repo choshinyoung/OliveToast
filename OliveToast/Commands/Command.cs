@@ -73,7 +73,8 @@ namespace OliveToast.Commands
                 CustomCommand = command,
                 Message = msg,
                 UserMessageContext = Context,
-                LastActiveTime = DateTime.Now
+                LastActiveTime = DateTime.Now,
+                Type = CommandCreateSession.CommandType.CustomCommand,
             });
         }
 

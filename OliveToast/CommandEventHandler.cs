@@ -8,6 +8,7 @@ using OliveToast.Managements.data;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Toast;
@@ -18,7 +19,7 @@ namespace OliveToast
     {
         public enum InteractionType
         {
-            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearch
+            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearch, SetJoinEvent, SetLeaveEvent
         }
 
         public static readonly string prefix = ConfigManager.Get("PREFIX");
@@ -83,17 +84,24 @@ namespace OliveToast
                 return;
             }
 
-            string joinMessage = OliveGuild.Get(guild.Id).Setting.JoinMessage;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+
+            string joinMessage = setting.JoinMessage;
+            List<string> toastLines = setting.JoinMessageToastLines;
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            string output = (string)toaster.Execute($"\"{joinMessage}\"", new CustomCommandContext(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true));
+            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true);
+            string output = (string)toaster.Execute($"\"{joinMessage}\"", context);
 
-            if (output is null or "")
+            if (output is not null and not "")
             {
-                return;
+                await guild.SystemChannel.SendMessageAsync(output);
             }
 
-            await guild.SystemChannel.SendMessageAsync(output);
+            foreach (string line in toastLines)
+            {
+                toaster.Execute(line, context);
+            }
         }
 
         public static async Task OnUserLeft(SocketGuildUser arg)
@@ -104,17 +112,24 @@ namespace OliveToast
                 return;
             }
 
-            string leaveMessage = OliveGuild.Get(guild.Id).Setting.LeaveMessage;
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+
+            string leaveMessage = setting.LeaveMessage;
+            List<string> toastLines = setting.LeaveMessageToastLines;
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            string output = (string)toaster.Execute($"\"{leaveMessage}\"", new CustomCommandContext(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true));
+            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true);
+            string output = (string)toaster.Execute($"\"{leaveMessage}\"", context);
 
-            if (output is null or "")
+            if (output is not null and not "")
             {
-                return;
+                await guild.SystemChannel.SendMessageAsync(output);
             }
 
-            await guild.SystemChannel.SendMessageAsync(output);
+            foreach (string line in toastLines)
+            {
+                toaster.Execute(line, context);
+            }
         }
 
         public static async Task OnMessageReceived(SocketMessage msg)
@@ -256,6 +271,12 @@ namespace OliveToast
                     page = int.Parse(args[4]);
 
                     await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
+
+                    break;
+                case InteractionType.SetJoinEvent:
+
+                    break;
+                case InteractionType.SetLeaveEvent:
 
                     break;
             }

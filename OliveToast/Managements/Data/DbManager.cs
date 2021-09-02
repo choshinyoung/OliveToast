@@ -83,7 +83,9 @@ namespace OliveToast.Managements.data
             public Dictionary<string, ulong> LevelRoles;
 
             public string JoinMessage;
+            public List<string> JoinMessageToastLines;
             public string LeaveMessage;
+            public List<string> LeaveMessageToastLines;
 
             public GuildSetting()
             {
@@ -96,7 +98,9 @@ namespace OliveToast.Managements.data
                 LevelRoles = new Dictionary<string, ulong>();
 
                 JoinMessage = "{mention of user}님, {serverName}에 오신 것을 환영합니다! :tada:";
+                JoinMessageToastLines = new();
                 LeaveMessage = "{name of user}님이 서버를 나가셨습니다 ㅠ.ㅠ";
+                LeaveMessageToastLines = new();
             }
         }
 

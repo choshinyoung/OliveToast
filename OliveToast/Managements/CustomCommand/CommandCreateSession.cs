@@ -25,6 +25,11 @@ namespace OliveToast.Managements.CustomCommand
             ChangeRegex, Complete, Cancel, ContinueWithoutAnswer
         }
 
+        public enum CommandType
+        {
+            CustomCommand, JoinMessage, LeaveMessage
+        }
+
         public static Dictionary<ulong, CommandCreateSession> Sessions = new();
 
         public Status SessionStatus;
@@ -35,6 +40,8 @@ namespace OliveToast.Managements.CustomCommand
         public SocketCommandContext UserMessageContext;
 
         public DateTime LastActiveTime;
+
+        public CommandType Type;
 
         public static async Task<bool> MessageResponse(ulong userId, ulong channelId, string content)
         {
@@ -184,7 +191,7 @@ namespace OliveToast.Managements.CustomCommand
                     break;
                 case ResponseType.Complete:
                     EmbedBuilder emb;
-                    if (session.CustomCommand.Answer is null && session.CustomCommand.ToastLines.Count == 0)
+                    if (session.CustomCommand.Answer is null && session.CustomCommand.ToastLines.Count == 0 && session.Type == CommandType.CustomCommand)
                     {
                         emb = session.UserMessageContext.CreateEmbed(description: "응답이 없는 커맨드는 토스트 커맨드가 한 줄 이상 있어야돼요");
                         await session.UserMessageContext.Channel.SendMessageAsync(embed: emb.Build());
@@ -192,35 +199,87 @@ namespace OliveToast.Managements.CustomCommand
                         break;
                     }
 
-                    emb = session.UserMessageContext.CreateEmbed(title: "커맨드 생성 완료");
-
-                    emb.AddField("커맨드", session.Command, true);
-                    if (session.CustomCommand.Answer is not null)
-                    {
-                        emb.AddField("응답", session.CustomCommand.Answer, true);
-                    }
-                    emb.AddField("정규식 사용 여부", session.CustomCommand.IsRegex.ToEmoji(), true);
-
-                    if (session.CustomCommand.ToastLines.Count > 0)
-                    {
-                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
-                    }
-
                     Sessions.Remove(userId);
 
-                    var commands = OliveGuild.Get(session.UserMessageContext.Guild.Id).Commands;
-
-                    if (commands.ContainsKey(session.Command))
+                    switch (session.Type) 
                     {
-                        commands[session.Command].Add(session.CustomCommand);
-                    }
-                    else
-                    {
-                        commands.Add(session.Command, new() { session.CustomCommand });
-                    }
-                    OliveGuild.Set(session.UserMessageContext.Guild.Id, g => g.Commands, commands);
+                        case CommandType.CustomCommand:
+                            emb = session.UserMessageContext.CreateEmbed(title: "커맨드 생성 완료");
 
-                    await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
+                            emb.AddField("커맨드", session.Command, true);
+                            if (session.CustomCommand.Answer is not null)
+                            {
+                                emb.AddField("응답", session.CustomCommand.Answer, true);
+                            }
+                            emb.AddField("정규식 사용 여부", session.CustomCommand.IsRegex.ToEmoji(), true);
+
+                            if (session.CustomCommand.ToastLines.Count > 0)
+                            {
+                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
+                            }
+
+                            var commands = OliveGuild.Get(session.UserMessageContext.Guild.Id).Commands;
+
+                            if (commands.ContainsKey(session.Command))
+                            {
+                                commands[session.Command].Add(session.CustomCommand);
+                            }
+                            else
+                            {
+                                commands.Add(session.Command, new() { session.CustomCommand });
+                            }
+                            OliveGuild.Set(session.UserMessageContext.Guild.Id, g => g.Commands, commands);
+
+                            await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
+
+                            break;
+                        case CommandType.JoinMessage:
+                            OliveGuild.GuildSetting setting = OliveGuild.Get(session.UserMessageContext.Guild.Id).Setting;
+
+                            setting.JoinMessage = session.CustomCommand.Answer;
+                            setting.JoinMessageToastLines = session.CustomCommand.ToastLines;
+
+                            OliveGuild.Set(session.UserMessageContext.Guild.Id, g => g.Setting, setting);
+
+                            emb = session.UserMessageContext.CreateEmbed("입장메시지를 설정했어요");
+
+                            if (session.CustomCommand.Answer is not null)
+                            {
+                                emb.AddField("응답", session.CustomCommand.Answer);
+                            }
+
+                            if (session.CustomCommand.ToastLines.Count > 0)
+                            {
+                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
+                            }
+
+                            await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
+
+                            break;
+                        case CommandType.LeaveMessage:
+                            setting = OliveGuild.Get(session.UserMessageContext.Guild.Id).Setting;
+
+                            setting.LeaveMessage = session.CustomCommand.Answer;
+                            setting.LeaveMessageToastLines = session.CustomCommand.ToastLines;
+
+                            OliveGuild.Set(session.UserMessageContext.Guild.Id, g => g.Setting, setting);
+
+                            emb = session.UserMessageContext.CreateEmbed("퇴장메시지를 설정했어요");
+
+                            if (session.CustomCommand.Answer is not null)
+                            {
+                                emb.AddField("응답", session.CustomCommand.Answer);
+                            }
+
+                            if (session.CustomCommand.ToastLines.Count > 0)
+                            {
+                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
+                            }
+
+                            await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
+
+                            break;
+                    }
 
                     break;
                 case ResponseType.Cancel:
