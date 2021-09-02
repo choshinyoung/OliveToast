@@ -187,7 +187,7 @@ namespace OliveToast.Commands
 
         [Command("입장 메시지 설정"), Alias("입장메시지 설정")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("유저가 입장할 때 보내는 메시지를 설정합니다")]
+        [Summary("유저가 입장할 때 보내는 메시지를 설정합니다\n`메시지`는 생략할 수 있습니다")]
         public async Task SetJoinMessage([Name("메시지"), Remainder] string answer = null)
         {
             if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
@@ -267,7 +267,7 @@ namespace OliveToast.Commands
 
         [Command("퇴장 메시지 설정"), Alias("퇴장메시지 설정")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("유저가 서버를 나갔을 때 보내는 메시지를 설정합니다")]
+        [Summary("유저가 서버를 나갔을 때 보내는 메시지를 설정합니다\n`메시지`는 생략할 수 있습니다")]
         public async Task SetLeaveMessage([Name("메시지"), Remainder] string answer = null)
         {
             if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
