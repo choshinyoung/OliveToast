@@ -71,6 +71,42 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.Guild.Roles.Select(u => (object)u).ToArray()),
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, x) => x.Roles.Select(u => (object)u).ToArray()),
 
+            ToastCommand.CreateFunc<CustomCommandContext, EmbedBuilder>("embed", (ctx) => ctx.User.CreateEmbed(false)),
+            ToastCommand.CreateFunc<EmbedBuilder, CustomCommandContext, VariableNode, object, EmbedBuilder>("with", (x, ctx, y, z) =>
+            {
+                switch (y.Name)
+                {
+                    case "title":
+                        return x.WithTitle(ctx.Toaster.ExecuteConverter<string>(z, ctx));
+                    case "description":
+                        return x.WithDescription(ctx.Toaster.ExecuteConverter<string>(z, ctx));
+                    case "color":
+                        var color = System.Drawing.ColorTranslator.FromHtml(ctx.Toaster.ExecuteConverter<string>(z, ctx));
+                        
+                        return x.WithColor(new(color.R, color.G, color.B));
+                    case "image":
+                        return x.WithImageUrl(ctx.Toaster.ExecuteConverter<string>(z, ctx));
+                    case "author":
+                        return x.WithAuthor(ctx.Toaster.ExecuteConverter<SocketGuildUser>(z, ctx));
+                    case "url":
+                        return x.WithUrl(ctx.Toaster.ExecuteConverter<string>(z, ctx));
+                    case "thumbnail":
+                        return x.WithThumbnailUrl(ctx.Toaster.ExecuteConverter<string>(z, ctx));
+                    case "field":
+                        object[] field = ctx.Toaster.ExecuteConverter<object[]>(z, ctx);
+                        if (field.Length is not 2 and not 3)
+                        {
+                            throw new Exception("잘못된 필드값이에요");
+                        }
+                        
+                        x.AddField(ctx.Toaster.ExecuteConverter<string>(field[0], ctx), field[1], field.Length == 3 && ctx.Toaster.ExecuteConverter<bool>(field[2], ctx));
+
+                        return x;
+                    default:
+                        throw new Exception("잘못된 속성 키예요");
+                }
+            }),
+
             ToastCommand.CreateAction<CustomCommandContext, object>("send", (ctx, x) =>
             {
                 if (ctx.SendCount >= 5)
@@ -78,7 +114,15 @@ namespace OliveToast.Managements.CustomCommand
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId = ctx.Channel.SendMessageAsync(x.ToString(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ulong msgId;
+                if (x is EmbedBuilder emb)
+                {
+                    msgId = ctx.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                }
+                else
+                {
+                    msgId = ctx.Channel.SendMessageAsync(ctx.Toaster.ExecuteConverter<string>(x, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                }
                 ctx.SendCount++;
 
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
@@ -91,7 +135,15 @@ namespace OliveToast.Managements.CustomCommand
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId = x.SendMessageAsync(y.ToString(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ulong msgId;
+                if (y is EmbedBuilder emb)
+                {
+                    msgId = x.SendMessageAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                }
+                else
+                {
+                    msgId = x.SendMessageAsync(ctx.Toaster.ExecuteConverter<string>(y, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                }
                 ctx.SendCount++;
 
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
@@ -104,7 +156,15 @@ namespace OliveToast.Managements.CustomCommand
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId = x.ReplyAsync(y.ToString(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ulong msgId;
+                if (y is EmbedBuilder emb)
+                {
+                    msgId = x.ReplyAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                }
+                else
+                {
+                    msgId = x.ReplyAsync(ctx.Toaster.ExecuteConverter<string>(y, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                }
                 ctx.SendCount++;
 
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
