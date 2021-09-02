@@ -71,40 +71,40 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.Guild.Roles.Select(u => (object)u).ToArray()),
             ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, x) => x.Roles.Select(u => (object)u).ToArray()),
 
-            ToastCommand.CreateAction<CustomCommandContext, string>("send", (ctx, x) =>
+            ToastCommand.CreateAction<CustomCommandContext, object>("send", (ctx, x) =>
             {
                 if (ctx.SendCount >= 5)
                 {
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId = ctx.Channel.SendMessageAsync(x, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ulong msgId = ctx.Channel.SendMessageAsync(x.ToString(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
                 ctx.SendCount++;
 
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
                 ctx.ContextMessages.Add(msgId);
             }, -1),
-            ToastCommand.CreateAction<CustomCommandContext, SocketTextChannel, string>("sendTo", (ctx, x, y) =>
+            ToastCommand.CreateAction<CustomCommandContext, SocketTextChannel, object>("sendTo", (ctx, x, y) =>
             {
                 if (ctx.SendCount >= 5)
                 {
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId = x.SendMessageAsync(y, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ulong msgId = x.SendMessageAsync(y.ToString(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
                 ctx.SendCount++;
 
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
                 ctx.ContextMessages.Add(msgId);
             }, -1),
-            ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("reply", (ctx, x, y) =>
+            ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, object>("reply", (ctx, x, y) =>
             {
                 if (ctx.SendCount >= 5)
                 {
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId = x.ReplyAsync(y, allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                ulong msgId = x.ReplyAsync(y.ToString(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
                 ctx.SendCount++;
 
                 ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
