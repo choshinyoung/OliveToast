@@ -24,7 +24,7 @@ namespace OliveToast.Managements.CustomCommand
             toaster.AddCommand(BasicCommands.Strings);
             toaster.AddCommand(BasicCommands.Lists);
             toaster.AddCommand(BasicCommands.Statements);
-            toaster.AddCommand(BasicCommands.Assign, BasicCommands.Convert, BasicCommands.Random, BasicCommands.RandomChoice);
+            toaster.AddCommand(BasicCommands.Assign, BasicCommands.Convert, BasicCommands.Execute, BasicCommands.Random, BasicCommands.RandomChoice);
             toaster.AddCommand(OliveToastCommands.Commands.ToArray());
 
             toaster.AddConverter(BasicConverters.All);

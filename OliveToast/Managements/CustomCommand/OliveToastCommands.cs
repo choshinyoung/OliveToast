@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using OliveToast.Managements.data;
 using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,7 @@ namespace OliveToast.Managements.CustomCommand
                         return x.WithDescription(ctx.Toaster.ExecuteConverter<string>(z, ctx));
                     case "color":
                         var color = System.Drawing.ColorTranslator.FromHtml(ctx.Toaster.ExecuteConverter<string>(z, ctx));
-                        
+
                         return x.WithColor(new(color.R, color.G, color.B));
                     case "image":
                         return x.WithImageUrl(ctx.Toaster.ExecuteConverter<string>(z, ctx));
@@ -98,7 +99,7 @@ namespace OliveToast.Managements.CustomCommand
                         {
                             throw new Exception("잘못된 필드값이에요");
                         }
-                        
+
                         x.AddField(ctx.Toaster.ExecuteConverter<string>(field[0], ctx), field[1], field.Length == 3 && ctx.Toaster.ExecuteConverter<bool>(field[2], ctx));
 
                         return x;
@@ -317,6 +318,37 @@ namespace OliveToast.Managements.CustomCommand
                         break;
                 }
             }),
+
+            ToastCommand.CreateFunc<CustomCommandContext, string, object>("get", (ctx, x) => OliveGuild.Get(ctx.Guild.Id).CommandDb[x]),
+            ToastCommand.CreateAction<CustomCommandContext, string, object>("set", (ctx, x, y) =>
+            {
+                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+
+                if (db.ContainsKey(x))
+                {
+                    db[x] = y;
+                }
+                else
+                {
+                    if (db.Count > 100)
+                    {
+                        throw new Exception("데이터베이스에 저장된 값이 너무 많아요");
+                    }
+
+                    db.Add(x, y);
+                }
+
+                OliveGuild.Set(ctx.Guild.Id, guild => guild.CommandDb, db);
+            }),
+            ToastCommand.CreateAction<CustomCommandContext, string>("deleteKey", (ctx, x) =>
+            {
+                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+
+                db.Remove(x);
+
+                OliveGuild.Set(ctx.Guild.Id, guild => guild.CommandDb, db);
+            }),
+            ToastCommand.CreateFunc<CustomCommandContext, object[]>("dbKeys", (ctx) => OliveGuild.Get(ctx.Guild.Id).CommandDb.Keys.Select(k => (object)k).ToArray()),
         };
 
         public static readonly List<ToastConverter> Converters = new()

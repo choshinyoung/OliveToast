@@ -30,12 +30,15 @@ namespace OliveToast.Managements.data
 
         public Dictionary<string, List<CustomCommand>> Commands;
 
+        public Dictionary<string, object> CommandDb;
+
         public OliveGuild(ulong id)
         {
             GuildId = id;
             Setting = new();
             Levels = new();
             Commands = new();
+            CommandDb = new();
         }
 
         public static OliveGuild Get(ulong id)
