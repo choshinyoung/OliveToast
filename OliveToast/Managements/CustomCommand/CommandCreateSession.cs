@@ -201,7 +201,7 @@ namespace OliveToast.Managements.CustomCommand
 
                     Sessions.Remove(userId);
 
-                    switch (session.Type) 
+                    switch (session.Type)
                     {
                         case CommandType.CustomCommand:
                             emb = session.UserMessageContext.CreateEmbed(title: "커맨드 생성 완료");

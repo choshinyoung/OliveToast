@@ -13,7 +13,7 @@ using Toast.Nodes;
 
 namespace OliveToast.Managements.CustomCommand
 {
-    class CustomCommandExecutor
+    public class CustomCommandExecutor
     {
         public static Toaster GetToaster()
         {

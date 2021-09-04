@@ -594,7 +594,7 @@ namespace OliveToast.Commands
 
         [Command("토스트")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("토스트 커맨드를 실행합니다")]
+        [Summary("토스트 커맨드를 실행합니다\n커맨드 라인은 줄바꿈 두 개로 구분됩니다")]
         public async Task ExecuteToast([Name("입력"), Remainder] string lines)
         {
             if (CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
@@ -612,22 +612,23 @@ namespace OliveToast.Commands
 
             CommandExecuteSession.Sessions.Add(Context.User.Id, new(context));
 
-            foreach (string line in lines.Split('\n'))
+            try
             {
-                try
+                foreach (string line in lines.Split("\n\n"))
                 {
                     result = toaster.Execute(line, context);
-                }
-                catch (Exception e)
-                {
-                    EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
-                    await Context.ReplyEmbedAsync(emb.Build());
-                }
 
-                if (!CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
-                {
-                    break;
+                    if (!CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
+                    {
+                        break;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+
+                EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
+                await Context.ReplyEmbedAsync(emb.Build());
             }
 
             if (CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
