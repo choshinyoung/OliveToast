@@ -6,8 +6,8 @@ namespace OliveToast.Managements.Data
 {
     class SpecialListManager
     {
-        const string WhiteListFilePath = @"Configs\whitelist.json";
-        const string BlackListFilePath = @"Configs\blacklist.json";
+        const string WhiteListFilePath = "Configs/whitelist.json";
+        const string BlackListFilePath = "Configs/blacklist.json";
 
         public static readonly List<ulong> WhiteList;
         public static readonly List<ulong> BlackList;
