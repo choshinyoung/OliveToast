@@ -288,6 +288,16 @@ namespace OliveToast.Commands
                     .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                 msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
+
+                CommandCreateSession.Sessions.Add(Context.User.Id, new()
+                {
+                    SessionStatus = CommandCreateSession.Status.AnswerInput,
+                    CustomCommand = command,
+                    Message = msg,
+                    UserMessageContext = Context,
+                    LastActiveTime = DateTime.Now,
+                    Type = CommandCreateSession.CommandType.LeaveMessage,
+                });
             }
             else
             {
@@ -301,17 +311,17 @@ namespace OliveToast.Commands
                 EmbedBuilder emb = Context.CreateEmbed("토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요");
                 emb.AddField("응답", answer, true);
                 msg = await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
-            }
 
-            CommandCreateSession.Sessions.Add(Context.User.Id, new()
-            {
-                SessionStatus = CommandCreateSession.Status.CommandInput,
-                CustomCommand = command,
-                Message = msg,
-                UserMessageContext = Context,
-                LastActiveTime = DateTime.Now,
-                Type = CommandCreateSession.CommandType.LeaveMessage,
-            });
+                CommandCreateSession.Sessions.Add(Context.User.Id, new()
+                {
+                    SessionStatus = CommandCreateSession.Status.ExecuteLinesInput,
+                    CustomCommand = command,
+                    Message = msg,
+                    UserMessageContext = Context,
+                    LastActiveTime = DateTime.Now,
+                    Type = CommandCreateSession.CommandType.LeaveMessage,
+                });
+            }
         }
 
         [Command("퇴장 메시지 보기"), Alias("퇴장메시지 보기", "퇴장 메시지 확인", "퇴장메시지 확인", "퇴장메시지")]
