@@ -36,7 +36,6 @@ namespace OliveToast
                 Title = "메시지 수정",
                 Color = new Color(255, 255, 0),
                 Description = $"<#{channel.Id}> 채널에서 [메시지]({msg.GetJumpUrl()})가 수정됐어요\n",
-                Timestamp = DateTimeOffset.Now.ToKST()
             };
             emb.WithAuthor(msg.Author);
 
@@ -83,7 +82,7 @@ namespace OliveToast
 
         private static async Task OnMessageDeleted(Cacheable<IMessage, ulong> cache, Cacheable<IMessageChannel, ulong> channel)
         {
-            if (channel.GetType() != typeof(SocketTextChannel))
+            if (!cache.HasValue && !channel.HasValue)
             {
                 return;
             }
@@ -101,7 +100,6 @@ namespace OliveToast
                 Title = "메시지 삭제",
                 Color = new Color(255, 0, 0),
                 Description = $"<#{channel.Id}> 채널에서 메시지({cache.Id})가 삭제됐어요\n",
-                Timestamp = DateTimeOffset.Now.ToKST()
             };
 
             if (cache.HasValue)
