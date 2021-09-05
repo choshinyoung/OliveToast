@@ -18,6 +18,6 @@
 - [choshinyoung.Toast](https://www.nuget.org/packages/choshinyoung.Toast)
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
 - [Hangul.Net](https://github.com/mohenjo/Hangul.Net)
-- [NCalcSync](https://www.nuget.org/packages/NCalcSync)
+- [mXparser](https://www.nuget.org/packages/MathParser.org-mXparser)
 - MongoDB
 - [Noto Sans KR](https://fonts.google.com/specimen/Noto+Sans+KR)

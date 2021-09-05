@@ -1,10 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
-using NCalc;
 using Newtonsoft.Json;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
+using org.mariuszgromada.math.mxparser;
 using System;
+using System.Data;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Numerics;
@@ -89,26 +90,24 @@ namespace OliveToast.Commands
 
         [Command("계산"), Alias("계산기")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("주어진 수식을 계산합니다\n[이곳](https://github.com/ncalc/ncalc/wiki)에서 사용방법을 확인할 수 있습니다")]
+        [Summary("주어진 수식을 계산합니다")]
         public async Task Calc([Remainder, Name("수식")] string input)
         {
-            Expression exp = new(input, EvaluateOptions.IgnoreCase);
+            Expression exp = new(input);
 
-            if (exp.HasErrors())
+            if (!exp.checkSyntax())
             {
                 EmbedBuilder emb = Context.CreateEmbed();
-                emb.AddField("오류 발생!", $"{exp.Error}\n\n[사용방법 보기](https://github.com/ncalc/ncalc/wiki)");
+                emb.AddField("오류 발생!", exp.getErrorMessage().Slice(100));
 
                 await Context.ReplyEmbedAsync(emb.Build());
 
                 return;
             }
 
-            object result = exp.Evaluate();
-            if (result.GetType() == typeof(double))
-            {
-                result = Math.Round((double)result, 10, MidpointRounding.AwayFromZero);
-            }
+            object result = exp.calculate();
+            result = Math.Round((double)result, 10, MidpointRounding.AwayFromZero);
+
             await Context.ReplyEmbedAsync(result);
         }
 
