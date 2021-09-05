@@ -95,7 +95,10 @@ namespace OliveToast
 
             if (output is not null and not "")
             {
-                await guild.SystemChannel.SendMessageAsync(output);
+                if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
+                {
+                    await guild.SystemChannel.SendMessageAsync(output);
+                }
             }
 
             foreach (string line in toastLines)
