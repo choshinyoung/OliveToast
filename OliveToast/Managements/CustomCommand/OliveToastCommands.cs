@@ -256,16 +256,16 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, int>("boostLevel", (ctx) => (int)ctx.Guild.PremiumTier),
             ToastCommand.CreateFunc<CustomCommandContext, bool>("isMfaEnabled", (ctx) => ctx.Guild.MfaLevel == MfaLevel.Enabled),
 
-            ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser, string>("dm", (ctx, x, y) =>
+            ToastCommand.CreateAction<CustomCommandContext, string>("dm", (ctx, x) =>
             {
-                if (ctx.isDmSent)
+                if (ctx.SendCount >= 5)
                 {
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                x.SendMessageAsync(y).Wait();
+                ctx.User.SendMessageAsync(x).Wait();
 
-                ctx.isDmSent = true;
+                ctx.SendCount++;
             }),
             ToastCommand.CreateAction<CustomCommandContext, SocketGuildUser>("kick", (ctx, x) =>
             {
