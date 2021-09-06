@@ -90,7 +90,7 @@ namespace OliveToast
             List<string> toastLines = setting.JoinMessageToastLines;
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true);
+            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, arg.Guild.OwnerId, Array.Empty<string>(), true, true, true);
             string output = (string)toaster.Execute($"\"{joinMessage}\"", context);
 
             if (output is not null and not "")
@@ -121,7 +121,7 @@ namespace OliveToast
             List<string> toastLines = setting.LeaveMessageToastLines;
 
             Toaster toaster = CustomCommandExecutor.GetToaster();
-            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, Array.Empty<string>(), true, true, true);
+            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, arg.Guild.OwnerId, Array.Empty<string>(), true, true, true);
             string output = (string)toaster.Execute($"\"{leaveMessage}\"", context);
 
             if (output is not null and not "")

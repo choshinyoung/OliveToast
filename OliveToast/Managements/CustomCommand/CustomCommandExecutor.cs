@@ -61,7 +61,7 @@ namespace OliveToast.Managements.CustomCommand
                 }
 
                 Toaster toaster = GetToaster();
-                CustomCommandContext toastContext = new(context, command.groups, command.command.CanKickUser, command.command.CanBanUser, command.command.CanManageRole, botMessage);
+                CustomCommandContext toastContext = new(context, command.command.CreatedBy, command.groups, command.command.CanKickUser, command.command.CanBanUser, command.command.CanManageRole, botMessage);
 
                 CommandExecuteSession.Sessions.Add(context.User.Id, new(toastContext));
 
@@ -270,7 +270,9 @@ namespace OliveToast.Managements.CustomCommand
 
         public readonly List<ulong> ContextMessages;
 
-        public CustomCommandContext(SocketGuild guild, SocketTextChannel channel, SocketUserMessage message, SocketGuildUser user, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
+        public ulong CommandCreator;
+
+        public CustomCommandContext(SocketGuild guild, SocketTextChannel channel, SocketUserMessage message, SocketGuildUser user, ulong commandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
         {
             Guild = guild;
             Channel = channel;
@@ -289,6 +291,8 @@ namespace OliveToast.Managements.CustomCommand
 
             SendCount = 0;
 
+            CommandCreator = commandCreator;
+
             ContextMessages = new();
             if (message is not null)
             {
@@ -300,8 +304,8 @@ namespace OliveToast.Managements.CustomCommand
             }
         }
 
-        public CustomCommandContext(SocketCommandContext context, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
-            : this(context.Guild, context.Channel as SocketTextChannel, context.Message, context.User as SocketGuildUser, groups, canKickUser, canBanUser, canManageeRole, botMessage)
+        public CustomCommandContext(SocketCommandContext context, ulong CommandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
+            : this(context.Guild, context.Channel as SocketTextChannel, context.Message, context.User as SocketGuildUser, CommandCreator, groups, canKickUser, canBanUser, canManageeRole, botMessage)
         {
 
         }

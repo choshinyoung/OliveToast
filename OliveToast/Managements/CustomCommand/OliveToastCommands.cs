@@ -332,19 +332,16 @@ namespace OliveToast.Managements.CustomCommand
             }),
             ToastCommand.CreateAction<CustomCommandContext, string, object>("set", (ctx, x, y) =>
             {
-                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+                Dictionary<string, OliveGuild.DbValue> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
 
                 if (db.ContainsKey(x))
                 {
-                    if (db[x] is OliveGuild.DbValue dbValue)
+                    if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.User.GuildPermissions.Administrator)
                     {
-                        if (dbValue.OwnerId != 0 && ctx.User.Id != dbValue.OwnerId && !ctx.User.GuildPermissions.Administrator)
-                        {
-                            throw new Exception("이 항목에 접근할 권한이 없어요");
-                        }
+                        throw new Exception("이 항목에 접근할 권한이 없어요");
                     }
 
-                    db[x] = new OliveGuild.DbValue(y);
+                    db[x] = new OliveGuild.DbValue(y, db[x].OwnerId);
                 }
                 else
                 {
@@ -360,19 +357,16 @@ namespace OliveToast.Managements.CustomCommand
             }),
             ToastCommand.CreateAction<CustomCommandContext, string, object>("privateSet", (ctx, x, y) =>
             {
-                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+                Dictionary<string, OliveGuild.DbValue> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
 
                 if (db.ContainsKey(x))
                 {
-                    if (db[x] is OliveGuild.DbValue dbValue)
+                    if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.User.GuildPermissions.Administrator)
                     {
-                        if (dbValue.OwnerId != 0 && ctx.User.Id != dbValue.OwnerId && !ctx.User.GuildPermissions.Administrator)
-                        {
-                            throw new Exception("이 항목에 접근할 권한이 없어요");
-                        }
+                        throw new Exception("이 항목에 접근할 권한이 없어요");
                     }
 
-                    db[x] = new OliveGuild.DbValue(y, ctx.User.Id);
+                    db[x] = new OliveGuild.DbValue(y, ctx.CommandCreator);
                 }
                 else
                 {
@@ -381,21 +375,18 @@ namespace OliveToast.Managements.CustomCommand
                         throw new Exception("데이터베이스에 저장된 값이 너무 많아요");
                     }
 
-                    db.Add(x, new OliveGuild.DbValue(y, ctx.User.Id));
+                    db.Add(x, new OliveGuild.DbValue(y, ctx.CommandCreator));
                 }
 
                 OliveGuild.Set(ctx.Guild.Id, guild => guild.CommandDb, db);
             }),
             ToastCommand.CreateAction<CustomCommandContext, string>("deleteKey", (ctx, x) =>
             {
-                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+                Dictionary<string, OliveGuild.DbValue> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
 
-                if (db[x] is OliveGuild.DbValue dbValue)
+                if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.User.GuildPermissions.Administrator)
                 {
-                    if (dbValue.OwnerId != 0 && ctx.User.Id != dbValue.OwnerId && !ctx.User.GuildPermissions.Administrator)
-                    {
-                        throw new Exception("이 항목에 접근할 권한이 없어요");
-                    }
+                    throw new Exception("이 항목에 접근할 권한이 없어요");
                 }
 
                 db.Remove(x);
@@ -404,14 +395,9 @@ namespace OliveToast.Managements.CustomCommand
             }),
             ToastCommand.CreateFunc<CustomCommandContext, string, bool>("isPrivate", (ctx, x) =>
             {
-                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+                Dictionary<string, OliveGuild.DbValue> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
 
-                if (db[x] is OliveGuild.DbValue dbValue)
-                {
-                    return dbValue.OwnerId != 0;
-                }
-
-                return false;
+                return db[x].OwnerId != 0;
             }),
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("dbKeys", (ctx) => OliveGuild.Get(ctx.Guild.Id).CommandDb.Keys.Select(k => (object)k).ToArray()),
         };

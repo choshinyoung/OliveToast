@@ -30,7 +30,7 @@ namespace OliveToast.Managements.data
 
         public Dictionary<string, List<CustomCommand>> Commands;
 
-        public Dictionary<string, object> CommandDb;
+        public Dictionary<string, DbValue> CommandDb;
 
         public OliveGuild(ulong id)
         {
