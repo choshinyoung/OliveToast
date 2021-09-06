@@ -132,6 +132,24 @@ namespace OliveToast.Managements.data
                 CanManageRole = acceptedPermissions.ManageRoles;
             }
         }
+
+        public class DbValue
+        {
+            public object Value;
+            public ulong OwnerId;
+
+            public DbValue(object value)
+            {
+                Value = value;
+                OwnerId = 0;
+            }
+
+            public DbValue(object value, ulong ownerId)
+            {
+                Value = value;
+                OwnerId = ownerId;
+            }
+        }
     }
 
     public class OliveUser

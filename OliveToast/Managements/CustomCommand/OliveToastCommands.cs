@@ -319,14 +319,32 @@ namespace OliveToast.Managements.CustomCommand
                 }
             }),
 
-            ToastCommand.CreateFunc<CustomCommandContext, string, object>("get", (ctx, x) => OliveGuild.Get(ctx.Guild.Id).CommandDb[x]),
+            ToastCommand.CreateFunc<CustomCommandContext, string, object>("get", (ctx, x) =>
+            {
+                object value = OliveGuild.Get(ctx.Guild.Id).CommandDb[x];
+
+                if (value is OliveGuild.DbValue dbValue)
+                {
+                    return dbValue.Value;
+                }
+
+                return value;
+            }),
             ToastCommand.CreateAction<CustomCommandContext, string, object>("set", (ctx, x, y) =>
             {
                 Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
 
                 if (db.ContainsKey(x))
                 {
-                    db[x] = y;
+                    if (db[x] is OliveGuild.DbValue dbValue)
+                    {
+                        if (dbValue.OwnerId != 0 && ctx.User.Id != dbValue.OwnerId && !ctx.User.GuildPermissions.Administrator)
+                        {
+                            throw new Exception("이 항목에 접근할 권한이 없어요");
+                        }
+                    }
+
+                    db[x] = new OliveGuild.DbValue(y);
                 }
                 else
                 {
@@ -335,7 +353,35 @@ namespace OliveToast.Managements.CustomCommand
                         throw new Exception("데이터베이스에 저장된 값이 너무 많아요");
                     }
 
-                    db.Add(x, y);
+                    db.Add(x, new OliveGuild.DbValue(y));
+                }
+
+                OliveGuild.Set(ctx.Guild.Id, guild => guild.CommandDb, db);
+            }),
+            ToastCommand.CreateAction<CustomCommandContext, string, object>("privateSet", (ctx, x, y) =>
+            {
+                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+
+                if (db.ContainsKey(x))
+                {
+                    if (db[x] is OliveGuild.DbValue dbValue)
+                    {
+                        if (dbValue.OwnerId != 0 && ctx.User.Id != dbValue.OwnerId && !ctx.User.GuildPermissions.Administrator)
+                        {
+                            throw new Exception("이 항목에 접근할 권한이 없어요");
+                        }
+                    }
+
+                    db[x] = new OliveGuild.DbValue(y, ctx.User.Id);
+                }
+                else
+                {
+                    if (db.Count > 100)
+                    {
+                        throw new Exception("데이터베이스에 저장된 값이 너무 많아요");
+                    }
+
+                    db.Add(x, new OliveGuild.DbValue(y, ctx.User.Id));
                 }
 
                 OliveGuild.Set(ctx.Guild.Id, guild => guild.CommandDb, db);
@@ -344,9 +390,28 @@ namespace OliveToast.Managements.CustomCommand
             {
                 Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
 
+                if (db[x] is OliveGuild.DbValue dbValue)
+                {
+                    if (dbValue.OwnerId != 0 && ctx.User.Id != dbValue.OwnerId && !ctx.User.GuildPermissions.Administrator)
+                    {
+                        throw new Exception("이 항목에 접근할 권한이 없어요");
+                    }
+                }
+
                 db.Remove(x);
 
                 OliveGuild.Set(ctx.Guild.Id, guild => guild.CommandDb, db);
+            }),
+            ToastCommand.CreateFunc<CustomCommandContext, string, bool>("isPrivate", (ctx, x) =>
+            {
+                Dictionary<string, object> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
+
+                if (db[x] is OliveGuild.DbValue dbValue)
+                {
+                    return dbValue.OwnerId != 0;
+                }
+
+                return false;
             }),
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("dbKeys", (ctx) => OliveGuild.Get(ctx.Guild.Id).CommandDb.Keys.Select(k => (object)k).ToArray()),
         };
