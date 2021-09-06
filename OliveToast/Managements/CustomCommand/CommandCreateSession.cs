@@ -142,7 +142,7 @@ namespace OliveToast.Managements.CustomCommand
                     }
                     else
                     {
-                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
+                        emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")).Slice(1000));
                     }
 
                     await session.Message.ModifyAsync(msg =>
@@ -215,7 +215,7 @@ namespace OliveToast.Managements.CustomCommand
 
                             if (session.CustomCommand.ToastLines.Count > 0)
                             {
-                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
+                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")).Slice(1000));
                             }
 
                             var commands = OliveGuild.Get(session.UserMessageContext.Guild.Id).Commands;
@@ -250,7 +250,7 @@ namespace OliveToast.Managements.CustomCommand
 
                             if (session.CustomCommand.ToastLines.Count > 0)
                             {
-                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
+                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")).Slice(1000));
                             }
 
                             await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
@@ -273,7 +273,7 @@ namespace OliveToast.Managements.CustomCommand
 
                             if (session.CustomCommand.ToastLines.Count > 0)
                             {
-                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")));
+                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l}\n```")).Slice(1000));
                             }
 
                             await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
