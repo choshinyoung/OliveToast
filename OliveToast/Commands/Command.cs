@@ -478,7 +478,7 @@ namespace OliveToast.Commands
 
             if (answer.ToastLines.Count > 0)
             {
-                emb.AddField("토스트 커맨드", string.Concat(answer.ToastLines.Select(l => $"```\n{l}\n```")));
+                emb.AddField("토스트 커맨드", string.Concat(answer.ToastLines.Select(l => $"```\n{l.Slice(60)}\n```")));
             }
 
             SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer.CreatedBy);
