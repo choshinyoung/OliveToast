@@ -92,10 +92,8 @@ namespace OliveToast.Commands
             }
 
             string target = commands.ElementAt(index).Key;
-            commands.Remove(target);
-            OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
-            
-            await Context.ReplyEmbedAsync($"`{target}` 커맨드를 삭제했어요");
+
+            await DeleteCommand(target);
         }
 
         [Command("커맨드 삭제"), Alias("커맨드 제거"), Priority(-1)]
@@ -111,10 +109,15 @@ namespace OliveToast.Commands
                 return;
             }
 
-            commands.Remove(command);
-            OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
-            
-            await Context.ReplyEmbedAsync($"`{command}` 커맨드를 삭제했어요");
+            EmbedBuilder emb = Context.CreateEmbed($"`{command}`커맨드를 삭제할까요?", "커맨드 삭제");
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("삭제", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.DeleteCommand}", ButtonStyle.Danger)
+                .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.Cancel}");
+
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+
+            CommandDeleteSession.Sessions.Add(Context.User.Id, new(Context, command));
         }
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
@@ -148,15 +151,15 @@ namespace OliveToast.Commands
                 return;
             }
 
-            commands[command].RemoveAll(c => c.Answer == answer);
-            if (!commands[command].Any())
-            {
-                commands.Remove(command);
-            }
+            EmbedBuilder emb = Context.CreateEmbed($"`{command}`커맨드의 응답 `{answer}` {commands[command].Count(c => c.Answer == answer)}개를 삭제할까요?", "커맨드 삭제");
 
-            OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("삭제", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.DeleteAnswers}", ButtonStyle.Danger)
+                .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.Cancel}");
 
-            await Context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+
+            CommandDeleteSession.Sessions.Add(Context.User.Id, new(Context, command, answer));
         }
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
@@ -220,16 +223,38 @@ namespace OliveToast.Commands
                 return;
             }
 
-            string answer = commands[command][aIndex].Answer;
-
-            commands[command].RemoveAt(aIndex);
-            if (!commands[command].Any())
+            if (CommandDeleteSession.Sessions.ContainsKey(Context.User.Id))
             {
-                commands.Remove(command);
+                await Context.ReplyEmbedAsync("이미 다른 커맨드를 삭제중이에요");
+                return;
             }
-            OliveGuild.Set(Context.Guild.Id, g => g.Commands, commands);
 
-            await Context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
+            EmbedBuilder emb = Context.CreateEmbed("이 커맨드를 삭제할까요?", "커맨드 삭제");
+
+            var answer = commands[command][aIndex];
+
+            emb.AddField("커맨드", command, true);
+            if (answer.Answer is not null)
+            {
+                emb.AddField("응답", answer.Answer, true);
+            }
+            emb.AddField("정규식 사용 여부", answer.IsRegex.ToEmoji(), true);
+
+            if (answer.ToastLines.Count > 0)
+            {
+                emb.AddField("토스트 커맨드", string.Concat(answer.ToastLines.Select(l => $"```\n{l.Slice(60)}\n```")));
+            }
+
+            SocketGuildUser user = Context.Guild.Users.ToList().Find(u => u.Id == answer.CreatedBy);
+            emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("삭제", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.DeleteSingleAnswer}", ButtonStyle.Danger)
+                .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.Cancel}");
+
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+
+            CommandDeleteSession.Sessions.Add(Context.User.Id, new(Context, cIndex, aIndex));
         }
 
         [Command("커맨드 목록")]

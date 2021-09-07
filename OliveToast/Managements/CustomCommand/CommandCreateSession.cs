@@ -250,7 +250,7 @@ namespace OliveToast.Managements.CustomCommand
 
                             if (session.CustomCommand.ToastLines.Count > 0)
                             {
-                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l.Slice(60)}\n```"))));
+                                emb.AddField("토스트 커맨드", string.Concat(session.CustomCommand.ToastLines.Select(l => $"```\n{l.Slice(60)}\n```")));
                             }
 
                             await session.UserMessageContext.ReplyEmbedAsync(emb.Build());
@@ -319,6 +319,47 @@ namespace OliveToast.Managements.CustomCommand
             string content = File.ReadAllText("Configs/regexTestStrings.json");
 
             Strings = JsonConvert.DeserializeObject<List<string>>(content);
+        }
+    }
+
+    class CommandDeleteSession
+    {
+        public enum ResponseType
+        {
+            DeleteCommand, DeleteAnswers, DeleteSingleAnswer, Cancel
+        }
+
+        public static Dictionary<ulong, CommandDeleteSession> Sessions = new();
+
+        public SocketCommandContext Context;
+
+        public int CommandIndex;
+        public int AnswerIndex;
+
+        public string Command;
+        public string Answer;
+
+        public CommandDeleteSession(SocketCommandContext context, int cIndex, int aIndex)
+        {
+            Context = context;
+
+            CommandIndex = cIndex;
+            AnswerIndex = aIndex;
+        }
+
+        public CommandDeleteSession(SocketCommandContext context, string command, string answer)
+        {
+            Context = context;
+
+            Command = command;
+            Answer = answer;
+        }
+
+        public CommandDeleteSession(SocketCommandContext context, string command)
+        {
+            Context = context;
+
+            Command = command;
         }
     }
 }

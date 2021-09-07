@@ -19,7 +19,7 @@ namespace OliveToast
     {
         public enum InteractionType
         {
-            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearch, SetJoinEvent, SetLeaveEvent
+            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearch, DeleteCommand
         }
 
         public static readonly string prefix = ConfigManager.Get("PREFIX");
@@ -279,10 +279,61 @@ namespace OliveToast
                     await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
 
                     break;
-                case InteractionType.SetJoinEvent:
+                case InteractionType.DeleteCommand:
+                    if (!CommandDeleteSession.Sessions.ContainsKey(userId))
+                    {
+                        break;
+                    }
 
-                    break;
-                case InteractionType.SetLeaveEvent:
+                    context = CommandDeleteSession.Sessions[userId].Context;
+
+                    CommandDeleteSession.ResponseType deleteResponse = (CommandDeleteSession.ResponseType)int.Parse(args[2]);
+
+                    var commands = OliveGuild.Get(context.Guild.Id).Commands;
+
+                    if (deleteResponse == CommandDeleteSession.ResponseType.Cancel)
+                    {
+                        CommandDeleteSession.Sessions.Remove(userId);
+
+                        await context.ReplyEmbedAsync("커맨드 삭제를 취소했어요");
+
+                        break;
+                    }
+                    else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteSingleAnswer)
+                    {
+                        command = commands.Keys.ToList()[CommandDeleteSession.Sessions[userId].CommandIndex];
+                        string answer = commands[command][CommandDeleteSession.Sessions[userId].AnswerIndex].Answer;
+
+                        commands[command].RemoveAt(CommandDeleteSession.Sessions[userId].AnswerIndex);
+                        if (!commands[command].Any())
+                        {
+                            commands.Remove(command);
+                        }
+                        OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+
+                        await context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
+                    }
+                    else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteAnswers)
+                    {
+                        commands[CommandDeleteSession.Sessions[userId].Command].RemoveAll(c => c.Answer == CommandDeleteSession.Sessions[userId].Answer);
+                        if (!commands[CommandDeleteSession.Sessions[userId].Command].Any())
+                        {
+                            commands.Remove(CommandDeleteSession.Sessions[userId].Command);
+                        }
+
+                        OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+
+                        await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드의 응답 `{CommandDeleteSession.Sessions[userId].Answer.을를("`")} 삭제했어요");
+                    }
+                    else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteCommand)
+                    {
+                        commands.Remove(CommandDeleteSession.Sessions[userId].Command);
+                        OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+
+                        await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드를 삭제했어요");
+                    }
+
+                    CommandDeleteSession.Sessions.Remove(userId);
 
                     break;
             }
