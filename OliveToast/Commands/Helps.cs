@@ -69,7 +69,7 @@ namespace OliveToast.Commands
 
                     foreach (CommandInfo info in commandInfos)
                     {
-                        string aliases = info.Aliases.Count > 1 ? string.Join(" ", info.Aliases.Where(a => a != info.Name).Select(a => $"`-{a}`")) + "\n" : "";
+                        string aliases = info.Aliases.Count > 1 ? string.Join(" ", info.Aliases.Where(a => a != info.Name).Select(a => $"`{CommandEventHandler.prefix}{a}`")) + "\n" : "";
 
                         string param = "";
                         foreach (ParameterInfo paramInfo in info.Parameters)
