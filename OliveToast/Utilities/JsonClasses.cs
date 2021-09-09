@@ -370,7 +370,7 @@ namespace OliveToast.Utilities
         public class Data
         {
             public bool voted { get; set; }
-            public long lastVote { get; set; }
+            public long? lastVote { get; set; }
         }
     }
 
