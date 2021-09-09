@@ -42,7 +42,7 @@ namespace OliveToast.Commands
             }
             catch (Exception e)
             {
-                EmbedBuilder emb = Context.CreateEmbed(e.ToString(), "오류 발생!");
+                EmbedBuilder emb = Context.CreateEmbed(e.ToString().Slice(4000), "오류 발생!");
                 await Context.ReplyEmbedAsync(emb.Build());
             }
         }

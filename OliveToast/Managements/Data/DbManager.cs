@@ -9,7 +9,7 @@ using static OliveToast.Utilities.RequireCategoryEnable;
 
 namespace OliveToast.Managements.data
 {
-    class DbManager
+    public class DbManager
     {
         public static MongoClient Client = new("mongodb://localhost");
         public static MongoDatabaseBase Db = (MongoDatabaseBase)Client.GetDatabase("oliveDb");

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OliveToast
 {
-    class Program
+    public class Program
     {
         public static DiscordSocketClient Client;
         public static CommandService Command;
