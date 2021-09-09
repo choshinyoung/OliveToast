@@ -40,7 +40,7 @@ namespace OliveToast.Utilities
 
             var result = JsonConvert.DeserializeObject<Voted>(await response.Content.ReadAsStringAsync());
 
-            return (DateTimeOffset.Now.ToKST() - Utility.TimestampToDateTime(result.data.lastVote)).Days > 7;
+            return result.data.lastVote.HasValue && (DateTimeOffset.Now.ToKST() - Utility.TimestampToDateTime(result.data.lastVote.Value)).Days > 7;
         }
     }
 }
