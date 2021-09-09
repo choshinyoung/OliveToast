@@ -361,6 +361,8 @@ namespace OliveToast
 
         public static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
+            if ((reaction.Channel as SocketTextChannel).Guild.GetUser(reaction.UserId).IsBot) return;
+
             new Task(async () =>
             {
                 await CustomCommandExecutor.OnReactionAdded(reaction);
