@@ -78,270 +78,295 @@ namespace OliveToast
 
         public static async Task OnUserJoined(SocketGuildUser arg)
         {
-            SocketGuild guild = arg.Guild;
-            if (guild.SystemChannel is null)
+            new Task(async () =>
             {
-                return;
-            }
-
-            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
-
-            string joinMessage = setting.JoinMessage;
-            List<string> toastLines = setting.JoinMessageToastLines;
-
-            Toaster toaster = CustomCommandExecutor.GetToaster();
-            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, arg.Guild.OwnerId, Array.Empty<string>(), true, true, true);
-            string output = (string)toaster.Execute($"\"{joinMessage}\"", context);
-
-            if (output is not null and not "")
-            {
-                if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
+                SocketGuild guild = arg.Guild;
+                if (guild.SystemChannel is null)
                 {
-                    await guild.SystemChannel.SendMessageAsync(output);
+                    return;
                 }
-            }
 
-            foreach (string line in toastLines)
-            {
-                toaster.Execute(line, context);
-            }
+                OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+
+                string joinMessage = setting.JoinMessage;
+                List<string> toastLines = setting.JoinMessageToastLines;
+
+                Toaster toaster = CustomCommandExecutor.GetToaster();
+                CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, arg.Guild.OwnerId, Array.Empty<string>(), true, true, true);
+                string output = (string)toaster.Execute($"\"{joinMessage}\"", context);
+
+                if (output is not null and not "")
+                {
+                    if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
+                    {
+                        await guild.SystemChannel.SendMessageAsync(output);
+                    }
+                }
+
+                foreach (string line in toastLines)
+                {
+                    toaster.Execute(line, context);
+                }
+            }).Start();
+
+            await Task.CompletedTask;
         }
 
         public static async Task OnUserLeft(SocketGuildUser arg)
         {
-            SocketGuild guild = arg.Guild;
-            if (guild.SystemChannel is null)
+            new Task(async () =>
             {
-                return;
-            }
-
-            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
-
-            string leaveMessage = setting.LeaveMessage;
-            List<string> toastLines = setting.LeaveMessageToastLines;
-
-            Toaster toaster = CustomCommandExecutor.GetToaster();
-            CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, arg.Guild.OwnerId, Array.Empty<string>(), true, true, true);
-            string output = (string)toaster.Execute($"\"{leaveMessage}\"", context);
-
-            if (output is not null and not "")
-            {
-                if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
+                SocketGuild guild = arg.Guild;
+                if (guild.SystemChannel is null)
                 {
-                    await guild.SystemChannel.SendMessageAsync(output);
+                    return;
                 }
-            }
 
-            foreach (string line in toastLines)
-            {
-                toaster.Execute(line, context);
-            }
+                OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+
+                string leaveMessage = setting.LeaveMessage;
+                List<string> toastLines = setting.LeaveMessageToastLines;
+
+                Toaster toaster = CustomCommandExecutor.GetToaster();
+                CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, arg.Guild.OwnerId, Array.Empty<string>(), true, true, true);
+                string output = (string)toaster.Execute($"\"{leaveMessage}\"", context);
+
+                if (output is not null and not "")
+                {
+                    if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
+                    {
+                        await guild.SystemChannel.SendMessageAsync(output);
+                    }
+                }
+
+                foreach (string line in toastLines)
+                {
+                    toaster.Execute(line, context);
+                }
+            }).Start();
+
+            await Task.CompletedTask;
         }
 
         public static async Task OnMessageReceived(SocketMessage msg)
         {
-            if (msg is not SocketUserMessage userMsg || userMsg.Content == null ||
-                userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot || SpecialListManager.IsBlackList(msg.Author.Id)) return;
-
-            SocketCommandContext context = new(Program.Client, userMsg);
-
-            if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content) || await CustomCommandExecutor.OnMessageReceived(context))
+            new Task(async () =>
             {
-                return;
-            }
+                if (msg is not SocketUserMessage userMsg || userMsg.Content == null ||
+                    userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot || SpecialListManager.IsBlackList(msg.Author.Id)) return;
 
-            int argPos = 0;
-            if (userMsg.HasStringPrefix(prefix, ref argPos) || userMsg.HasMentionPrefix(Program.Client.CurrentUser, ref argPos))
-            {
-                if (Program.Command.Search(context, argPos).IsSuccess)
+                SocketCommandContext context = new(Program.Client, userMsg);
+
+                if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content) || await CustomCommandExecutor.OnMessageReceived(context))
                 {
-                    if (CommandRateLimit.AddCount(context.User.Id))
+                    return;
+                }
+
+                int argPos = 0;
+                if (userMsg.HasStringPrefix(prefix, ref argPos) || userMsg.HasMentionPrefix(Program.Client.CurrentUser, ref argPos))
+                {
+                    if (Program.Command.Search(context, argPos).IsSuccess)
                     {
-                        await Program.Command.ExecuteAsync(context, argPos, Program.Service);
-                    }
-                    else
-                    {
-                        await context.Message.AddReactionAsync(new Emoji("🚫"));
+                        if (CommandRateLimit.AddCount(context.User.Id))
+                        {
+                            await Program.Command.ExecuteAsync(context, argPos, Program.Service);
+                        }
+                        else
+                        {
+                            await context.Message.AddReactionAsync(new Emoji("🚫"));
+                        }
                     }
                 }
-            }
 
-            if (context.IsPrivate)
-            {
-                return;
-            }
-
-            OliveGuild guild = OliveGuild.Get(context.Guild.Id);
-
-            new Task(async () => await CustomCommandExecutor.Execute(context, guild)).Start();
-
-            #region level
-            if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Level))
-            {
-                return;
-            }
-            if (guild.Setting.NonXpChannels.Contains(context.Channel.Id))
-            {
-                return;
-            }
-
-            string UserId = context.User.Id.ToString();
-            if (guild.Levels.ContainsKey(UserId))
-            {
-                guild.Levels[UserId].Xp++;
-                if (guild.Levels[UserId].Xp >= Utility.GetLevelXp(guild.Levels[UserId].Level))
+                if (context.IsPrivate)
                 {
-                    guild.Levels[UserId].Level++;
-                    guild.Levels[UserId].Xp = 0;
+                    return;
+                }
 
-                    string lv = guild.Levels[UserId].Level.ToString();
+                OliveGuild guild = OliveGuild.Get(context.Guild.Id);
 
-                    if (guild.Setting.LevelUpChannelId.HasValue && context.Guild.Channels.Any(c => c.Id == guild.Setting.LevelUpChannelId.Value))
+                new Task(async () => await CustomCommandExecutor.Execute(context, guild)).Start();
+
+                #region level
+                if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Level))
+                {
+                    return;
+                }
+                if (guild.Setting.NonXpChannels.Contains(context.Channel.Id))
+                {
+                    return;
+                }
+
+                string UserId = context.User.Id.ToString();
+                if (guild.Levels.ContainsKey(UserId))
+                {
+                    guild.Levels[UserId].Xp++;
+                    if (guild.Levels[UserId].Xp >= Utility.GetLevelXp(guild.Levels[UserId].Level))
                     {
-                        SocketTextChannel c = context.Guild.GetTextChannel(guild.Setting.LevelUpChannelId.Value);
+                        guild.Levels[UserId].Level++;
+                        guild.Levels[UserId].Xp = 0;
 
-                        await c.SendMessageAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:");
-                    }
-                    else
-                    {
-                        await context.ReplyEmbedAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
-                    }
+                        string lv = guild.Levels[UserId].Level.ToString();
 
-                    if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
-                    {
-                        await (context.User as SocketGuildUser).AddRoleAsync(context.Guild.GetRole(guild.Setting.LevelRoles[lv]));
+                        if (guild.Setting.LevelUpChannelId.HasValue && context.Guild.Channels.Any(c => c.Id == guild.Setting.LevelUpChannelId.Value))
+                        {
+                            SocketTextChannel c = context.Guild.GetTextChannel(guild.Setting.LevelUpChannelId.Value);
+
+                            await c.SendMessageAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:");
+                        }
+                        else
+                        {
+                            await context.ReplyEmbedAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
+                        }
+
+                        if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
+                        {
+                            await (context.User as SocketGuildUser).AddRoleAsync(context.Guild.GetRole(guild.Setting.LevelRoles[lv]));
+                        }
                     }
                 }
-            }
-            else
-            {
-                guild.Levels.Add(UserId, new OliveGuild.UserLevel());
-                guild.Levels[UserId].Xp++;
-            }
-            
-            OliveGuild.Set(context.Guild.Id, g => g.Levels, guild.Levels);
-            #endregion
+                else
+                {
+                    guild.Levels.Add(UserId, new OliveGuild.UserLevel());
+                    guild.Levels[UserId].Xp++;
+                }
+
+                OliveGuild.Set(context.Guild.Id, g => g.Levels, guild.Levels);
+                #endregion
+            }).Start();
+
+            await Task.CompletedTask;
         }
 
         public static async Task OnInteractionCreated(SocketInteraction arg)
         {
-            SocketMessageComponent component = arg as SocketMessageComponent;
-            string[] args = component.Data.CustomId.Split('.');
-
-            ulong userId = ulong.Parse(args[0]);
-            InteractionType type = (InteractionType)int.Parse(args[1]);
-
-            if (component.User.Id != userId) return;
-
-            switch (type)
+            new Task(async () =>
             {
-                case InteractionType.CreateCommand:
-                    CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
-                    await CommandCreateSession.ButtonResponse(userId, response);
+                SocketMessageComponent component = arg as SocketMessageComponent;
+                string[] args = component.Data.CustomId.Split('.');
 
-                    break;
-                case InteractionType.CancelTypingGame:
-                    if (!TypingSession.Sessions.ContainsKey(userId))
-                    {
-                        break;
-                    }
+                ulong userId = ulong.Parse(args[0]);
+                InteractionType type = (InteractionType)int.Parse(args[1]);
 
-                    SocketCommandContext context = TypingSession.Sessions[userId].Context;
+                if (component.User.Id != userId) return;
 
-                    TypingSession.Sessions.Remove(userId);
-                    await context.ReplyEmbedAsync("게임이 취소됐어요");
-
-                    break;
-                case InteractionType.CancelWordGame:
-                    if (!WordSession.Sessions.ContainsKey(userId))
-                    {
-                        break;
-                    }
-
-                    context = WordSession.Sessions[userId].Context;
-
-                    WordSession.Sessions.Remove(userId);
-                    await context.ReplyEmbedAsync("게임이 취소됐어요");
-
-                    break;
-                case InteractionType.CommandList:
-                    SocketGuild guild = Program.Client.GetGuild(ulong.Parse(args[2]));
-                    int page = int.Parse(args[3]);
-
-                    await Command.ChangeListPage(guild, userId, component.Message, page);
-
-                    break;
-                case InteractionType.CommandAnswerList:
-                    guild = Program.Client.GetGuild(ulong.Parse(args[2]));
-                    string command = args[3];
-                    page = int.Parse(args[4]);
-
-                    await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
-
-                    break;
-                case InteractionType.DeleteCommand:
-                    if (!CommandDeleteSession.Sessions.ContainsKey(userId))
-                    {
-                        break;
-                    }
-
-                    context = CommandDeleteSession.Sessions[userId].Context;
-
-                    CommandDeleteSession.ResponseType deleteResponse = (CommandDeleteSession.ResponseType)int.Parse(args[2]);
-
-                    var commands = OliveGuild.Get(context.Guild.Id).Commands;
-
-                    if (deleteResponse == CommandDeleteSession.ResponseType.Cancel)
-                    {
-                        CommandDeleteSession.Sessions.Remove(userId);
-
-                        await context.ReplyEmbedAsync("커맨드 삭제를 취소했어요");
+                switch (type)
+                {
+                    case InteractionType.CreateCommand:
+                        CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
+                        await CommandCreateSession.ButtonResponse(userId, response);
 
                         break;
-                    }
-                    else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteSingleAnswer)
-                    {
-                        command = commands.Keys.ToList()[CommandDeleteSession.Sessions[userId].CommandIndex];
-                        string answer = commands[command][CommandDeleteSession.Sessions[userId].AnswerIndex].Answer;
-
-                        commands[command].RemoveAt(CommandDeleteSession.Sessions[userId].AnswerIndex);
-                        if (!commands[command].Any())
+                    case InteractionType.CancelTypingGame:
+                        if (!TypingSession.Sessions.ContainsKey(userId))
                         {
-                            commands.Remove(command);
+                            break;
                         }
-                        OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
 
-                        await context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
-                    }
-                    else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteAnswers)
-                    {
-                        commands[CommandDeleteSession.Sessions[userId].Command].RemoveAll(c => c.Answer == CommandDeleteSession.Sessions[userId].Answer);
-                        if (!commands[CommandDeleteSession.Sessions[userId].Command].Any())
+                        SocketCommandContext context = TypingSession.Sessions[userId].Context;
+
+                        TypingSession.Sessions.Remove(userId);
+                        await context.ReplyEmbedAsync("게임이 취소됐어요");
+
+                        break;
+                    case InteractionType.CancelWordGame:
+                        if (!WordSession.Sessions.ContainsKey(userId))
+                        {
+                            break;
+                        }
+
+                        context = WordSession.Sessions[userId].Context;
+
+                        WordSession.Sessions.Remove(userId);
+                        await context.ReplyEmbedAsync("게임이 취소됐어요");
+
+                        break;
+                    case InteractionType.CommandList:
+                        SocketGuild guild = Program.Client.GetGuild(ulong.Parse(args[2]));
+                        int page = int.Parse(args[3]);
+
+                        await Command.ChangeListPage(guild, userId, component.Message, page);
+
+                        break;
+                    case InteractionType.CommandAnswerList:
+                        guild = Program.Client.GetGuild(ulong.Parse(args[2]));
+                        string command = args[3];
+                        page = int.Parse(args[4]);
+
+                        await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
+
+                        break;
+                    case InteractionType.DeleteCommand:
+                        if (!CommandDeleteSession.Sessions.ContainsKey(userId))
+                        {
+                            break;
+                        }
+
+                        context = CommandDeleteSession.Sessions[userId].Context;
+
+                        CommandDeleteSession.ResponseType deleteResponse = (CommandDeleteSession.ResponseType)int.Parse(args[2]);
+
+                        var commands = OliveGuild.Get(context.Guild.Id).Commands;
+
+                        if (deleteResponse == CommandDeleteSession.ResponseType.Cancel)
+                        {
+                            CommandDeleteSession.Sessions.Remove(userId);
+
+                            await context.ReplyEmbedAsync("커맨드 삭제를 취소했어요");
+
+                            break;
+                        }
+                        else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteSingleAnswer)
+                        {
+                            command = commands.Keys.ToList()[CommandDeleteSession.Sessions[userId].CommandIndex];
+                            string answer = commands[command][CommandDeleteSession.Sessions[userId].AnswerIndex].Answer;
+
+                            commands[command].RemoveAt(CommandDeleteSession.Sessions[userId].AnswerIndex);
+                            if (!commands[command].Any())
+                            {
+                                commands.Remove(command);
+                            }
+                            OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+
+                            await context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
+                        }
+                        else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteAnswers)
+                        {
+                            commands[CommandDeleteSession.Sessions[userId].Command].RemoveAll(c => c.Answer == CommandDeleteSession.Sessions[userId].Answer);
+                            if (!commands[CommandDeleteSession.Sessions[userId].Command].Any())
+                            {
+                                commands.Remove(CommandDeleteSession.Sessions[userId].Command);
+                            }
+
+                            OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+
+                            await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드의 응답 `{CommandDeleteSession.Sessions[userId].Answer.을를("`")} 삭제했어요");
+                        }
+                        else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteCommand)
                         {
                             commands.Remove(CommandDeleteSession.Sessions[userId].Command);
+                            OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+
+                            await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드를 삭제했어요");
                         }
 
-                        OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+                        CommandDeleteSession.Sessions.Remove(userId);
 
-                        await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드의 응답 `{CommandDeleteSession.Sessions[userId].Answer.을를("`")} 삭제했어요");
-                    }
-                    else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteCommand)
-                    {
-                        commands.Remove(CommandDeleteSession.Sessions[userId].Command);
-                        OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
+                        break;
+                }
+            }).Start();
 
-                        await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드를 삭제했어요");
-                    }
-
-                    CommandDeleteSession.Sessions.Remove(userId);
-
-                    break;
-            }
+            await Task.CompletedTask;
         }
 
         public static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
-            await CustomCommandExecutor.OnReactionAdded(reaction);
+            new Task(async () =>
+            {
+                await CustomCommandExecutor.OnReactionAdded(reaction);
+            }).Start();
+
+            await Task.CompletedTask;
         }
 
         public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
