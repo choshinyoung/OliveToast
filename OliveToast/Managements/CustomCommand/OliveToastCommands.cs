@@ -493,6 +493,16 @@ namespace OliveToast.Managements.CustomCommand
 
                 return ctx.Guild.GetRole(x);
             }),
+
+            ToastConverter.Create<object[], object[]>((ctx, x) =>
+            {
+                if (x.Length > 1024)
+                {
+                    throw new Exception("리스트의 크기가 너무 커요");
+                }
+
+                return x;
+            }),
         };
     }
 }
