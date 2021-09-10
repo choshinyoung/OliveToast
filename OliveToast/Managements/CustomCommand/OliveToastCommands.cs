@@ -37,6 +37,14 @@ namespace OliveToast.Managements.CustomCommand
 
                 return x.Equals(y);
             }, 9),
+            ToastCommand.CreateFunc<ToastContext, int, int, object[]>("range", (ctx, x, y) => {
+                if (y > 1024)
+                {
+                    throw new Exception("리스트의 크기가 너무 커요");
+                }
+
+                return Enumerable.Range(x, y).Select(a => (object)a).ToArray();
+            }),
 
             ToastCommand.CreateFunc<CustomCommandContext, int, string>("group", (ctx, x) => ctx.Groups[x]),
 
