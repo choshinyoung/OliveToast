@@ -38,7 +38,7 @@ namespace OliveToast.Managements.CustomCommand
                 return x.Equals(y);
             }, 9),
             ToastCommand.CreateFunc<ToastContext, int, int, object[]>("range", (ctx, x, y) => {
-                if (y > 1024)
+                if (y > 2048)
                 {
                     throw new Exception("리스트의 크기가 너무 커요");
                 }
@@ -504,7 +504,7 @@ namespace OliveToast.Managements.CustomCommand
 
             ToastConverter.Create<object[], object[]>((ctx, x) =>
             {
-                if (x.Length > 1024)
+                if (x.Length > 2048)
                 {
                     throw new Exception("리스트의 크기가 너무 커요");
                 }
