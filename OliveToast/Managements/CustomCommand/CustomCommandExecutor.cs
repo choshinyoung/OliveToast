@@ -17,7 +17,10 @@ namespace OliveToast.Managements.CustomCommand
     {
         public static Toaster GetToaster()
         {
-            Toaster toaster = new();
+            Toaster toaster = new()
+            {
+                MaxDepth = 32,
+            };
 
             toaster.AddCommand(BasicCommands.Literals);
             toaster.AddCommand(BasicCommands.Operators.Except(new List<ToastCommand>() { BasicCommands.Equal }).ToArray());
