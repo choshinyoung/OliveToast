@@ -6,6 +6,8 @@
 
 디스코드 봇 올리브토스트 v6의 소스코드입니다
 
+[초대하기](https://discord.com/oauth2/authorize?client_id=495209098929766400&scope=bot&permissions=2416241734)
+
 ## Initialize
 
 1. [appsettings.example.json](OliveToast/Configs/appsettings.example.json)의 이름을 `appsettings.json`으로 변경 후 내용 작성
