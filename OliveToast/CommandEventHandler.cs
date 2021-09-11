@@ -361,10 +361,10 @@ namespace OliveToast
 
         public static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
-            if ((reaction.Channel as SocketTextChannel).Guild.GetUser(reaction.UserId).IsBot) return;
-
             new Task(async () =>
             {
+                if ((reaction.Channel as SocketTextChannel).Guild.GetUser(reaction.UserId).IsBot) return;
+
                 await CustomCommandExecutor.OnReactionAdded(reaction);
             }).Start();
 
@@ -373,27 +373,32 @@ namespace OliveToast
 
         public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            if (!result.IsSuccess)
+            new Task(async () =>
             {
-                var ctx = context as SocketCommandContext;
-
-                if (Program.IsDebugMode)
+                if (!result.IsSuccess)
                 {
-                    EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
-                    await ctx.ReplyEmbedAsync(emb.Build());
+                    var ctx = context as SocketCommandContext;
+
+                    if (Program.IsDebugMode)
+                    {
+                        EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
+                        await ctx.ReplyEmbedAsync(emb.Build());
+                    }
+                    else
+                    {
+                        await context.Message.AddReactionAsync(new Emoji("⚠️"));
+                    }
                 }
                 else
                 {
-                    await context.Message.AddReactionAsync(new Emoji("⚠️"));
+                    if (new Random().Next(0, 15) == 0 && await KoreanBots.IsNotVotedAsync(context.User.Id))
+                    {
+                        await (context as SocketCommandContext).ReplyEmbedAsync("[KOREANBOTS](https://koreanbots.dev/bots/495209098929766400)에서 올리브토스트에게 하트를 추가해주세요!\n(하트는 12시간마다 한번씩 추가할 수 있어요)");
+                    }
                 }
-            }
-            else
-            {
-                if (new Random().Next(0, 15) == 0 && await KoreanBots.IsNotVotedAsync(context.User.Id))
-                {
-                    await (context as SocketCommandContext).ReplyEmbedAsync("[KOREANBOTS](https://koreanbots.dev/bots/495209098929766400)에서 올리브토스트에게 하트를 추가해주세요!\n(하트는 12시간마다 한번씩 추가할 수 있어요)");
-                }
-            }
+            }).Start();
+
+            await Task.CompletedTask;
         }
     }
 }
