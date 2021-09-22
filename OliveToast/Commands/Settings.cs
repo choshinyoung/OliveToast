@@ -205,7 +205,7 @@ namespace OliveToast.Commands
                 ComponentBuilder component = new ComponentBuilder()
                     .WithButton("응답 없이 계속하기", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ContinueWithoutAnswer}")
                     .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
-                    .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
+                    /* .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/") */;
 
                 msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
 

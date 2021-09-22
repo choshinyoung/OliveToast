@@ -63,7 +63,7 @@ namespace OliveToast.Commands
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ChangeRegex}")
                 .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
-                .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
+                /* .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/") */;
 
             RestUserMessage msg = await Context.ReplyEmbedAsync("커맨드를 입력해주세요", component: component.Build());
 
