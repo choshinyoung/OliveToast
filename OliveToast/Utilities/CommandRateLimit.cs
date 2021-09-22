@@ -5,8 +5,8 @@ namespace OliveToast.Utilities
 {
     class CommandRateLimit
     {
-        public const int LimitCount = 5;
-        public const int LimitingTime = 10;
+        public static int LimitCount = 5;
+        public static int LimitingTime = 10;
 
         private static readonly Dictionary<ulong, int> RateLimits = new();
 

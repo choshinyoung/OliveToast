@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.Scripting;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static OliveToast.Utilities.RequirePermission;
 
@@ -14,6 +16,8 @@ namespace OliveToast.Commands
     [Name("어드민")]
     public class Admin : ModuleBase<SocketCommandContext>
     {
+        public static Dictionary<string, int> CommandStats = new();
+
         [Command("실행"), Alias("이발", "eval")]
         [RequirePermission(PermissionType.BotAdmin)]
         [Summary("C# 코드를 실행합니다")]
@@ -180,6 +184,21 @@ namespace OliveToast.Commands
             }
 
             await Context.ReplyEmbedAsync("메시지를 전송했어요");
+        }
+
+        [Command("통계")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커맨드 사용 통계를 확인합니다")]
+        public async Task CheckStat()
+        {
+            var sorted = CommandStats.ToList();
+            sorted.Sort((p1, p2) => p2.Value.CompareTo(p1.Value));
+
+            var str = sorted.Select(p => $"`{CommandEventHandler.prefix}{p.Key}`: {p.Value}\n");
+
+            EmbedBuilder emb = Context.CreateEmbed(string.Concat(str), $"지난 {(int)((DateTime.Now - Program.Uptime).TotalHours)}시간 동안 사용된 커맨드 통계");
+
+            await Context.ReplyEmbedAsync(emb.Build());
         }
     }
 }

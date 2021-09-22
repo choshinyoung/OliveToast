@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using OliveToast.Commands;
 using OliveToast.Managements.data;
 using OliveToast.Utilities;
 using System;
@@ -56,6 +57,16 @@ namespace OliveToast.Managements.CustomCommand
             if (!CommandExecuteSession.Sessions.ContainsKey(context.User.Id) && CommandRateLimit.AddCount(context.User.Id))
             {
                 var command = answers[new Random().Next(answers.Count)];
+
+                string key = command.command.ToastLines.Any() ? "토스트 커맨드가 있는 커스텀 커맨드" : "커스텀 커맨드";
+                if (Admin.CommandStats.ContainsKey(key))
+                {
+                    Admin.CommandStats[key]++;
+                }
+                else
+                {
+                    Admin.CommandStats.Add(key, 1);
+                }
 
                 SocketUserMessage botMessage = null;
                 if (command.command.Answer is not null)
