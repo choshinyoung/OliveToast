@@ -256,6 +256,8 @@ namespace OliveToast
                         CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
                         await CommandCreateSession.ButtonResponse(userId, response);
 
+                        await arg.DeferAsync();
+
                         break;
                     case InteractionType.CancelTypingGame:
                         if (!TypingSession.Sessions.ContainsKey(userId))
@@ -267,6 +269,8 @@ namespace OliveToast
 
                         TypingSession.Sessions.Remove(userId);
                         await context.ReplyEmbedAsync("게임이 취소됐어요");
+
+                        await arg.DeferAsync();
 
                         break;
                     case InteractionType.CancelWordGame:
@@ -280,12 +284,16 @@ namespace OliveToast
                         WordSession.Sessions.Remove(userId);
                         await context.ReplyEmbedAsync("게임이 취소됐어요");
 
+                        await arg.DeferAsync();
+
                         break;
                     case InteractionType.CommandList:
                         SocketGuild guild = Program.Client.GetGuild(ulong.Parse(args[2]));
                         int page = int.Parse(args[3]);
 
                         await Command.ChangeListPage(guild, userId, component.Message, page);
+
+                        await arg.DeferAsync();
 
                         break;
                     case InteractionType.CommandAnswerList:
@@ -294,6 +302,8 @@ namespace OliveToast
                         page = int.Parse(args[4]);
 
                         await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
+
+                        await arg.DeferAsync();
 
                         break;
                     case InteractionType.DeleteCommand:
@@ -313,6 +323,8 @@ namespace OliveToast
                             CommandDeleteSession.Sessions.Remove(userId);
 
                             await context.ReplyEmbedAsync("커맨드 삭제를 취소했어요");
+
+                            await arg.DeferAsync();
 
                             break;
                         }
@@ -351,6 +363,8 @@ namespace OliveToast
                         }
 
                         CommandDeleteSession.Sessions.Remove(userId);
+
+                        await arg.DeferAsync();
 
                         break;
                 }
