@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="choshinyoung.Toast" Version="1.4.2" />
-    <PackageReference Include="Discord.Net.Labs" Version="3.0.3" />
+    <PackageReference Include="Discord.Net.Labs" Version="3.1.0" />
     <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.11.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
