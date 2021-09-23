@@ -181,7 +181,7 @@ namespace OliveToast.Managements.CustomCommand
                     ComponentBuilder component = new ComponentBuilder()
                         .WithButton(session.CustomCommand.IsRegex ? "일반 텍스트로 변경" : "정규식으로 변경", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.ChangeRegex}")
                         .WithButton("취소", $"{userId}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger)
-                        /* .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/") */;
+                        .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                     await session.Message.ModifyAsync(msg =>
                     {
