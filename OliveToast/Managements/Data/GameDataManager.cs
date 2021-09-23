@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OliveToast.Managements.Data
 {
-    class WordsManager
+    public class WordsManager
     {
         public static readonly List<string> Words;
 
@@ -16,7 +16,7 @@ namespace OliveToast.Managements.Data
         }
     }
 
-    class SentenceManager
+    public class SentenceManager
     {
         public static readonly List<string> Sentences;
         public static readonly List<string> EnSentences;
