@@ -14,21 +14,43 @@ namespace OliveToast.Utilities
     {
         public static async Task<RestUserMessage> ReplyAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
         {
-            MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
-            return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+            if (await context.Channel.GetMessageAsync(context.Message.Id) is not null)
+            {
+                MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
+                return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+            }
+            else
+            {
+                return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, component: component);
+            }
         }
 
         public static async Task<RestUserMessage> ReplyEmbedAsync(this SocketCommandContext context, object content, bool disalbeMention = true, MessageComponent component = null)
         {
-            Embed emb = context.CreateEmbed(content.ToString()).Build();
-            MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
-            return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+            if (await context.Channel.GetMessageAsync(context.Message.Id) is not null)
+            {
+                Embed emb = context.CreateEmbed(content.ToString()).Build();
+                MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+            }
+            else
+            {
+                Embed emb = context.CreateEmbed(content.ToString()).Build();
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, component: component);
+            }
         }
 
         public static async Task<RestUserMessage> ReplyEmbedAsync(this SocketCommandContext context, Embed emb, bool disalbeMention = true, MessageComponent component = null)
         {
-            MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
-            return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+            if (await context.Channel.GetMessageAsync(context.Message.Id) is not null)
+            {
+                MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+            }
+            else
+            {
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, component: component);
+            }
         }
 
         public static EmbedBuilder CreateEmbed(this SocketCommandContext context, object description = null, string title = null, string imgUrl = null, string url = null, string thumbnailUrl = null, Color? color = null)

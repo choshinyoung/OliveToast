@@ -3,7 +3,6 @@ using Discord.WebSocket;
 using MongoDB.Driver;
 using OliveToast.Managements.data;
 using OliveToast.Utilities;
-using System;
 using System.Threading.Tasks;
 
 namespace OliveToast
@@ -18,7 +17,7 @@ namespace OliveToast
 
         public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 if (channel.GetType() != typeof(SocketTextChannel))
                 {
@@ -80,14 +79,12 @@ namespace OliveToast
                 }
 
                 await c.SendMessageAsync(embed: emb.Build());
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
 
         private static async Task OnMessageDeleted(Cacheable<IMessage, ulong> cache, Cacheable<IMessageChannel, ulong> channel)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 if (!cache.HasValue && !channel.HasValue)
                 {
@@ -134,9 +131,7 @@ namespace OliveToast
                 }
 
                 await c.SendMessageAsync(embed: emb.Build());
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
     }
 }

@@ -651,7 +651,6 @@ namespace OliveToast.Commands
             }
             catch (Exception e)
             {
-
                 EmbedBuilder emb = Context.CreateEmbed(title: "오류 발생!", description: e.GetBaseException().Message);
                 await Context.ReplyEmbedAsync(emb.Build());
             }

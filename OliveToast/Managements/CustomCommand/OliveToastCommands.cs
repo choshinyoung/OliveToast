@@ -165,7 +165,13 @@ namespace OliveToast.Managements.CustomCommand
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
+                if (ctx.Channel.GetMessageAsync(x.Id).GetAwaiter().GetResult() is null)
+                {
+                    throw new Exception("메시지를 찾을 수 없어요");
+                }
+
                 ulong msgId;
+
                 if (y is EmbedBuilder emb)
                 {
                     msgId = x.ReplyAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;

@@ -78,7 +78,7 @@ namespace OliveToast
 
         public static async Task OnUserJoined(SocketGuildUser arg)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 SocketGuild guild = arg.Guild;
                 if (guild.SystemChannel is null)
@@ -107,14 +107,12 @@ namespace OliveToast
                 {
                     toaster.Execute(line, context);
                 }
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
 
         public static async Task OnUserLeft(SocketGuildUser arg)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 SocketGuild guild = arg.Guild;
                 if (guild.SystemChannel is null)
@@ -143,14 +141,12 @@ namespace OliveToast
                 {
                     toaster.Execute(line, context);
                 }
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
 
         public static async Task OnMessageReceived(SocketMessage msg)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 if (msg is not SocketUserMessage userMsg || userMsg.Content == null ||
                     userMsg.Author.Id == Program.Client.CurrentUser.Id || userMsg.Author.IsBot || SpecialListManager.IsBlackList(msg.Author.Id)) return;
@@ -185,7 +181,7 @@ namespace OliveToast
 
                 OliveGuild guild = OliveGuild.Get(context.Guild.Id);
 
-                new Task(async () => await CustomCommandExecutor.Execute(context, guild)).Start();
+                await Task.Factory.StartNew(async () => await CustomCommandExecutor.Execute(context, guild));
 
                 #region level
                 if (!guild.Setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Level))
@@ -233,14 +229,12 @@ namespace OliveToast
 
                 OliveGuild.Set(context.Guild.Id, g => g.Levels, guild.Levels);
                 #endregion
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
 
         public static async Task OnInteractionCreated(SocketInteraction arg)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 SocketMessageComponent component = arg as SocketMessageComponent;
                 string[] args = component.Data.CustomId.Split('.');
@@ -368,26 +362,22 @@ namespace OliveToast
 
                         break;
                 }
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
 
         public static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 if ((reaction.Channel as SocketTextChannel).Guild.GetUser(reaction.UserId).IsBot) return;
 
                 await CustomCommandExecutor.OnReactionAdded(reaction);
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
 
         public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            new Task(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 if (!result.IsSuccess)
                 {
@@ -419,9 +409,7 @@ namespace OliveToast
                         await (context as SocketCommandContext).ReplyEmbedAsync("[KOREANBOTS](https://koreanbots.dev/bots/495209098929766400)에서 올리브토스트에게 하트를 추가해주세요!\n(하트는 12시간마다 한번씩 추가할 수 있어요)");
                     }
                 }
-            }).Start();
-
-            await Task.CompletedTask;
+            });
         }
     }
 }
