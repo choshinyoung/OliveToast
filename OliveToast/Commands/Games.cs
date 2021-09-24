@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using HPark.Hangul;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using System;
@@ -233,7 +234,7 @@ namespace OliveToast.Commands
                         return true;
                     }
 
-                    int speed = (int)(content.Length / (DateTime.Now - session.LastActiveTime).TotalSeconds * 100);
+                    int speed = (int)(HangulString.SplitToPhonemes(content).Length / (DateTime.Now - session.LastActiveTime).TotalSeconds * 60);
 
                     double a = content.Length < session.Sentence.Length ?
                         (double)content.Where((c, i) => i < session.Sentence.Length && c == session.Sentence[i]).Count() / session.Sentence.Length :
