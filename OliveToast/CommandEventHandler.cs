@@ -93,14 +93,12 @@ namespace OliveToast
 
                 if (output is not null and not "")
                 {
-                    if (guild.SystemChannel is null)
+                    if (guild.SystemChannel is not null)
                     {
-                        return;
-                    }
-
-                    if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
-                    {
-                        await guild.SystemChannel.SendMessageAsync(output);
+                        if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
+                        {
+                            await guild.SystemChannel.SendMessageAsync(output);
+                        }
                     }
                 }
 
@@ -128,14 +126,12 @@ namespace OliveToast
 
                 if (output is not null and not "")
                 {
-                    if (guild.SystemChannel is null)
+                    if (guild.SystemChannel is not null)
                     {
-                        return;
-                    }
-
-                    if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
-                    {
-                        await guild.SystemChannel.SendMessageAsync(output);
+                        if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
+                        {
+                            await guild.SystemChannel.SendMessageAsync(output);
+                        }
                     }
                 }
 
