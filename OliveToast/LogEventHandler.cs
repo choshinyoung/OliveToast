@@ -14,7 +14,7 @@ namespace OliveToast
             client.MessageUpdated += OnMessageUpdated;
             client.MessageDeleted += OnMessageDeleted;
         }
-
+         
         public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
         {
             await Task.Factory.StartNew(async () =>

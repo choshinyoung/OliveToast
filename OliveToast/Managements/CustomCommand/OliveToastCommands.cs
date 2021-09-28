@@ -66,6 +66,8 @@ namespace OliveToast.Managements.CustomCommand
                 }
             }),
 
+            ToastCommand.CreateFunc<CustomCommandContext, long>("currentTime", (ctx) => DateTimeOffset.Now.ToUnixTimeSeconds()),
+
             ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userMessage", (ctx) => ctx.Message),
             ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botMessage", (ctx) => ctx.BotMessage),
             ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userLastMessage", (ctx) => ctx.UserLastMessage),
@@ -101,6 +103,8 @@ namespace OliveToast.Managements.CustomCommand
                         return x.WithUrl(ctx.Toaster.ExecuteConverter<string>(z, ctx));
                     case "thumbnail":
                         return x.WithThumbnailUrl(ctx.Toaster.ExecuteConverter<string>(z, ctx));
+                    case "timestamp":
+                        return x.WithTimestamp(Utility.TimestampToDateTime(ctx.Toaster.ExecuteConverter<long>(z, ctx)));
                     case "field":
                         object[] field = ctx.Toaster.ExecuteConverter<object[]>(z, ctx);
                         if (field.Length is not 2 and not 3)
@@ -234,6 +238,7 @@ namespace OliveToast.Managements.CustomCommand
                         "nickname" => user.GetName(false),
                         "isBot" => user.IsBot,
                         "mention" => user.Mention,
+                        "createdAt" => user.CreatedAt.ToUnixTimeSeconds(),
                         _ => throw new Exception("잘못된 속성 키예요")
                     },
                     SocketTextChannel channel => x.Name switch
@@ -244,6 +249,7 @@ namespace OliveToast.Managements.CustomCommand
                         "isNsfw" => channel.IsNsfw,
                         "mention" => channel.Mention,
                         "slowMode" => channel.SlowModeInterval,
+                        "createdAt" => channel.CreatedAt.ToUnixTimeSeconds(),
                         _ => throw new Exception("잘못된 속성 키예요")
                     },
                     SocketRole role => x.Name switch
@@ -253,6 +259,7 @@ namespace OliveToast.Managements.CustomCommand
                         "isHoisted" => role.IsHoisted,
                         "isMentionable" => role.IsMentionable,
                         "mention" => role.Mention,
+                        "createdAt" => role.CreatedAt.ToUnixTimeSeconds(),
                         _ => throw new Exception("잘못된 속성 키예요")
                     },
                     _ => throw new Exception("알 수 없는 타입이이에요"),
