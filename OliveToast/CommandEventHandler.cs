@@ -81,10 +81,6 @@ namespace OliveToast
             await Task.Factory.StartNew(async () =>
             {
                 SocketGuild guild = arg.Guild;
-                if (guild.SystemChannel is null)
-                {
-                    return;
-                }
 
                 OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
 
@@ -97,6 +93,11 @@ namespace OliveToast
 
                 if (output is not null and not "")
                 {
+                    if (guild.SystemChannel is null)
+                    {
+                        return;
+                    }
+
                     if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
                     {
                         await guild.SystemChannel.SendMessageAsync(output);
@@ -115,10 +116,6 @@ namespace OliveToast
             await Task.Factory.StartNew(async () =>
             {
                 SocketGuild guild = arg.Guild;
-                if (guild.SystemChannel is null)
-                {
-                    return;
-                }
 
                 OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
 
@@ -131,6 +128,11 @@ namespace OliveToast
 
                 if (output is not null and not "")
                 {
+                    if (guild.SystemChannel is null)
+                    {
+                        return;
+                    }
+
                     if (guild.GetUser(Program.Client.CurrentUser.Id).GetPermissions(guild.SystemChannel).SendMessages)
                     {
                         await guild.SystemChannel.SendMessageAsync(output);
