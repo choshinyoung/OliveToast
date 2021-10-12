@@ -395,11 +395,11 @@ namespace OliveToast
                 {
                     if (Admin.CommandStats.ContainsKey(command.Value.Name))
                     {
-                        Admin.CommandStats[command.Value.Name]++;
+                        Admin.CommandStats[command.Value.Name].Add((context.User.Id, context.Guild.Id));
                     }
                     else
                     {
-                        Admin.CommandStats.Add(command.Value.Name, 1);
+                        Admin.CommandStats.Add(command.Value.Name, new() { (context.User.Id, context.Guild.Id) });
                     }
 
                     if (new Random().Next(0, 15) == 0 && await KoreanBots.IsNotVotedAsync(context.User.Id))

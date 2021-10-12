@@ -61,11 +61,11 @@ namespace OliveToast.Managements.CustomCommand
                 string key = command.command.ToastLines.Any() ? "토스트 커맨드가 있는 커스텀 커맨드" : "커스텀 커맨드";
                 if (Admin.CommandStats.ContainsKey(key))
                 {
-                    Admin.CommandStats[key]++;
+                    Admin.CommandStats[key].Add((context.User.Id, context.Guild.Id));
                 }
                 else
                 {
-                    Admin.CommandStats.Add(key, 1);
+                    Admin.CommandStats.Add(key, new() { (context.User.Id, context.Guild.Id) });
                 }
 
                 SocketUserMessage botMessage = null;

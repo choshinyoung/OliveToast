@@ -16,7 +16,7 @@ namespace OliveToast.Commands
     [Name("어드민")]
     public class Admin : ModuleBase<SocketCommandContext>
     {
-        public static Dictionary<string, int> CommandStats = new();
+        public static Dictionary<string, List<(ulong userId, ulong guildId)>> CommandStats = new();
 
         [Command("실행"), Alias("이발", "eval")]
         [RequirePermission(PermissionType.BotAdmin)]
@@ -192,11 +192,11 @@ namespace OliveToast.Commands
         public async Task CheckStat()
         {
             var sorted = CommandStats.ToList();
-            sorted.Sort((p1, p2) => p2.Value.CompareTo(p1.Value));
+            sorted.Sort((p1, p2) => p2.Value.Count.CompareTo(p1.Value.Count));
 
-            var str = sorted.Select(p => $"`{CommandEventHandler.prefix}{p.Key}`: {p.Value}\n");
+            var str = sorted.Select(p => $"`{CommandEventHandler.prefix}{p.Key}`: {p.Value.Count}\n");
 
-            EmbedBuilder emb = Context.CreateEmbed(string.Concat(str), $"지난 {(int)((DateTime.Now - Program.Uptime).TotalHours)}시간 동안 사용된 커맨드 통계");
+            EmbedBuilder emb = Context.CreateEmbed(string.Concat(str), $"지난 {(int)(DateTime.Now - Program.Uptime).TotalHours}시간 동안 사용된 커맨드 통계");
 
             await Context.ReplyEmbedAsync(emb.Build());
         }
