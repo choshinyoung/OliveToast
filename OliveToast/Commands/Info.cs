@@ -97,7 +97,7 @@ namespace OliveToast.Commands
         [Summary("역할의 정보를 확인합니다")]
         public async Task RoleInfo([Name("역할"), Remainder] SocketRole r)
         {
-            EmbedBuilder emb = Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color);
+            EmbedBuilder emb = Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color, thumbnailUrl: r.GetIconUrl());
 
             emb.AddField("ID", r.Id, true);
             emb.AddField("생성일", r.CreatedAt.ToKSTString(), true);
