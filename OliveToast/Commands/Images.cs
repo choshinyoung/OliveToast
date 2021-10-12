@@ -31,7 +31,7 @@ namespace OliveToast.Commands
 
             EmbedBuilder emb = Context.CreateEmbed(imgUrl: "attachment://result.gif");
 
-            await Context.Channel.SendFileAsync(stream, $"result.gif", embed: emb.Build());
+            await Context.Channel.SendFileAsync(stream, "result.gif", embed: emb.Build());
         }
 
         [Command("팔레트"), Alias("팔레트 추출", "색추출")]

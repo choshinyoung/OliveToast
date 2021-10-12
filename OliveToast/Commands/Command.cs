@@ -2,12 +2,15 @@
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using OliveToast.Managements.CustomCommand;
 using OliveToast.Managements.data;
 using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Toast;
 using static OliveToast.Utilities.RequireCategoryEnable;
@@ -510,6 +513,100 @@ namespace OliveToast.Commands
             emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
 
             await Context.ReplyEmbedAsync(emb.Build());
+        }
+
+        [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        public async Task DownloadToastCommand([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (!commands.ContainsKey(command) || !commands[command].Any(c => c.Answer == answer))
+            {
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await DownloadToastCommand(commands.Keys.ToList().IndexOf(command), commands[command].IndexOf(commands[command].Find(c => c.Answer == answer)));
+        }
+
+        [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        public async Task DownloadToastCommand([Name("커맨드 번호")] int cIndex, [Name("응답"), Remainder] string answer)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= cIndex)
+            {
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[cIndex];
+
+            if (!commands[command].Any(c => c.Answer == answer))
+            {
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await DownloadToastCommand(cIndex, commands[command].IndexOf(commands[command].Find(c => c.Answer == answer)));
+        }
+
+        [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        public async Task DownloadToastCommand([Name("커맨드")] string command, [Name("응답 번호")] int aIndex)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (!commands.ContainsKey(command) || commands[command].Count <= aIndex)
+            {
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            await DownloadToastCommand(commands.Keys.ToList().IndexOf(command), aIndex);
+        }
+
+        [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드"), Priority(1)]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        public async Task DownloadToastCommand([Name("커맨드 번호")] int cIndex, [Name("응답 번호")] int aIndex)
+        {
+            var commands = OliveGuild.Get(Context.Guild.Id).Commands;
+
+            if (commands.Count <= cIndex)
+            {
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            string command = commands.Keys.ToList()[cIndex];
+
+            if (commands[command].Count <= aIndex)
+            {
+                await Context.ReplyEmbedAsync("존재하지 않는 커맨드에요");
+                return;
+            }
+
+            var answer = commands[command][aIndex];
+
+            if (!answer.ToastLines.Any())
+            {
+                await Context.ReplyEmbedAsync("이 커맨드에는 토스트 커맨드가 없어요");
+
+                return;
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(answer.ToastLines, Formatting.Indented));
+            MemoryStream stream = new(bytes);
+
+            await Context.Channel.SendFileAsync(stream, "toastLines.json");
+
+            stream.Dispose();
         }
 
         [Command("커맨드 검색")]

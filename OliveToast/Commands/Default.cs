@@ -5,7 +5,6 @@ using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using org.mariuszgromada.math.mxparser;
 using System;
-using System.Data;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Numerics;
