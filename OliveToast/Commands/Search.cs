@@ -269,7 +269,7 @@ namespace OliveToast.Commands
             emb.AddField("UUID", $"{uuid.id}\n{uuid.id[..8]}-{uuid.id[8..12]}-{uuid.id[12..16]}-{uuid.id[16..20]}-{uuid.id[20..]}");
 
             emb.AddField("UUIDMost", Convert.ToInt64(uuid.id[..16], 16), true);
-            emb.AddField("UUIDMost", Convert.ToInt64(uuid.id[16..], 16), true);
+            emb.AddField("UUIDLeast", Convert.ToInt64(uuid.id[16..], 16), true);
 
             emb.AddField("닉네임 변경 역사", string.Join('\n', names.Select(n => $"`{n.name}`: {(n.changedToAt != null ? DateTimeOffset.FromUnixTimeMilliseconds(n.changedToAt.Value).ToShortKSTString() : "?")}")));
 
