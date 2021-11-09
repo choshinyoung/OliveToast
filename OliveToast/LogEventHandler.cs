@@ -38,7 +38,7 @@ namespace OliveToast
                     Color = new Color(255, 255, 0),
                     Description = $"<#{channel.Id}> 채널에서 [메시지]({msg.GetJumpUrl()})가 수정됐어요\n",
                 };
-                emb.WithAuthor(msg.Author);
+                emb.WithAuthor($"{cache.Value.Author.Username}#{cache.Value.Author.Discriminator} ({cache.Value.Author.Id})", cache.Value.Author.GetAvatar());
 
                 if (cache.HasValue)
                 {

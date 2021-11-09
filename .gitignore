@@ -341,3 +341,4 @@ healthchecksdb
 /OliveToast/appsettings.json
 /OliveToast/Configs/appsettings.json
 /OliveToast/Configs/regexTestStrings.json
+/.vscode
