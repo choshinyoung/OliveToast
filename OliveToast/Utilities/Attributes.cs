@@ -65,7 +65,7 @@ namespace OliveToast.Utilities
                 }
             }
 
-            return Task.FromResult(PreconditionResult.FromError($"이 커맨드를 실행하려면 {PermissionToString(Permission)} 권한이 필요해요"));
+            return Task.FromResult(PreconditionResult.FromError(new RequirePermissionException(Permission)));
         }
 
         public static string PermissionToString(PermissionType type)
@@ -110,7 +110,7 @@ namespace OliveToast.Utilities
             }
             else
             {
-                return Task.FromResult(PreconditionResult.FromError($"이 커맨드를 실행하려면 {CategoryToString(Category)} 타입의 활성화가 필요해요\n`{CommandEventHandler.prefix}활성화 {CategoryToString(Category).을를("`")} 입력해보세요"));
+                return Task.FromResult(PreconditionResult.FromError(new CategoryNotEnabledException(Category)));
             }
         }
 
@@ -140,6 +140,26 @@ namespace OliveToast.Utilities
         public static bool HavePrecondition<T>(this ModuleInfo info)
         {
             return info.Preconditions.Any(p => p.GetType() == typeof(T));
+        }
+    }
+
+    public class RequirePermissionException : Exception
+    {
+        public const string Emoji = "<:PermissionDenied:907628900266434620>";
+
+        public RequirePermissionException(RequirePermission.PermissionType perm) : base($"{Emoji} 이 커맨드를 실행하려면 {RequirePermission.PermissionToString(perm)} 권한이 필요해요")
+        {
+
+        }
+    }
+
+    public class CategoryNotEnabledException : Exception
+    {
+        public const string Emoji = "<:CategoryNotEnabled:907628900564209705>";
+
+        public CategoryNotEnabledException(RequireCategoryEnable.CategoryType cat) : base($"{Emoji} 이 커맨드를 실행하려면 {RequireCategoryEnable.CategoryToString(cat)} 타입의 활성화가 필요해요")
+        {
+
         }
     }
 }

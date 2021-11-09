@@ -388,7 +388,18 @@ namespace OliveToast
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(new Emoji("⚠️"));
+                        IEmote emote = new Emoji("⚠️");
+
+                        if (result.ErrorReason.StartsWith(RequirePermissionException.Emoji))
+                        {
+                            emote = Emote.Parse(RequirePermissionException.Emoji);
+                        }
+                        else if (result.ErrorReason.StartsWith(CategoryNotEnabledException.Emoji))
+                        {
+                            emote = Emote.Parse(CategoryNotEnabledException.Emoji);
+                        }
+
+                        await context.Message.AddReactionAsync(emote);
                     }
                 }
                 else
