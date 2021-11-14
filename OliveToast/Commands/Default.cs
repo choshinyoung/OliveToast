@@ -112,12 +112,12 @@ namespace OliveToast.Commands
 
         [Command("팩토리얼"), Alias("팩")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("주어진 수의 팩토리얼을 계산합니다\n`n`에는 807이하의 정수만 입력할 수 있습니다")]
+        [Summary("주어진 수의 팩토리얼을 계산합니다\n`n`에는 1024 이하의 정수만 입력할 수 있습니다")]
         public async Task Factorial(int n)
         {
-            if (n > 807 || n < 0)
+            if (n > 1024 || n < 0)
             {
-                await Context.ReplyEmbedAsync("0 이상, 807 이하의 정수만 입력할 수 있어요");
+                await Context.ReplyEmbedAsync("0 이상, 1024 이하의 정수만 입력할 수 있어요");
                 return;
             }
 
