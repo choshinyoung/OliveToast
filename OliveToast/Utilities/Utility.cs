@@ -65,6 +65,16 @@ namespace OliveToast.Utilities
     {
         public static string GetAvatar(this IUser user)
         {
+            if (user is SocketGuildUser guildUser)
+            {
+                string avatar = guildUser.GetGuildAvatarUrl();
+
+                if (avatar != null)
+                {
+                    return avatar;
+                }
+            }
+
             return user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl();
         }
 
