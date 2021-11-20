@@ -21,5 +21,6 @@
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
 - [Hangul.Net](https://github.com/mohenjo/Hangul.Net)
 - [mXparser](https://www.nuget.org/packages/MathParser.org-mXparser)
+- [AnimatedGif](https://www.nuget.org/packages/AnimatedGif/)
 - MongoDB
 - [Noto Sans KR](https://fonts.google.com/specimen/Noto+Sans+KR)

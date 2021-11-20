@@ -113,9 +113,7 @@ namespace OliveToast.Commands
             Graphics g = Graphics.FromImage(output);
 
             // draw palette
-            PrivateFontCollection collection = new();
-            collection.AddFontFile("Configs/NotoSansKR.otf");
-            using (Font font = new(new FontFamily("Noto Sans KR", collection), 13f))
+            using (Font font = Utility.GetFont())
             using (StringFormat format = new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far })
             {
                 for (int i = 0; i < slicedColorList.Count; i++)

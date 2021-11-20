@@ -3,6 +3,8 @@ using Discord.WebSocket;
 using HPark.Hangul;
 using Newtonsoft.Json;
 using System;
+using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,6 +30,18 @@ namespace OliveToast.Utilities
         public static DateTime TimestampToDateTime(long timestamp)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestamp).AddHours(9);
+        }
+
+        public static Font GetFont(float size = 13f, FontStyle style = FontStyle.Regular)
+        {
+            return new Font(GetFontFamily(), size, style);
+        }
+
+        public static FontFamily GetFontFamily()
+        {
+            PrivateFontCollection collection = new();
+            collection.AddFontFile("Configs/NotoSansKR.otf");
+            return new FontFamily("Noto Sans KR", collection);
         }
 
         public class TimeOutWebClient : WebClient

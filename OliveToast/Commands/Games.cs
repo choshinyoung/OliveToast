@@ -1,11 +1,17 @@
-﻿using Discord;
+﻿using AnimatedGif;
+using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using HPark.Hangul;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static OliveToast.Utilities.RequireCategoryEnable;
@@ -174,6 +180,138 @@ namespace OliveToast.Commands
             }
 
             await Rot(users);
+        }
+
+        [Command("룰렛"), Alias("돌림판")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("를렛을 돌립니다")]
+        public async Task Roulette([Name("항목")] params string[] items)
+        {
+            if (items.Length is < 2 or > 30)
+            {
+                await Context.ReplyEmbedAsync("두 개 이상, 30개 이하의 항목을 적어주세요");
+                return;
+            }
+
+            RestUserMessage msg = await Context.ReplyAsync("렌더 중이에요...");
+
+            const int fps = 10;
+
+            int frameCount = fps * 5;
+            float r = 2 * MathF.PI / items.Length;
+            float radius = 240;
+
+            Size size = new(512, 512);
+
+            using Font font = Utility.GetFont(MathF.Min(r * 25, 40));
+            using StringFormat format = new()
+            {
+                Alignment = StringAlignment.Center,
+            };
+
+            System.Drawing.Color[] colors = new System.Drawing.Color[]
+            {
+                System.Drawing.Color.FromArgb(252, 92, 101),
+                System.Drawing.Color.FromArgb(253, 150, 68),
+                System.Drawing.Color.FromArgb(254, 211, 48),
+                System.Drawing.Color.FromArgb(38, 222, 129),
+                System.Drawing.Color.FromArgb(43, 203, 186),
+                System.Drawing.Color.FromArgb(69, 170, 242),
+                System.Drawing.Color.FromArgb(75, 123, 236),
+                System.Drawing.Color.FromArgb(209, 216, 224),
+                System.Drawing.Color.FromArgb(119, 140, 163),
+            };
+
+            using MemoryStream stream = new();
+            AnimatedGifCreator gif = new(stream, 1000 / fps);
+
+            using Bitmap baseImage = new(size.Width, size.Height);
+            using Graphics baseG = Graphics.FromImage(baseImage);
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                List<PointF> points = new()
+                {
+                    new(size.Width / 2, size.Height / 2),
+                };
+
+                const int roundness = 15;
+                for (int j = 0; j <= roundness; j++)
+                {
+                    points.Add(new(MathF.Cos(r * i + r / roundness * j) * radius + size.Width / 2, MathF.Sin(r * i + r / roundness * j) * radius + size.Height / 2));
+                }
+
+                using SolidBrush brush = new(colors[i % colors.Length]);
+                baseG.FillPolygon(brush, points.ToArray());
+
+                baseG.TranslateTransform(size.Width / 2, size.Height / 2);
+                baseG.RotateTransform((r * i + r / 2) * (180 / MathF.PI) + 90);
+                baseG.TranslateTransform(-size.Width / 2, -size.Height / 2);
+
+                float width = MathF.Min(250, 110 * r);
+                RectangleF rect = new(size.Width / 2 - width / 2, 40 + r * 6, width, 75 + r * 35);
+                baseG.DrawString(items[i], font, Brushes.White, rect, format);
+
+                baseG.ResetTransform();
+            }
+
+            List<PointF> pinPoints = new()
+            {
+                new(size.Width / 2 + -12.5f, 5),
+                new(size.Width / 2 + 12.5f, 5),
+                new(size.Width / 2 + 12.5f, 35),
+                new(size.Width / 2 + 0, 50),
+                new(size.Width / 2 + -12.5f, 35)
+            };
+
+            float prvAngle = 0;
+            float speed = new Random().Next(20, 50) * 10 / fps;
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                using Bitmap bmp = new(size.Width, size.Height);
+                using Graphics g = Graphics.FromImage(bmp);
+                g.Clear(System.Drawing.Color.FromArgb(47, 49, 54));
+
+                prvAngle += MathF.Sin(MathF.PI / frameCount * i) * speed;
+
+                g.TranslateTransform(size.Width / 2, size.Height / 2);
+                g.RotateTransform(prvAngle - 90);
+                g.TranslateTransform(-size.Width / 2, -size.Height / 2);
+
+                g.DrawImage(baseImage, Point.Empty);
+
+                g.ResetTransform();
+
+                g.FillPolygon(Brushes.LightGray, pinPoints.ToArray());
+
+                int delay = -1;
+                if (i == frameCount - 1)
+                {
+                    int index = (int)MathF.Floor((prvAngle % 360 * -1 + 360) / (360f / items.Length));
+
+                    GraphicsPath path = new();
+                    path.AddString(items[index], Utility.GetFontFamily(), (int)FontStyle.Bold, 50, new Rectangle(size.Width / 2 - 200, 300, 400, 200), new()
+                    {
+                        Alignment = StringAlignment.Center,
+                        LineAlignment = StringAlignment.Center,
+                    });
+                    g.DrawPath(new Pen(System.Drawing.Color.White, 7), path);
+                    g.FillPath(new SolidBrush(colors[index % colors.Length]), path);
+
+                    delay = 1000 * 5;
+                }
+
+                await gif.AddFrameAsync(bmp, delay, GifQuality.Bit8);
+            }
+
+            gif.Dispose();
+            stream.Position = 0;
+
+            await msg.DeleteAsync();
+
+            EmbedBuilder emb = Context.CreateEmbed(imgUrl: "attachment://result.gif");
+            await Context.Channel.SendFileAsync(stream, "result.gif", embed: emb.Build());
         }
 
         [Command("타자 연습"), Alias("타자", "타자연습")]
