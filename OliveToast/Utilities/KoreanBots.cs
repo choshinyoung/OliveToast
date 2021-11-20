@@ -30,6 +30,13 @@ namespace OliveToast.Utilities
 
         public static async Task<bool> IsNotVotedAsync(ulong userId)
         {
+            var result = await GetVotedData(userId);
+
+            return !result.data.lastVote.HasValue || (DateTimeOffset.Now.ToKST() - Utility.TimestampToDateTime(result.data.lastVote.Value)).Days > 7;
+        }
+
+        public static async Task<Voted> GetVotedData(ulong userId)
+        {
             using var httpClient = new HttpClient();
             using var request = new HttpRequestMessage(new HttpMethod("GET"), $"https://koreanbots.dev/api/v2/bots/495209098929766400/vote?userID={userId}");
 
@@ -38,9 +45,7 @@ namespace OliveToast.Utilities
 
             var response = await httpClient.SendAsync(request);
 
-            var result = JsonConvert.DeserializeObject<Voted>(await response.Content.ReadAsStringAsync());
-
-            return !result.data.lastVote.HasValue || (DateTimeOffset.Now.ToKST() - Utility.TimestampToDateTime(result.data.lastVote.Value)).Days > 7;
+            return JsonConvert.DeserializeObject<Voted>(await response.Content.ReadAsStringAsync());
         }
     }
 }

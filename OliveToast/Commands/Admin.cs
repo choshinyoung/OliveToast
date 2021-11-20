@@ -200,5 +200,29 @@ namespace OliveToast.Commands
 
             await Context.ReplyEmbedAsync(emb.Build());
         }
+
+        [Command("투표확인"), Alias("투표 확인")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 유저가 올리브토스트를 투표했는지 확인합니다")]
+        public async Task CheckIsVoted([Remainder, Name("유저")]SocketUser user)
+        {
+            var data = (await KoreanBots.GetVotedData(user.Id)).data;
+
+            DateTime time = Utility.TimestampToDateTime(data.lastVote.Value);
+
+            await Context.ReplyEmbedAsync($"{data.voted}\n{time.ToLongDateString()} {time.ToLongTimeString()}");
+        }
+
+        [Command("투표확인"), Alias("투표 확인")]
+        [RequirePermission(PermissionType.BotAdmin)]
+        [Summary("해당 유저가 올리브토스트를 투표했는지 확인합니다")]
+        public async Task CheckIsVoted([Remainder, Name("유저")]ulong id)
+        {
+            var data = (await KoreanBots.GetVotedData(id)).data;
+
+            DateTime time = Utility.TimestampToDateTime(data.lastVote.Value);
+
+            await Context.ReplyEmbedAsync($"{data.voted}\n{time.ToLongDateString()} {time.ToLongTimeString()}");
+        }
     }
 }
