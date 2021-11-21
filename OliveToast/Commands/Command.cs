@@ -281,7 +281,7 @@ namespace OliveToast.Commands
             {
                 count = MaxListCommandCount;
                 component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandList, Context.Guild.Id, 0), disabled: true);
-                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandList, Context.Guild.Id, -1), ButtonStyle.Secondary);
                 component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandList, Context.Guild.Id, 2));
             }
 
@@ -304,6 +304,11 @@ namespace OliveToast.Commands
 
         public static async Task ChangeListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, int page)
         {
+            if (page == -1)
+            {
+                page = 1;
+            }
+
             List<string> commands = OliveGuild.Get(guild.Id).Commands.Keys.ToList();
 
             EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
@@ -326,7 +331,7 @@ namespace OliveToast.Commands
 
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandList, guild.Id, page - 1), disabled: startIndex == 0)
-                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
+                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandList, guild.Id, -1), ButtonStyle.Secondary)
                 .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandList, guild.Id, page + 1), disabled: startIndex + MaxListCommandCount >= commands.Count);
 
             component.WithSelectMenu(InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandListSelectMenu, guild.Id), options, "커맨드 선택하기", row: 1);
@@ -377,7 +382,7 @@ namespace OliveToast.Commands
             {
                 count = MaxListCommandCount;
                 component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, index, 0), disabled: true);
-                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, index, -1), ButtonStyle.Secondary);
                 component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, index, 2));
             }
 
@@ -404,6 +409,11 @@ namespace OliveToast.Commands
 
         public static async Task ChangeAnswerListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, int cIndex, int page)
         {
+            if (page == -1)
+            {
+                page = 1;
+            }
+
             var commands = OliveGuild.Get(guild.Id).Commands;
 
             string command = commands.Keys.ToList()[cIndex];
@@ -436,7 +446,7 @@ namespace OliveToast.Commands
             ComponentBuilder component = new();
             if (answer.Count > MaxListCommandCount) {
                 component.WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, cIndex, page - 1), disabled: startIndex == 0);
-                component.WithButton($"{page} / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton($"{page} / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, cIndex, -1), ButtonStyle.Secondary);
                 component.WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, cIndex, page + 1), disabled: startIndex + MaxListCommandCount >= answer.Count);
             }
 
@@ -696,7 +706,7 @@ namespace OliveToast.Commands
             {
                 count = MaxListCommandCount;
                 component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 0, content), disabled: true);
-                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, -1, content), ButtonStyle.Secondary);
                 component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 2, content));
             }
 
@@ -719,6 +729,11 @@ namespace OliveToast.Commands
 
         public static async Task ChangeSearchPage(SocketGuild guild, ulong userId, SocketUserMessage msg, string content, int page)
         {
+            if (page == -1)
+            {
+                page = 1;
+            }
+
             EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
             emb.Fields = new List<EmbedFieldBuilder>();
 
@@ -744,7 +759,7 @@ namespace OliveToast.Commands
 
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page - 1, content), disabled: startIndex == 0)
-                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
+                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, -1, content), ButtonStyle.Secondary)
                 .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page + 1, content), disabled: startIndex + MaxListCommandCount >= commands.Count);
 
             component.WithSelectMenu(InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandListSelectMenu, guild.Id), options, "커맨드 선택하기", row: 1);
