@@ -17,7 +17,11 @@ namespace OliveToast
     {
         public enum InteractionType
         {
-            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearchList, DeleteCommand
+            None,
+            CancelTypingGame, CancelWordGame,
+            CreateCommand, DeleteCommand,
+            CommandList, CommandAnswerList, CommandSearchList,
+            CommandListSelectMenu, CommandAnswerListSelectMenu,
         }
 
         public struct InteractionData
@@ -45,19 +49,19 @@ namespace OliveToast
         public static Dictionary<InteractionType, Func<InteractionData, SocketMessageComponent, Task>> Functions = new()
         {
             { InteractionType.None, None },
-            { InteractionType.CreateCommand, CreateCommand },
             { InteractionType.CancelTypingGame, CancelTypingGame },
             { InteractionType.CancelWordGame, CancelWordGame },
+            { InteractionType.CreateCommand, CreateCommand },
+            { InteractionType.DeleteCommand, DeleteCommand },
             { InteractionType.CommandList, CommandList },
             { InteractionType.CommandAnswerList, CommandAnswerList },
             { InteractionType.CommandSearchList, CommandSearchList },
-            { InteractionType.DeleteCommand, DeleteCommand },
+            { InteractionType.CommandListSelectMenu, CommandListSelctMenu },
+            { InteractionType.CommandAnswerListSelectMenu, CommandAnswerListSelectMenu },
         };
 
-        public static async Task OnInteractionCreated(SocketInteraction arg)
+        public static async Task OnInteractionCreated(SocketMessageComponent component)
         {
-            SocketMessageComponent component = arg as SocketMessageComponent;
-
             InteractionData data = new(component.Data.CustomId);
 
             if (component.User.Id != data.UserId) return;
@@ -121,7 +125,7 @@ namespace OliveToast
         public static async Task CommandAnswerList(InteractionData data, SocketMessageComponent component)
         {
             SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
-            string command = data.Args[1];
+            int command = int.Parse(data.Args[1]);
             int page = int.Parse(data.Args[2]);
 
             await Command.ChangeAnswerListPage(guild, data.UserId, component.Message, command, page);
@@ -132,10 +136,28 @@ namespace OliveToast
         public static async Task CommandSearchList(InteractionData data, SocketMessageComponent component)
         {
             SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
-            string command = data.Args[1];
-            int page = int.Parse(data.Args[2]);
+            int page = int.Parse(data.Args[1]);
+            string command = string.Join('.', data.Args[2..]);
 
             await Command.ChangeSearchPage(guild, data.UserId, component.Message, command, page);
+
+            await component.DeferAsync();
+        }
+
+        public static async Task CommandListSelctMenu(InteractionData data, SocketMessageComponent component)
+        {
+            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
+
+            await Command.ChangeAnswerListPage(guild, data.UserId, component.Message, int.Parse(component.Data.Values.ToArray()[0]), 1);
+
+            await component.DeferAsync();
+        }
+
+        public static async Task CommandAnswerListSelectMenu(InteractionData data, SocketMessageComponent component)
+        {
+            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
+
+            await Command.UpdateCommandInfo(guild, component.Message, int.Parse(data.Args[1]), int.Parse(component.Data.Values.ToArray()[0]));
 
             await component.DeferAsync();
         }

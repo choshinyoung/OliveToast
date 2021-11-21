@@ -29,7 +29,8 @@ namespace OliveToast
 
             command.CommandExecuted += OnCommandExecuted;
 
-            client.InteractionCreated += OnInteractionCreated;
+            client.SelectMenuExecuted += OnSelectMenuExecuted;
+            client.ButtonExecuted += OnButtonExecuted;
 
             client.JoinedGuild += OnJoinGuild;
             client.LeftGuild += OnLeftGuild;
@@ -225,7 +226,15 @@ namespace OliveToast
             });
         }
 
-        public static async Task OnInteractionCreated(SocketInteraction arg)
+        public static async Task OnSelectMenuExecuted(SocketMessageComponent arg)
+        {
+            await Task.Factory.StartNew(async () =>
+            {
+                await InteractionHandler.OnInteractionCreated(arg);
+            });
+        }
+
+        public static async Task OnButtonExecuted(SocketMessageComponent arg)
         {
             await Task.Factory.StartNew(async () =>
             {

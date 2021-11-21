@@ -285,9 +285,18 @@ namespace OliveToast.Commands
                 component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandList, Context.Guild.Id, 2));
             }
 
+            List<SelectMenuOptionBuilder> options = new();
+
             for (int i = 0; i < count; i++)
             {
                 emb.AddField(i.ToString(), commands[i], true);
+
+                options.Add(new(i.ToString(), i.ToString(), commands[i]));
+            }
+
+            if (commands.Count > 0)
+            {
+                component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandListSelectMenu, Context.Guild.Id), options, "커맨드 선택하기", row: 1);
             }
 
             await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
@@ -302,6 +311,8 @@ namespace OliveToast.Commands
 
             int startIndex = MaxListCommandCount * (page - 1);
 
+            List<SelectMenuOptionBuilder> options = new();
+
             for (int i = 0; i < MaxListCommandCount; i++)
             {
                 int index = startIndex + i;
@@ -309,12 +320,16 @@ namespace OliveToast.Commands
                 if (commands.Count <= index) break;
 
                 emb.AddField(index.ToString(), commands[index], true);
+
+                options.Add(new(index.ToString(), index.ToString(), commands[index]));
             }
 
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandList, guild.Id, page - 1), disabled: startIndex == 0)
                 .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
                 .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandList, guild.Id, page + 1), disabled: startIndex + MaxListCommandCount >= commands.Count);
+
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandListSelectMenu, guild.Id), options, "커맨드 선택하기", row: 1);
 
             await msg.ModifyAsync(m =>
             {
@@ -361,12 +376,14 @@ namespace OliveToast.Commands
             if (count > MaxListCommandCount)
             {
                 count = MaxListCommandCount;
-                component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, command, 0), disabled: true);
+                component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, index, 0), disabled: true);
                 component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
-                component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, command, 2));
+                component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, index, 2));
             }
 
             EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
+
+            List<SelectMenuOptionBuilder> options = new();
 
             for (int i = 0; i < count; i++)
             {
@@ -376,19 +393,29 @@ namespace OliveToast.Commands
                 string toastCommands = answer[i].ToastLines.Any() ? $"\n커맨드 {answer[i].ToastLines.Count}줄" : "";
 
                 emb.AddField($"{i} {isRegex} {toastCommands}", answer[i].Answer ?? "응답이 없어요", true);
+
+                options.Add(new(i.ToString(), i.ToString(), answer[i].Answer ?? "응답이 없어요"));
             }
+
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerListSelectMenu, Context.Guild.Id, index), options, "응답 선택하기", row: 1);
 
             await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
         }
 
-        public static async Task ChangeAnswerListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, string command, int page)
+        public static async Task ChangeAnswerListPage(SocketGuild guild, ulong userId, SocketUserMessage msg, int cIndex, int page)
         {
-            var answer = OliveGuild.Get(guild.Id).Commands[command];
+            var commands = OliveGuild.Get(guild.Id).Commands;
+
+            string command = commands.Keys.ToList()[cIndex];
+            var answer = commands[command];
 
             EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
+            emb.Title = $"`{command}` 커맨드의 응답 목록";
             emb.Fields = new List<EmbedFieldBuilder>();
 
             int startIndex = MaxListCommandCount * (page - 1);
+
+            List<SelectMenuOptionBuilder> options = new();
 
             for (int i = 0; i < MaxListCommandCount; i++)
             {
@@ -402,12 +429,18 @@ namespace OliveToast.Commands
                 string toastCommands = answer[index].ToastLines.Any() ? $"\n커맨드 {answer[index].ToastLines.Count}줄" : "";
 
                 emb.AddField($"{index} {isRegex} {toastCommands}", answer[index].Answer ?? "응답이 없어요", true);
+
+                options.Add(new(index.ToString(), index.ToString(), answer[index].Answer ?? "응답이 없어요"));
             }
 
-            ComponentBuilder component = new ComponentBuilder()
-                .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, page - 1), disabled: startIndex == 0)
-                .WithButton($"{page} / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
-                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, page + 1), disabled: startIndex + MaxListCommandCount >= answer.Count);
+            ComponentBuilder component = new();
+            if (answer.Count > MaxListCommandCount) {
+                component.WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, cIndex, page - 1), disabled: startIndex == 0);
+                component.WithButton($"{page} / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, cIndex, page + 1), disabled: startIndex + MaxListCommandCount >= answer.Count);
+            }
+
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerListSelectMenu, guild.Id, cIndex), options, "응답 선택하기", row: 1);
 
             await msg.ModifyAsync(m =>
             {
@@ -495,7 +528,7 @@ namespace OliveToast.Commands
 
             var answer = commands[command][aIndex];
 
-            EmbedBuilder emb = Context.CreateEmbed("", $"커맨드 정보");
+            EmbedBuilder emb = Context.CreateEmbed("", "커맨드 정보");
 
             emb.AddField("커맨드", command, true);
             if (answer.Answer is not null)
@@ -513,6 +546,39 @@ namespace OliveToast.Commands
             emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
 
             await Context.ReplyEmbedAsync(emb.Build());
+        }
+
+        public static async Task UpdateCommandInfo(SocketGuild guild, SocketUserMessage msg, int cIndex, int aIndex)
+        {
+            var commands = OliveGuild.Get(guild.Id).Commands;
+
+            string command = commands.Keys.ToList()[cIndex];
+            var answer = commands[command][aIndex];
+
+            EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
+            emb.Title = "커맨드 정보";
+            emb.Fields = new List<EmbedFieldBuilder>();
+
+            emb.AddField("커맨드", command, true);
+            if (answer.Answer is not null)
+            {
+                emb.AddField("응답", answer.Answer, true);
+            }
+            emb.AddField("정규식 사용 여부", answer.IsRegex.ToEmoji(), true);
+
+            if (answer.ToastLines.Count > 0)
+            {
+                emb.AddField("토스트 커맨드", string.Concat(answer.ToastLines.Select(l => $"```\n{l.Slice(60)}\n```")));
+            }
+
+            SocketGuildUser user = guild.Users.ToList().Find(u => u.Id == answer.CreatedBy);
+            emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
+
+            await msg.ModifyAsync(m =>
+            {
+                m.Embeds = new[] { emb.Build() };
+                m.Components = null;
+            });
         }
 
         [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드")]
@@ -629,17 +695,24 @@ namespace OliveToast.Commands
             if (count > MaxListCommandCount)
             {
                 count = MaxListCommandCount;
-                component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 0), disabled: true);
+                component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 0, content), disabled: true);
                 component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
-                component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 2));
+                component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 2, content));
             }
 
             var keys = OliveGuild.Get(Context.Guild.Id).Commands.Keys.ToList();
 
+            List<SelectMenuOptionBuilder> options = new();
             for (int i = 0; i < count; i++)
             {
-                emb.AddField(keys.IndexOf(commands[i]).ToString(), commands[i], true);
+                int index = keys.IndexOf(commands[i]);
+
+                emb.AddField(index.ToString(), commands[i], true);
+
+                options.Add(new(index.ToString(), index.ToString(), commands[i]));
             }
+
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandListSelectMenu, Context.Guild.Id), options, "커맨드 선택하기", row: 1);
 
             await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
         }
@@ -655,19 +728,26 @@ namespace OliveToast.Commands
 
             int startIndex = MaxListCommandCount * (page - 1);
 
+            List<SelectMenuOptionBuilder> options = new();
             for (int i = 0; i < MaxListCommandCount; i++)
             {
                 int index = startIndex + i;
 
                 if (commands.Count <= index) break;
 
-                emb.AddField(keys.IndexOf(commands[index]).ToString(), commands[index], true);
+                int keyIndex = keys.IndexOf(commands[index]);
+
+                emb.AddField(keyIndex.ToString(), commands[index], true);
+
+                options.Add(new(keyIndex.ToString(), keyIndex.ToString(), commands[index]));
             }
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page - 1), disabled: startIndex == 0)
+                .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page - 1, content), disabled: startIndex == 0)
                 .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
-                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page + 1), disabled: startIndex + MaxListCommandCount >= commands.Count);
+                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page + 1, content), disabled: startIndex + MaxListCommandCount >= commands.Count);
+
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandListSelectMenu, guild.Id), options, "커맨드 선택하기", row: 1);
 
             await msg.ModifyAsync(m =>
             {
