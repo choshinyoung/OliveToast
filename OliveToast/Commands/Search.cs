@@ -139,12 +139,38 @@ namespace OliveToast.Commands
                 _ => ":question:"
             }, true);
             emb.AddField("카테고리", string.Join(' ', b.category.Select(c => $"`{c}`")), true);
+            if (b.flags != Flag.None)
+            {
+                string badges = "";
+                if ((b.flags & Flag.Official) == Flag.Official)
+                {
+                    badges += "`공식 봇` ";
+                }
+                if ((b.flags & Flag.KoreanbotVerified) == Flag.KoreanbotVerified)
+                {
+                    badges += "`한디리 인증된 봇` ";
+                }
+                if ((b.flags & Flag.Partner) == Flag.Partner)
+                {
+                    badges += "`파트너` ";
+                }
+                if ((b.flags & Flag.DiscordVerified) == Flag.DiscordVerified)
+                {
+                    badges += "`인증된 봇` ";
+                }
+                if ((b.flags & Flag.Premium) == Flag.Premium)
+                {
+                    badges += "`프리미엄` ";
+                }
+                if ((b.flags & Flag.HackatonWinner) == Flag.HackatonWinner)
+                {
+                    badges += "`제 1회 한디리 해커톤 우승자 봇` ";
+                }
+
+                emb.AddField("배지", badges, true);
+            }
 
             emb.AddField("설명", b.intro);
-
-            emb.AddField("KOREANBOTS 인증된 봇", ((b.flags & Flag.KoreanbotVerified) == Flag.KoreanbotVerified).ToEmoji(), true);
-            emb.AddField("디스코드 인증된 봇", ((b.flags & Flag.DiscordVerified) == Flag.DiscordVerified).ToEmoji(), true);
-            emb.AddField("해커톤 우승 봇", ((b.flags & Flag.HackatonWinner) == Flag.HackatonWinner).ToEmoji(), true);
 
             emb.AddField("제작자", string.Join(", ", b.owners.Select(o => $"`{o.username}#{o.tag}`")), true);
             emb.AddField("라이브러리", $"`{b.lib}`", true);
