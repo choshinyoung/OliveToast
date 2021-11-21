@@ -183,7 +183,7 @@ namespace OliveToast.Commands
         }
 
         [Command("룰렛"), Alias("돌림판")]
-        [RequirePermission(PermissionType.UseBot)]
+        [RequirePermission(PermissionType.BotAdmin)]
         [Summary("를렛을 돌립니다")]
         public async Task Roulette([Name("항목")] params string[] items)
         {
