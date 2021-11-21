@@ -203,8 +203,8 @@ namespace OliveToast.Commands
             if (answer is null)
             {
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("응답 없이 계속하기", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ContinueWithoutAnswer}")
-                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
+                    .WithButton("응답 없이 계속하기", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ContinueWithoutAnswer}")
+                    .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
                     .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                 msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
@@ -224,8 +224,8 @@ namespace OliveToast.Commands
                 command.Answer = answer;
 
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("완료", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Complete}", ButtonStyle.Success)
-                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger);
+                    .WithButton("완료", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Complete}", ButtonStyle.Success)
+                    .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger);
 
                 EmbedBuilder emb = Context.CreateEmbed("토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요");
                 emb.AddField("응답", answer, true);
@@ -283,8 +283,8 @@ namespace OliveToast.Commands
             if (answer is null)
             {
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("응답 없이 계속하기", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ContinueWithoutAnswer}")
-                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
+                    .WithButton("응답 없이 계속하기", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ContinueWithoutAnswer}")
+                    .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
                     .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                 msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
@@ -304,8 +304,8 @@ namespace OliveToast.Commands
                 command.Answer = answer;
 
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("완료", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Complete}", ButtonStyle.Success)
-                    .WithButton("취소", $"{Context.User.Id}.{(int)CommandEventHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
+                    .WithButton("완료", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Complete}", ButtonStyle.Success)
+                    .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
                     .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                 EmbedBuilder emb = Context.CreateEmbed("토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요");

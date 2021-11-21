@@ -17,11 +17,6 @@ namespace OliveToast
 {
     class CommandEventHandler
     {
-        public enum InteractionType
-        {
-            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearch, DeleteCommand
-        }
-
         public static readonly string prefix = ConfigManager.Get("PREFIX");
 
         public static void RegisterEvents(DiscordSocketClient client, CommandService command)
@@ -234,132 +229,7 @@ namespace OliveToast
         {
             await Task.Factory.StartNew(async () =>
             {
-                SocketMessageComponent component = arg as SocketMessageComponent;
-                string[] args = component.Data.CustomId.Split('.');
-
-                ulong userId = ulong.Parse(args[0]);
-                InteractionType type = (InteractionType)int.Parse(args[1]);
-
-                if (component.User.Id != userId) return;
-
-                switch (type)
-                {
-                    case InteractionType.CreateCommand:
-                        CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(args[2]);
-                        await CommandCreateSession.ButtonResponse(userId, response);
-
-                        await arg.DeferAsync();
-
-                        break;
-                    case InteractionType.CancelTypingGame:
-                        if (!TypingSession.Sessions.ContainsKey(userId))
-                        {
-                            break;
-                        }
-
-                        SocketCommandContext context = TypingSession.Sessions[userId].Context;
-
-                        TypingSession.Sessions.Remove(userId);
-                        await context.ReplyEmbedAsync("게임이 취소됐어요");
-
-                        await arg.DeferAsync();
-
-                        break;
-                    case InteractionType.CancelWordGame:
-                        if (!WordSession.Sessions.ContainsKey(userId))
-                        {
-                            break;
-                        }
-
-                        context = WordSession.Sessions[userId].Context;
-
-                        WordSession.Sessions.Remove(userId);
-                        await context.ReplyEmbedAsync("게임이 취소됐어요");
-
-                        await arg.DeferAsync();
-
-                        break;
-                    case InteractionType.CommandList:
-                        SocketGuild guild = Program.Client.GetGuild(ulong.Parse(args[2]));
-                        int page = int.Parse(args[3]);
-
-                        await Command.ChangeListPage(guild, userId, component.Message, page);
-
-                        await arg.DeferAsync();
-
-                        break;
-                    case InteractionType.CommandAnswerList:
-                        guild = Program.Client.GetGuild(ulong.Parse(args[2]));
-                        string command = args[3];
-                        page = int.Parse(args[4]);
-
-                        await Command.ChangeAnswerListPage(guild, userId, component.Message, command, page);
-
-                        await arg.DeferAsync();
-
-                        break;
-                    case InteractionType.DeleteCommand:
-                        if (!CommandDeleteSession.Sessions.ContainsKey(userId))
-                        {
-                            break;
-                        }
-
-                        context = CommandDeleteSession.Sessions[userId].Context;
-
-                        CommandDeleteSession.ResponseType deleteResponse = (CommandDeleteSession.ResponseType)int.Parse(args[2]);
-
-                        var commands = OliveGuild.Get(context.Guild.Id).Commands;
-
-                        if (deleteResponse == CommandDeleteSession.ResponseType.Cancel)
-                        {
-                            CommandDeleteSession.Sessions.Remove(userId);
-
-                            await context.ReplyEmbedAsync("커맨드 삭제를 취소했어요");
-
-                            await arg.DeferAsync();
-
-                            break;
-                        }
-                        else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteSingleAnswer)
-                        {
-                            command = commands.Keys.ToList()[CommandDeleteSession.Sessions[userId].CommandIndex];
-                            string answer = commands[command][CommandDeleteSession.Sessions[userId].AnswerIndex].Answer;
-
-                            commands[command].RemoveAt(CommandDeleteSession.Sessions[userId].AnswerIndex);
-                            if (!commands[command].Any())
-                            {
-                                commands.Remove(command);
-                            }
-                            OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
-
-                            await context.ReplyEmbedAsync($"`{command}` 커맨드의 응답 `{answer.을를("`")} 삭제했어요");
-                        }
-                        else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteAnswers)
-                        {
-                            commands[CommandDeleteSession.Sessions[userId].Command].RemoveAll(c => c.Answer == CommandDeleteSession.Sessions[userId].Answer);
-                            if (!commands[CommandDeleteSession.Sessions[userId].Command].Any())
-                            {
-                                commands.Remove(CommandDeleteSession.Sessions[userId].Command);
-                            }
-
-                            OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
-
-                            await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드의 응답 `{CommandDeleteSession.Sessions[userId].Answer.을를("`")} 삭제했어요");
-                        }
-                        else if (deleteResponse == CommandDeleteSession.ResponseType.DeleteCommand)
-                        {
-                            commands.Remove(CommandDeleteSession.Sessions[userId].Command);
-                            OliveGuild.Set(context.Guild.Id, g => g.Commands, commands);
-
-                            await context.ReplyEmbedAsync($"`{CommandDeleteSession.Sessions[userId].Command}` 커맨드를 삭제했어요");
-                        }
-
-                        CommandDeleteSession.Sessions.Remove(userId);
-
-                        await arg.DeferAsync();
-
-                        break;
-                }
+                await InteractionHandler.OnInteractionCreated(arg);
             });
         }
 
