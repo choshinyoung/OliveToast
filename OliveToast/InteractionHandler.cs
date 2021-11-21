@@ -19,6 +19,7 @@ namespace OliveToast
         {
             None,
             CancelTypingGame, CancelWordGame,
+            HelpList, HelpListSelectMenu,
             CreateCommand, DeleteCommand,
             CommandList, CommandAnswerList, CommandSearchList,
             CommandListSelectMenu, CommandAnswerListSelectMenu,
@@ -51,6 +52,8 @@ namespace OliveToast
             { InteractionType.None, None },
             { InteractionType.CancelTypingGame, CancelTypingGame },
             { InteractionType.CancelWordGame, CancelWordGame },
+            { InteractionType.HelpList, HelpList },
+            { InteractionType.HelpListSelectMenu, HelpListSelectMenu },
             { InteractionType.CreateCommand, CreateCommand },
             { InteractionType.DeleteCommand, DeleteCommand },
             { InteractionType.CommandList, CommandList },
@@ -108,6 +111,22 @@ namespace OliveToast
 
             WordSession.Sessions.Remove(data.UserId);
             await context.ReplyEmbedAsync("게임이 취소됐어요");
+
+            await component.DeferAsync();
+        }
+
+        public static async Task HelpList(InteractionData data, SocketMessageComponent component)
+        {
+            int page = int.Parse(data.Args[0]);
+
+            await Helps.ChangeListPage(data.UserId, component.Message, page);
+
+            await component.DeferAsync();
+        }
+
+        public static async Task HelpListSelectMenu(InteractionData data, SocketMessageComponent component)
+        {
+            await Helps.ChangeListPage(data.UserId, component.Message, int.Parse(component.Data.Values.ToArray()[0]));
 
             await component.DeferAsync();
         }

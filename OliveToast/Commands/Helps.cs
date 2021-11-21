@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
@@ -16,24 +17,83 @@ namespace OliveToast.Commands
         [Summary("커맨드 목록을 볼 수 있습니다")]
         public async Task Help()
         {
-            EmbedBuilder emb = Context.CreateEmbed(title: "도움말", description: $"\"{CommandEventHandler.prefix}도움 `카테고리/커맨드`\"로 자세한 사용법 보기");
+            List<ModuleInfo> modules = Program.Command.Modules.Where(m => m.HavePrecondition<RequireCategoryEnable>()).ToList();
+            modules.Sort((m1, m2) => RequireCategoryEnable.GetCategory(m1).CompareTo(RequireCategoryEnable.GetCategory(m2)));
+
+            int page = 1;
+
+            ModuleInfo module = modules[page - 1];
+
+            EmbedBuilder emb = Context.CreateEmbed($"\"{CommandEventHandler.prefix}도움 `커맨드`\"로 자세한 사용법 보기", $"{module.Name} 커맨드 도움말");
+
+            List<CommandInfo> cmds = new();
+            foreach (CommandInfo cmd in module.Commands)
+            {
+                if (cmd.Summary != null && !cmds.Any(c => c.Name == cmd.Name))
+                {
+                    cmds.Add(cmd);
+                }
+            }
+
+            foreach (CommandInfo info in cmds)
+            {
+                emb.AddField($"{CommandEventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Where(p => p.Name != "").Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
+            }
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.HelpList, 0), disabled: true)
+                .WithButton($"1 / {modules.Count}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.HelpList, -1), ButtonStyle.Secondary)
+                .WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.HelpList, 2));
+
+            List<SelectMenuOptionBuilder> options = modules.Select((m, index) => new SelectMenuOptionBuilder(m.Name, (index + 1).ToString())).ToList();
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.HelpListSelectMenu), options, "카테고리 선택하기", row: 1);
+
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+        }
+
+        public static async Task ChangeListPage(ulong userId, SocketUserMessage msg, int page)
+        {
+            if (page == -1)
+            {
+                page = 1;
+            }
 
             List<ModuleInfo> modules = Program.Command.Modules.Where(m => m.HavePrecondition<RequireCategoryEnable>()).ToList();
             modules.Sort((m1, m2) => RequireCategoryEnable.GetCategory(m1).CompareTo(RequireCategoryEnable.GetCategory(m2)));
 
-            foreach (ModuleInfo module in modules.Where(m => m.Commands.Count > 0 && m.GetType() != typeof(Admin)))
-            {
-                List<CommandInfo> cmds = new();
-                foreach (CommandInfo cmd in module.Commands)
-                {
-                    if (cmd.Summary != null && !cmds.Any(c => c.Name == cmd.Name))
-                        cmds.Add(cmd);
-                }
+            ModuleInfo module = modules[page - 1];
 
-                emb.AddField(module.Name, string.Join(' ', cmds.Select(c => $"`{CommandEventHandler.prefix}{c.Name}`")));
+            EmbedBuilder emb = msg.Embeds.First().ToEmbedBuilder();
+            emb.Title = $"{module.Name} 커맨드 도움말";
+            emb.Fields = new List<EmbedFieldBuilder>();
+
+            List<CommandInfo> cmds = new();
+            foreach (CommandInfo cmd in module.Commands)
+            {
+                if (cmd.Summary != null && !cmds.Any(c => c.Name == cmd.Name))
+                {
+                    cmds.Add(cmd);
+                }
             }
 
-            await Context.ReplyEmbedAsync(emb.Build());
+            foreach (CommandInfo info in cmds)
+            {
+                emb.AddField($"{CommandEventHandler.prefix}{info.Name} {string.Join(' ', info.Parameters.Where(p => p.Name != "").Select(p => $"`{p.Name}`"))}", info.Summary.Split('\n')[0]);
+            }
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpList, page - 1), disabled: page == 1)
+                .WithButton($"{page} / {modules.Count}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpList, -1), ButtonStyle.Secondary)
+                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpList, page + 1), disabled: page == modules.Count - 1);
+
+            List<SelectMenuOptionBuilder> options = modules.Select((m, index) => new SelectMenuOptionBuilder(m.Name, (index + 1).ToString())).ToList();
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpListSelectMenu), options, "카테고리 선택하기", row: 1);
+
+            await msg.ModifyAsync(m =>
+            {
+                m.Embeds = new[] { emb.Build() };
+                m.Components = component.Build();
+            });
         }
 
         [Command("도움"), Alias("도움말")]
