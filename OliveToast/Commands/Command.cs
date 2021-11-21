@@ -64,8 +64,8 @@ namespace OliveToast.Commands
             OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions);
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("정규식으로 변경", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.ChangeRegex}")
-                .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)CommandCreateSession.ResponseType.Cancel}", ButtonStyle.Danger)
+                .WithButton("정규식으로 변경", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.ChangeRegex))
+                .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger)
                 .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
             RestUserMessage msg = await Context.ReplyEmbedAsync("커맨드를 입력해주세요", component: component.Build());
@@ -115,8 +115,8 @@ namespace OliveToast.Commands
             EmbedBuilder emb = Context.CreateEmbed($"`{command}`커맨드를 삭제할까요?", "커맨드 삭제");
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("삭제", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.DeleteCommand}", ButtonStyle.Danger)
-                .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.Cancel}");
+                .WithButton("삭제", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.DeleteCommand, (int)CommandDeleteSession.ResponseType.DeleteCommand), ButtonStyle.Danger)
+                .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.DeleteCommand, (int)CommandDeleteSession.ResponseType.Cancel));
 
             await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
 
@@ -157,8 +157,8 @@ namespace OliveToast.Commands
             EmbedBuilder emb = Context.CreateEmbed($"`{command}`커맨드의 응답 `{answer}` {commands[command].Count(c => c.Answer == answer)}개를 삭제할까요?", "커맨드 삭제");
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("삭제", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.DeleteAnswers}", ButtonStyle.Danger)
-                .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.Cancel}");
+                .WithButton("삭제", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.DeleteCommand, (int)CommandDeleteSession.ResponseType.DeleteAnswers), ButtonStyle.Danger)
+                .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.DeleteCommand, (int)CommandDeleteSession.ResponseType.Cancel));
 
             await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
 
@@ -252,8 +252,8 @@ namespace OliveToast.Commands
             emb.AddField("제작자", user is null ? answer.CreatedBy.ToString() : $"{user.Username}#{user.Discriminator}");
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("삭제", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.DeleteSingleAnswer}", ButtonStyle.Danger)
-                .WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.DeleteCommand}.{(int)CommandDeleteSession.ResponseType.Cancel}");
+                .WithButton("삭제", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.DeleteCommand, (int)CommandDeleteSession.ResponseType.DeleteSingleAnswer), ButtonStyle.Danger)
+                .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.DeleteCommand, (int)CommandDeleteSession.ResponseType.Cancel));
 
             await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
 
@@ -280,9 +280,9 @@ namespace OliveToast.Commands
             if (count > MaxListCommandCount)
             {
                 count = MaxListCommandCount;
-                component.WithButton("<", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CommandList}.{Context.Guild.Id}.{0}", disabled: true);
-                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.None}", ButtonStyle.Secondary);
-                component.WithButton(">", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CommandList}.{Context.Guild.Id}.{2}");
+                component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandList, Context.Guild.Id, 0), disabled: true);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandList, Context.Guild.Id, 2));
             }
 
             for (int i = 0; i < count; i++)
@@ -312,9 +312,9 @@ namespace OliveToast.Commands
             }
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("<", $"{userId}.{(int)InteractionHandler.InteractionType.CommandList}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
-                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)InteractionHandler.InteractionType.None}", ButtonStyle.Secondary)
-                .WithButton(">", $"{userId}.{(int)InteractionHandler.InteractionType.CommandList}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= commands.Count);
+                .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandList, guild.Id, page - 1), disabled: startIndex == 0)
+                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
+                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandList, guild.Id, page + 1), disabled: startIndex + MaxListCommandCount >= commands.Count);
 
             await msg.ModifyAsync(m =>
             {
@@ -361,9 +361,9 @@ namespace OliveToast.Commands
             if (count > MaxListCommandCount)
             {
                 count = MaxListCommandCount;
-                component.WithButton("<", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CommandAnswerList}.{Context.Guild.Id}.{command}.{0}", disabled: true);
-                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.None}", ButtonStyle.Secondary);
-                component.WithButton(">", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CommandAnswerList}.{Context.Guild.Id}.{command}.{2}");
+                component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, command, 0), disabled: true);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerList, Context.Guild.Id, command, 2));
             }
 
             EmbedBuilder emb = Context.CreateEmbed("", $"`{command}` 커맨드의 응답 목록");
@@ -405,9 +405,9 @@ namespace OliveToast.Commands
             }
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("<", $"{userId}.{(int)InteractionHandler.InteractionType.CommandAnswerList}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
-                .WithButton($"{page} / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)InteractionHandler.InteractionType.None}", ButtonStyle.Secondary)
-                .WithButton(">", $"{userId}.{(int)InteractionHandler.InteractionType.CommandAnswerList}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= answer.Count);
+                .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, page - 1), disabled: startIndex == 0)
+                .WithButton($"{page} / {Math.Ceiling(answer.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
+                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandAnswerList, guild.Id, page + 1), disabled: startIndex + MaxListCommandCount >= answer.Count);
 
             await msg.ModifyAsync(m =>
             {
@@ -629,9 +629,9 @@ namespace OliveToast.Commands
             if (count > MaxListCommandCount)
             {
                 count = MaxListCommandCount;
-                component.WithButton("<", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CommandSearch}.{Context.Guild.Id}.{0}", disabled: true);
-                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.None}", ButtonStyle.Secondary);
-                component.WithButton(">", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CommandSearch}.{Context.Guild.Id}.{2}");
+                component.WithButton("<", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 0), disabled: true);
+                component.WithButton($"1 / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.None), ButtonStyle.Secondary);
+                component.WithButton(">", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandSearchList, Context.Guild.Id, 2));
             }
 
             var keys = OliveGuild.Get(Context.Guild.Id).Commands.Keys.ToList();
@@ -665,9 +665,9 @@ namespace OliveToast.Commands
             }
 
             ComponentBuilder component = new ComponentBuilder()
-                .WithButton("<", $"{userId}.{(int)InteractionHandler.InteractionType.CommandSearch}.{guild.Id}.{page - 1}", disabled: startIndex == 0)
-                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", $"{userId}.{(int)InteractionHandler.InteractionType.None}", ButtonStyle.Secondary)
-                .WithButton(">", $"{userId}.{(int)InteractionHandler.InteractionType.CommandSearch}.{guild.Id}.{page + 1}", disabled: startIndex + MaxListCommandCount >= commands.Count);
+                .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page - 1), disabled: startIndex == 0)
+                .WithButton($"{page} / {Math.Ceiling(commands.Count / (float)MaxListCommandCount)}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.None), ButtonStyle.Secondary)
+                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CommandSearchList, guild.Id, page + 1), disabled: startIndex + MaxListCommandCount >= commands.Count);
 
             await msg.ModifyAsync(m =>
             {

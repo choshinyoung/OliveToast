@@ -17,7 +17,7 @@ namespace OliveToast
     {
         public enum InteractionType
         {
-            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearch, DeleteCommand
+            None, CreateCommand, CancelTypingGame, CancelWordGame, CommandList, CommandAnswerList, CommandSearchList, DeleteCommand
         }
 
         public struct InteractionData
@@ -37,6 +37,11 @@ namespace OliveToast
             }
         }
 
+        public static string GenerateCustomId(ulong userId, InteractionType type, params object[] args)
+        {
+            return $"{userId}.{(int)type}.{string.Join('.', args)}";
+        }
+
         public static Dictionary<InteractionType, Func<InteractionData, SocketMessageComponent, Task>> Functions = new()
         {
             { InteractionType.None, None },
@@ -45,7 +50,7 @@ namespace OliveToast
             { InteractionType.CancelWordGame, CancelWordGame },
             { InteractionType.CommandList, CommandList },
             { InteractionType.CommandAnswerList, CommandAnswerList },
-            { InteractionType.CommandSearch, CommandSearch },
+            { InteractionType.CommandSearchList, CommandSearchList },
             { InteractionType.DeleteCommand, DeleteCommand },
         };
 
@@ -67,7 +72,7 @@ namespace OliveToast
 
         public static async Task CreateCommand(InteractionData data, SocketMessageComponent component)
         {
-            CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(data.Args[2]);
+            CommandCreateSession.ResponseType response = (CommandCreateSession.ResponseType)int.Parse(data.Args[0]);
             await CommandCreateSession.ButtonResponse(data.UserId, response);
 
             await component.DeferAsync();
@@ -105,8 +110,8 @@ namespace OliveToast
 
         public static async Task CommandList(InteractionData data, SocketMessageComponent component)
         {
-            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[2]));
-            int page = int.Parse(data.Args[3]);
+            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
+            int page = int.Parse(data.Args[1]);
 
             await Command.ChangeListPage(guild, data.UserId, component.Message, page);
 
@@ -115,18 +120,24 @@ namespace OliveToast
 
         public static async Task CommandAnswerList(InteractionData data, SocketMessageComponent component)
         {
-            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[2]));
-            string command = data.Args[3];
-            int page = int.Parse(data.Args[4]);
+            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
+            string command = data.Args[1];
+            int page = int.Parse(data.Args[2]);
 
             await Command.ChangeAnswerListPage(guild, data.UserId, component.Message, command, page);
 
             await component.DeferAsync();
         }
 
-        public static async Task CommandSearch(InteractionData data, SocketMessageComponent component)
+        public static async Task CommandSearchList(InteractionData data, SocketMessageComponent component)
         {
+            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
+            string command = data.Args[1];
+            int page = int.Parse(data.Args[2]);
 
+            await Command.ChangeSearchPage(guild, data.UserId, component.Message, command, page);
+
+            await component.DeferAsync();
         }
 
         public static async Task DeleteCommand(InteractionData data, SocketMessageComponent component)
@@ -138,7 +149,7 @@ namespace OliveToast
 
             SocketCommandContext context = CommandDeleteSession.Sessions[data.UserId].Context;
 
-            CommandDeleteSession.ResponseType deleteResponse = (CommandDeleteSession.ResponseType)int.Parse(data.Args[2]);
+            CommandDeleteSession.ResponseType deleteResponse = (CommandDeleteSession.ResponseType)int.Parse(data.Args[0]);
 
             var commands = OliveGuild.Get(context.Guild.Id).Commands;
 

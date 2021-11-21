@@ -91,8 +91,8 @@ namespace OliveToast.Managements.CustomCommand
                     emb.AddField("커맨드", content, true);
 
                     ComponentBuilder component = new ComponentBuilder()
-                        .WithButton("응답 없이 계속하기", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.ContinueWithoutAnswer}")
-                        .WithButton("취소", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
+                        .WithButton("응답 없이 계속하기", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.ContinueWithoutAnswer))
+                        .WithButton("취소", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.Cancel), ButtonStyle.Danger);
 
                     await session.Message.ModifyAsync(msg => 
                     { 
@@ -110,8 +110,8 @@ namespace OliveToast.Managements.CustomCommand
                     emb.AddField("응답", content, true);
 
                     component = new ComponentBuilder()
-                        .WithButton("완료", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.Complete}", ButtonStyle.Success)
-                        .WithButton("취소", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
+                        .WithButton("완료", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.Complete), ButtonStyle.Success)
+                        .WithButton("취소", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.Cancel), ButtonStyle.Danger);
 
                     await session.Message.ModifyAsync(msg =>
                     {
@@ -179,8 +179,8 @@ namespace OliveToast.Managements.CustomCommand
                     session.CustomCommand.IsRegex = !session.CustomCommand.IsRegex;
 
                     ComponentBuilder component = new ComponentBuilder()
-                        .WithButton(session.CustomCommand.IsRegex ? "일반 텍스트로 변경" : "정규식으로 변경", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.ChangeRegex}")
-                        .WithButton("취소", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger)
+                        .WithButton(session.CustomCommand.IsRegex ? "일반 텍스트로 변경" : "정규식으로 변경", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.ChangeRegex))
+                        .WithButton("취소", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.Cancel), ButtonStyle.Danger)
                         .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                     await session.Message.ModifyAsync(msg =>
@@ -296,8 +296,8 @@ namespace OliveToast.Managements.CustomCommand
                     emb.Description = "토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요";
 
                     component = new ComponentBuilder()
-                        .WithButton("완료", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.Complete}", ButtonStyle.Success)
-                        .WithButton("취소", $"{userId}.{(int)InteractionHandler.InteractionType.CreateCommand}.{(int)ResponseType.Cancel}", ButtonStyle.Danger);
+                        .WithButton("완료", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.Complete), ButtonStyle.Success)
+                        .WithButton("취소", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.CreateCommand, (int)ResponseType.Cancel), ButtonStyle.Danger);
 
                     await session.Message.ModifyAsync(msg =>
                     {

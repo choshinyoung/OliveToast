@@ -60,7 +60,7 @@ namespace OliveToast.Commands
             {
                 WordSession.Sessions.Add(Context.User.Id, new(Context, new List<string>(), DateTime.Now));
 
-                ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CancelWordGame}", ButtonStyle.Danger);
+                ComponentBuilder component = new ComponentBuilder().WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelWordGame), ButtonStyle.Danger);
                 await Context.ReplyEmbedAsync("끝말잇기 시작!", component: component.Build());
 
                 if (word != null)
@@ -327,7 +327,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
+            ComponentBuilder component = new ComponentBuilder().WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelTypingGame), ButtonStyle.Danger);
             await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
             TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
@@ -346,7 +346,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            ComponentBuilder component = new ComponentBuilder().WithButton("취소", $"{Context.User.Id}.{(int)InteractionHandler.InteractionType.CancelTypingGame}", ButtonStyle.Danger);
+            ComponentBuilder component = new ComponentBuilder().WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelTypingGame), ButtonStyle.Danger);
             await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
 
             TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
