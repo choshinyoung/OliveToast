@@ -207,6 +207,7 @@ namespace OliveToast.Commands
             using StringFormat format = new()
             {
                 Alignment = StringAlignment.Center,
+                Trimming = StringTrimming.Character,
             };
 
             System.Drawing.Color[] colors = new System.Drawing.Color[]
@@ -295,6 +296,7 @@ namespace OliveToast.Commands
                     {
                         Alignment = StringAlignment.Center,
                         LineAlignment = StringAlignment.Center,
+                        Trimming = StringTrimming.Character,
                     });
                     g.DrawPath(new Pen(System.Drawing.Color.White, 7), path);
                     g.FillPath(new SolidBrush(colors[index % colors.Length]), path);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace OliveToast.Utilities
 {
-    class WordSession
+    public class WordSession
     {
         public SocketCommandContext Context;
         public List<string> Words;
@@ -20,7 +20,7 @@ namespace OliveToast.Utilities
         }
     }
 
-    class TypingSession
+    public class TypingSession
     {
         public SocketCommandContext Context;
         public string Sentence;
