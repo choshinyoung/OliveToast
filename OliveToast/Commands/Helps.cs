@@ -84,7 +84,7 @@ namespace OliveToast.Commands
             ComponentBuilder component = new ComponentBuilder()
                 .WithButton("<", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpList, page - 1), disabled: page == 1)
                 .WithButton($"{page} / {modules.Count}", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpList, -1), ButtonStyle.Secondary)
-                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpList, page + 1), disabled: page == modules.Count - 1);
+                .WithButton(">", InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpList, page + 1), disabled: page == modules.Count);
 
             List<SelectMenuOptionBuilder> options = modules.Select((m, index) => new SelectMenuOptionBuilder(m.Name, (index + 1).ToString())).ToList();
             component.WithSelectMenu(InteractionHandler.GenerateCustomId(userId, InteractionHandler.InteractionType.HelpListSelectMenu), options, "카테고리 선택하기", row: 1);
