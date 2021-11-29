@@ -399,7 +399,7 @@ namespace OliveToast.Commands
 
                 emb.AddField($"{i} {isRegex} {toastCommands}", answer[i].Answer ?? "응답이 없어요", true);
 
-                options.Add(new(i.ToString(), i.ToString(), answer[i].Answer ?? "응답이 없어요"));
+                options.Add(new(i.ToString(), i.ToString(), (answer[i].Answer ?? "응답이 없어요").Slice(100)));
             }
 
             component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CommandAnswerListSelectMenu, Context.Guild.Id, index), options, "응답 선택하기", row: 1);
@@ -440,7 +440,7 @@ namespace OliveToast.Commands
 
                 emb.AddField($"{index} {isRegex} {toastCommands}", answer[index].Answer ?? "응답이 없어요", true);
 
-                options.Add(new(index.ToString(), index.ToString(), answer[index].Answer ?? "응답이 없어요"));
+                options.Add(new(index.ToString(), index.ToString(), (answer[i].Answer ?? "응답이 없어요").Slice(100)));
             }
 
             ComponentBuilder component = new();
