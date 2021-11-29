@@ -291,7 +291,7 @@ namespace OliveToast.Commands
             {
                 emb.AddField(i.ToString(), commands[i], true);
 
-                options.Add(new(i.ToString(), i.ToString(), commands[i]));
+                options.Add(new(i.ToString(), i.ToString(), commands[i].Slice(100)));
             }
 
             if (commands.Count > 0)
@@ -326,7 +326,7 @@ namespace OliveToast.Commands
 
                 emb.AddField(index.ToString(), commands[index], true);
 
-                options.Add(new(index.ToString(), index.ToString(), commands[index]));
+                options.Add(new(index.ToString(), index.ToString(), commands[index].Slice(100)));
             }
 
             ComponentBuilder component = new ComponentBuilder()
