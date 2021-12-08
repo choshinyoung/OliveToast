@@ -14,7 +14,7 @@ namespace OliveToast
             client.MessageUpdated += OnMessageUpdated;
             client.MessageDeleted += OnMessageDeleted;
         }
-         
+
         public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
         {
             await Task.Factory.StartNew(async () =>
@@ -121,6 +121,18 @@ namespace OliveToast
                         {
                             await c.SendFileAsync(cache.Value.Content.ToStream(), "before.txt", "");
                         }
+                    }
+
+                    if (cache.Value.Attachments.Count != 0)
+                    {
+                        string urls = "";
+
+                        foreach (var att in cache.Value.Attachments)
+                        {
+                            urls += $"{att.ProxyUrl}\n";
+                        }
+
+                        emb.AddField("파일", urls, true);
                     }
                 }
                 else
