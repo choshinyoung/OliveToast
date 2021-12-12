@@ -312,9 +312,8 @@ namespace OliveToast.Commands
 
             await msg.ModifyAsync(x =>
             {
-                x.Content = "";
                 x.Embed = Context.CreateEmbed(imgUrl: "attachment://result.gif").Build();
-                x.Attachments = (List<FileAttachment>)new()
+                x.Attachments = new List<FileAttachment>()
                 {
                     new(stream, "result.gif"),
                 };
