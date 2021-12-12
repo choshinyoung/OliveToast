@@ -37,7 +37,7 @@ namespace OliveToast.Commands
         [Summary("가위바위보입니다\n`가위`, `바위`, `보` 중 하나를 입력할 수 있습니다")]
         public async Task RockScissorsPaper([Name("입력")] Rcp input)
         {
-            switch(new Random().Next(3))
+            switch (new Random().Next(3))
             {
                 case 0:
                     await Context.ReplyEmbedAsync($"{input}! 무승부!");
@@ -193,7 +193,7 @@ namespace OliveToast.Commands
                 return;
             }
 
-            RestUserMessage msg = await Context.ReplyAsync("렌더 중이에요...");
+            RestUserMessage msg = await Context.ReplyEmbedAsync("렌더 중이에요...");
 
             const int fps = 10;
 
@@ -310,10 +310,15 @@ namespace OliveToast.Commands
             gif.Dispose();
             stream.Position = 0;
 
-            await msg.DeleteAsync();
-
-            EmbedBuilder emb = Context.CreateEmbed(imgUrl: "attachment://result.gif");
-            await Context.Channel.SendFileAsync(stream, "result.gif", embed: emb.Build());
+            await msg.ModifyAsync(x =>
+            {
+                x.Content = "";
+                x.Embed = Context.CreateEmbed(imgUrl: "attachment://result.gif").Build();
+                x.Attachments = (List<FileAttachment>)new()
+                {
+                    new(stream, "result.gif"),
+                };
+            });
         }
 
         [Command("타자 연습"), Alias("타자", "타자연습")]
