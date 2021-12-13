@@ -10,12 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static OliveToast.Utilities.RequireCategoryEnable;
 using static OliveToast.Utilities.RequirePermission;
+
+using Color = System.Drawing.Color;
 
 namespace OliveToast.Commands
 {
@@ -210,17 +211,17 @@ namespace OliveToast.Commands
                 Trimming = StringTrimming.Character,
             };
 
-            System.Drawing.Color[] colors = new System.Drawing.Color[]
+            Color[] colors = new[]
             {
-                System.Drawing.Color.FromArgb(252, 92, 101),
-                System.Drawing.Color.FromArgb(253, 150, 68),
-                System.Drawing.Color.FromArgb(254, 211, 48),
-                System.Drawing.Color.FromArgb(38, 222, 129),
-                System.Drawing.Color.FromArgb(43, 203, 186),
-                System.Drawing.Color.FromArgb(69, 170, 242),
-                System.Drawing.Color.FromArgb(75, 123, 236),
-                System.Drawing.Color.FromArgb(209, 216, 224),
-                System.Drawing.Color.FromArgb(119, 140, 163),
+                Color.FromArgb(252, 92, 101),
+                Color.FromArgb(253, 150, 68),
+                Color.FromArgb(254, 211, 48),
+                Color.FromArgb(38, 222, 129),
+                Color.FromArgb(43, 203, 186),
+                Color.FromArgb(69, 170, 242),
+                Color.FromArgb(75, 123, 236),
+                Color.FromArgb(209, 216, 224),
+                Color.FromArgb(119, 140, 163),
             };
 
             using MemoryStream stream = new();
@@ -272,7 +273,7 @@ namespace OliveToast.Commands
             {
                 using Bitmap bmp = new(size.Width, size.Height);
                 using Graphics g = Graphics.FromImage(bmp);
-                g.Clear(System.Drawing.Color.FromArgb(47, 49, 54));
+                g.Clear(Color.FromArgb(47, 49, 54));
 
                 prvAngle += MathF.Sin(MathF.PI / frameCount * i) * speed;
 
@@ -298,7 +299,7 @@ namespace OliveToast.Commands
                         LineAlignment = StringAlignment.Center,
                         Trimming = StringTrimming.Character,
                     });
-                    g.DrawPath(new Pen(System.Drawing.Color.White, 7), path);
+                    g.DrawPath(new Pen(Color.White, 7), path);
                     g.FillPath(new SolidBrush(colors[index % colors.Length]), path);
 
                     delay = 1000 * 5;

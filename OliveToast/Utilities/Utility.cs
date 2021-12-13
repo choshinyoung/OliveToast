@@ -13,6 +13,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
+using Color = System.Drawing.Color;
+
 namespace OliveToast.Utilities
 {
     class Utility
@@ -57,7 +59,7 @@ namespace OliveToast.Utilities
 
     static class ColorExtension
     {
-        public static string ToHex(this System.Drawing.Color color)
+        public static string ToHex(this Color color)
         {
             return $"#{toHex(color.R)}{toHex(color.G)}{toHex(color.B)}";
 
@@ -69,7 +71,7 @@ namespace OliveToast.Utilities
             }
         }
 
-        public static string ToFormattedString(this System.Drawing.Color color)
+        public static string ToFormattedString(this Color color)
         {
             return $"rgb({color.R}, {color.G}, {color.B})";
         }

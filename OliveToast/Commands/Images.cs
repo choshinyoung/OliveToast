@@ -4,12 +4,13 @@ using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static OliveToast.Utilities.RequireCategoryEnable;
 using static OliveToast.Utilities.RequirePermission;
+
+using Color = System.Drawing.Color;
 
 namespace OliveToast.Commands
 {
@@ -47,14 +48,14 @@ namespace OliveToast.Commands
             }
 
             // get all colors
-            Dictionary<System.Drawing.Color, int> colors = new();
+            Dictionary<Color, int> colors = new();
             using (Bitmap bmp = new(System.Drawing.Image.FromStream(stream), 128, 128))
             {
                 for (int x = 0; x < bmp.Width; x++)
                 {
                     for (int y = 0; y < bmp.Height; y++)
                     {
-                        System.Drawing.Color px = bmp.GetPixel(x, y);
+                        Color px = bmp.GetPixel(x, y);
                         if (colors.ContainsKey(px))
                         {
                             colors[px]++;
@@ -68,14 +69,14 @@ namespace OliveToast.Commands
             }
 
             // find simillar colors
-            List<(System.Drawing.Color color, int count)> colorList = colors.Select(c => (c.Key, c.Value)).ToList();
+            List<(Color color, int count)> colorList = colors.Select(c => (c.Key, c.Value)).ToList();
             colorList.Sort((t1, t2) => t2.count.CompareTo(t1.count));
             for (int i = 0; i < colorList.Count; i++)
             {
                 for (int o = 0; o < i; o++)
                 {
-                    System.Drawing.Color c1 = colorList[i].color;
-                    System.Drawing.Color c2 = colorList[o].color;
+                    Color c1 = colorList[i].color;
+                    Color c2 = colorList[o].color;
 
                     if (Math.Abs(c1.R - c2.R) < 10 && Math.Abs(c1.G - c2.G) < 10 && Math.Abs(c1.B - c2.B) < 10)
                     {
@@ -122,7 +123,7 @@ namespace OliveToast.Commands
                     Rectangle rect = new((i - (isTop ? 0 : cellCount)) * 100, isTop ? 0 : 100, 100, 100);
 
                     g.FillRectangle(new SolidBrush(slicedColorList[i].color), rect);
-                    g.DrawString(slicedColorList[i].color.ToHex(), font, slicedColorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(System.Drawing.Color.FromArgb(50, 50, 50)), rect, format);
+                    g.DrawString(slicedColorList[i].color.ToHex(), font, slicedColorList[i].color.GetBrightness() < .5f ? Brushes.White : new SolidBrush(Color.FromArgb(50, 50, 50)), rect, format);
                 }
             }
 
