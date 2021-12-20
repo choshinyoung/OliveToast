@@ -370,7 +370,7 @@ namespace OliveToast.Commands
                 component.WithButton(role.Name, InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.RoleMenu, Context.Guild.Id, role.Id));
             }
 
-            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+            await Context.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: null, component: component.Build());
         }
     }
 }
