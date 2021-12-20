@@ -79,8 +79,8 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.Channel),
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.Guild.TextChannels.Select(u => (object)u).ToArray()),
 
-            ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.Guild.Roles.Select(u => (object)u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, x) => x.Roles.Select(u => (object)u).ToArray()),
+            ToastCommand.CreateFunc<CustomCommandContext, object[]>("roles", (ctx) => ctx.Guild.Roles.ToList().OrderBy(r => -r.Position).Select(u => (object)u).ToArray()),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser, object[]>("rolesOf", (ctx, x) => x.Roles.ToList().OrderBy(r => -r.Position).Select(u => (object)u).ToArray()),
 
             ToastCommand.CreateFunc<CustomCommandContext, EmbedBuilder>("embed", (ctx) => ctx.User.CreateEmbed(false)),
             ToastCommand.CreateFunc<EmbedBuilder, CustomCommandContext, VariableNode, object, EmbedBuilder>("with", (x, ctx, y, z) =>
