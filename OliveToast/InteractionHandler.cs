@@ -23,6 +23,7 @@ namespace OliveToast
             CreateCommand, DeleteCommand,
             CommandList, CommandAnswerList, CommandSearchList,
             CommandListSelectMenu, CommandAnswerListSelectMenu,
+            RoleMenu,
         }
 
         public struct InteractionData
@@ -61,6 +62,7 @@ namespace OliveToast
             { InteractionType.CommandSearchList, CommandSearchList },
             { InteractionType.CommandListSelectMenu, CommandListSelctMenu },
             { InteractionType.CommandAnswerListSelectMenu, CommandAnswerListSelectMenu },
+            { InteractionType.RoleMenu, RoleMenu },
         };
 
         public static async Task OnInteractionCreated(SocketMessageComponent component)
@@ -241,6 +243,26 @@ namespace OliveToast
             CommandDeleteSession.Sessions.Remove(data.UserId);
 
             await component.DeferAsync();
+        }
+
+        public static async Task RoleMenu(InteractionData data, SocketMessageComponent component)
+        {
+            SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
+            SocketGuildUser user = guild.GetUser(data.UserId);            
+            SocketRole role = guild.GetRole(ulong.Parse(data.Args[1]));
+
+            if (user.Roles.Contains(role))
+            {
+                await user.RemoveRoleAsync(role);
+
+                await component.RespondAsync($"{role.Mention} 역할을 제거했어요", ephemeral: true, allowedMentions: AllowedMentions.None);
+            }
+            else
+            {
+                await user.AddRoleAsync(role);
+
+                await component.RespondAsync($"{role.Mention} 역할을 추가했어요", ephemeral: true, allowedMentions: AllowedMentions.None);
+            }
         }
     }
 }

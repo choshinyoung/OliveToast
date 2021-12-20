@@ -204,7 +204,7 @@ namespace OliveToast.Commands
 
             Size size = new(512, 512);
 
-            using Font font = Utility.GetFont(MathF.Min(r * 25, 40));
+            using Font font = Utility.GetFont(MathF.Min(r * 20, 30));
             using StringFormat format = new()
             {
                 Alignment = StringAlignment.Center,
@@ -293,9 +293,12 @@ namespace OliveToast.Commands
                     int index = (int)MathF.Floor((prvAngle % 360 * -1 + 360) / (360f / items.Length));
 
                     GraphicsPath path = new();
-                    path.AddString(items[index], Utility.GetFontFamily(), (int)FontStyle.Bold, 50, new Rectangle(size.Width / 2 - 200, 300, 400, 200), new()
+
+                    SizeF textSize = g.MeasureString(items[index], Utility.GetFont(50));
+                    textSize = new(MathF.Min(textSize.Width, 400), 200);
+
+                    path.AddString(items[index], Utility.GetFontFamily(), (int)FontStyle.Bold, 50, new RectangleF(size.Width / 2 - textSize.Width / 2, 300, textSize.Width, textSize.Height), new()
                     {
-                        Alignment = StringAlignment.Center,
                         LineAlignment = StringAlignment.Center,
                         Trimming = StringTrimming.Character,
                     });

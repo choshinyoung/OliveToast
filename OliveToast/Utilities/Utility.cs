@@ -1,23 +1,15 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using HPark.Hangul;
-using Newtonsoft.Json;
 using System;
 using System.Drawing;
 using System.Drawing.Text;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 using Color = System.Drawing.Color;
 
 namespace OliveToast.Utilities
 {
-    class Utility
+    public class Utility
     {
         public static string GetInvite()
         {

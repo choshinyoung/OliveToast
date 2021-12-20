@@ -345,5 +345,25 @@ namespace OliveToast.Commands
 
             await Context.ReplyEmbedAsync(emb.Build());
         }
+
+        [Command("역할 메뉴"), Alias("역할메뉴", "역할 지급", "역할지급")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다")]
+        public async Task RoleMenu([Name("역할")] params SocketRole[] roles)
+        {
+            EmbedBuilder emb = Context.CreateEmbed("아래 버튼을 클릭해서 원하는 역할을 추가하세요", "역할 메뉴");
+            emb.Footer = null;
+
+            ComponentBuilder component = new();
+
+            foreach (SocketRole role in roles)
+            {
+                emb.AddField(role.Name, role.Mention, true);
+
+                component.WithButton(role.Name, InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.RoleMenu, Context.Guild.Id, role.Id));
+            }
+
+            await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+        }
     }
 }
