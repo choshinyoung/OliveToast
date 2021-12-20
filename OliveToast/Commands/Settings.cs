@@ -351,6 +351,13 @@ namespace OliveToast.Commands
         [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다")]
         public async Task RoleMenu([Name("역할")] params SocketRole[] roles)
         {
+            if (roles.GroupBy(r => r.Id).Any(r => r.Count() > 1)) 
+            {
+                await Context.ReplyEmbedAsync("중복된 역할이 있어요");
+
+                return;
+            }
+
             EmbedBuilder emb = Context.CreateEmbed("아래 버튼을 클릭해서 원하는 역할을 추가하세요", "역할 메뉴");
             emb.Footer = null;
 
