@@ -69,7 +69,7 @@ namespace OliveToast
         {
             InteractionData data = new(component.Data.CustomId);
 
-            if (component.User.Id != data.UserId) return;
+            if (component.User.Id != data.UserId && data.Type != InteractionType.RoleMenu) return;
 
             await Functions[data.Type](data, component);
         }
