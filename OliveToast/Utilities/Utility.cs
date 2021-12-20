@@ -67,6 +67,18 @@ namespace OliveToast.Utilities
         {
             return $"rgb({color.R}, {color.G}, {color.B})";
         }
+
+        public static (int hue, byte saturation, byte value) ToHSV(this Color color)
+        {
+            int max = Math.Max(color.R, Math.Max(color.G, color.B));
+            int min = Math.Min(color.R, Math.Min(color.G, color.B));
+
+            int hue = (int)color.GetHue();
+            double saturation = (max == 0) ? 0 : 1d - (1d * min / max);
+            double value = max / 255d;
+
+            return (hue, (byte)Math.Round(saturation * 100), (byte)Math.Round(value * 100));
+        }
     }
 
     static class DiscordUserExtension

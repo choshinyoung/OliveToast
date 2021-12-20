@@ -35,6 +35,50 @@ namespace OliveToast.Commands
             await Context.Channel.SendFileAsync(stream, "result.gif", embed: emb.Build());
         }
 
+        [Command("색깔"), Alias("색")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("색을 확인하고 변환할 수 있습니다")]
+        public async Task CheckColor([Name("Hex")] string hex)
+        {
+            if (!hex.StartsWith("#"))
+            {
+                hex = '#' + hex;
+            }
+
+            var color = ColorTranslator.FromHtml(hex);
+
+            await CheckColor(color.R, color.G, color.B);
+        }
+
+        [Command("색깔"), Alias("색")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("색을 확인하고 변환할 수 있습니다")]
+        public async Task CheckColor([Name("Red")] int _r, [Name("Green")] int _g, [Name("Blue")] int _b)
+        {
+            var color = Color.FromArgb(_r, _g, _b);
+
+            using Bitmap bmp = new(352, 240);
+            using Graphics g = Graphics.FromImage(bmp);
+
+            g.Clear(color);
+
+            using MemoryStream stream = new();
+            bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            stream.Position = 0;
+
+            EmbedBuilder emb = Context.CreateEmbed(title: "색깔", imgUrl: "attachment://result.png", color: new Discord.Color(color.R, color.G, color.B));
+
+            emb.AddField("Hex", color.ToHex(), true);
+            emb.AddField("RGB", color.ToFormattedString(), true);
+            emb.AddEmptyField();
+
+            var hsv = color.ToHSV();
+            emb.AddField("HSV", $"hsv({hsv.hue}, {hsv.saturation}, {hsv.value})", true);
+            emb.AddField("HSL", $"hsl({Math.Round(color.GetHue())}, {Math.Round(color.GetSaturation() * 100)}, {Math.Round(color.GetBrightness() * 100)})", true);
+
+            await Context.Channel.SendFileAsync(stream, "result.png", embed: emb.Build());
+        }
+
         [Command("팔레트"), Alias("팔레트 추출", "색추출")]
         [RequirePermission(PermissionType.UseBot)]
         [Summary("이미지에서 가장 많이 쓰인 색을 추출합니다")]
