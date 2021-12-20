@@ -248,7 +248,7 @@ namespace OliveToast
         public static async Task RoleMenu(InteractionData data, SocketMessageComponent component)
         {
             SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
-            SocketGuildUser user = guild.GetUser(data.UserId);            
+            SocketGuildUser user = guild.GetUser(component.User.Id);            
             SocketRole role = guild.GetRole(ulong.Parse(data.Args[1]));
 
             if (user.Roles.Contains(role))
