@@ -349,7 +349,7 @@ namespace OliveToast.Commands
 
         [Command("역할 메뉴"), Alias("역할메뉴", "역할 지급", "역할지급")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다")]
+        [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들입니다")]
         public async Task RoleMenu([Name("역할")] params SocketRole[] roles)
         {
             await RoleMenu(roles, false);
@@ -357,7 +357,7 @@ namespace OliveToast.Commands
 
         [Command("단일 역할 메뉴"), Alias("단일역할메뉴", "단일 역할 지급", "단일역할지급")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다")]
+        [Summary("주어진 역할 중 선택된 역할 한 개를 제외한 다른 역할을 자동으로 제거해주는 역할 메뉴를 생성합니다\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들입니다")]
         public async Task SingleRoleMenu([Name("역할")] params SocketRole[] roles)
         {
             await RoleMenu(roles, true);
