@@ -6,6 +6,7 @@ using OliveToast.Managements.CustomCommand;
 using OliveToast.Managements.data;
 using OliveToast.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static OliveToast.Utilities.RequireCategoryEnable;
@@ -351,24 +352,47 @@ namespace OliveToast.Commands
         [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다")]
         public async Task RoleMenu([Name("역할")] params SocketRole[] roles)
         {
-            if (roles.GroupBy(r => r.Id).Any(r => r.Count() > 1)) 
+            await RoleMenu(roles, false);
+        }
+
+        [Command("단일 역할 메뉴"), Alias("단일역할메뉴", "단일 역할 지급", "단일역할지급")]
+        [RequirePermission(PermissionType.ManageBotSetting)]
+        [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다")]
+        public async Task SingleRoleMenu([Name("역할")] params SocketRole[] roles)
+        {
+            await RoleMenu(roles, true);
+        }
+
+        public async Task RoleMenu(SocketRole[] roles, bool isSingle)
+        {
+            if (roles.Length is < 1 or > 25)
+            {
+                await Context.ReplyEmbedAsync("한 번에 1개 이상, 25개 이하의 역할만 사용할 수 있어요");
+
+                return;
+            }
+
+            if (roles.GroupBy(r => r.Id).Any(r => r.Count() > 1))
             {
                 await Context.ReplyEmbedAsync("중복된 역할이 있어요");
 
                 return;
             }
 
-            EmbedBuilder emb = Context.CreateEmbed("아래 버튼을 클릭해서 원하는 역할을 추가하세요", "역할 메뉴");
+            EmbedBuilder emb = Context.CreateEmbed($"셀렉트 메뉴에서 원하는 역할을 추가하세요{(isSingle ? "\n아래 역할 중 한 개만 사용할 수 있어요" : "")}", "역할 메뉴");
             emb.Footer = null;
 
             ComponentBuilder component = new();
+            List<SelectMenuOptionBuilder> options = new();
 
             foreach (SocketRole role in roles)
             {
                 emb.AddField(role.Name, role.Mention, true);
 
-                component.WithButton(role.Name, InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.RoleMenu, Context.Guild.Id, role.Id));
+                options.Add(new(role.Name, role.Id.ToString()));
             }
+
+            component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.RoleMenu, Context.Guild.Id, isSingle ? 1 : 0), options, "역할 선택하기");
 
             await Context.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: null, component: component.Build());
         }

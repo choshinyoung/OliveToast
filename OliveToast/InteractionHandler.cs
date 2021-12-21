@@ -249,7 +249,8 @@ namespace OliveToast
         {
             SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
             SocketGuildUser user = guild.GetUser(component.User.Id);            
-            SocketRole role = guild.GetRole(ulong.Parse(data.Args[1]));
+            SocketRole role = guild.GetRole(ulong.Parse(component.Data.Values.ToArray()[0]));
+            bool isSingle = data.Args[1] == "1";
 
             if (user.Roles.Contains(role))
             {
@@ -259,9 +260,27 @@ namespace OliveToast
             }
             else
             {
+                List<SocketRole> removedRoles = new();
+
+                if (isSingle)
+                {
+                    List<SocketRole> roles = (component.Message.Components.First().Components.First() as SelectMenuComponent).Options.Select(o => guild.GetRole(ulong.Parse(o.Value))).ToList();
+
+                    foreach (SocketRole _role in roles)
+                    {
+                        if (user.Roles.Contains(_role))
+                        {
+                            removedRoles.Add(_role);
+                        }
+                    }
+
+                    await user.RemoveRolesAsync(removedRoles);
+                }
+
                 await user.AddRoleAsync(role);
 
-                await component.RespondAsync($"{role.Mention} 역할을 추가했어요", ephemeral: true, allowedMentions: AllowedMentions.None);
+                string removedRoleMessage = removedRoles.Any() ? $"{string.Join(", ", removedRoles.Select(r => r.Mention))} 역할을 제거하고 " : "";
+                await component.RespondAsync($"{removedRoleMessage}{role.Mention} 역할을 추가했어요", ephemeral: true, allowedMentions: AllowedMentions.None);
             }
         }
     }
