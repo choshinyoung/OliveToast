@@ -19,11 +19,12 @@ namespace OliveToast
         {
             None,
             CancelTypingGame, CancelWordGame,
-            HelpList, HelpListSelectMenu,
+            HelpList, HelpCategoryListSelectMenu,
             CreateCommand, DeleteCommand,
             CommandList, CommandAnswerList, CommandSearchList,
             CommandListSelectMenu, CommandAnswerListSelectMenu,
             RoleMenu,
+            HelpCommandListSelectMenu
         }
 
         public struct InteractionData
@@ -54,7 +55,8 @@ namespace OliveToast
             { InteractionType.CancelTypingGame, CancelTypingGame },
             { InteractionType.CancelWordGame, CancelWordGame },
             { InteractionType.HelpList, HelpList },
-            { InteractionType.HelpListSelectMenu, HelpListSelectMenu },
+            { InteractionType.HelpCategoryListSelectMenu, HelpCategoryListSelectMenu },
+            { InteractionType.HelpCommandListSelectMenu, HelpCommandListSelectMenu },
             { InteractionType.CreateCommand, CreateCommand },
             { InteractionType.DeleteCommand, DeleteCommand },
             { InteractionType.CommandList, CommandList },
@@ -121,14 +123,21 @@ namespace OliveToast
         {
             int page = int.Parse(data.Args[0]);
 
-            await Helps.ChangeListPage(data.UserId, component.Message, page);
+            await Helps.ChangeCategoryListPage(data.UserId, component.Message, page);
 
             await component.DeferAsync();
         }
 
-        public static async Task HelpListSelectMenu(InteractionData data, SocketMessageComponent component)
+        public static async Task HelpCategoryListSelectMenu(InteractionData data, SocketMessageComponent component)
         {
-            await Helps.ChangeListPage(data.UserId, component.Message, int.Parse(component.Data.Values.ToArray()[0]));
+            await Helps.ChangeCategoryListPage(data.UserId, component.Message, int.Parse(component.Data.Values.ToArray()[0]));
+
+            await component.DeferAsync();
+        }
+
+        public static async Task HelpCommandListSelectMenu(InteractionData data, SocketMessageComponent component)
+        {
+            await Helps.UpdateCommandInfo(component.Message, component.Data.Values.ToArray()[0]);
 
             await component.DeferAsync();
         }
