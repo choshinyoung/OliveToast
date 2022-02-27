@@ -348,9 +348,9 @@ namespace OliveToast.Commands
             }
 
             ComponentBuilder component = new ComponentBuilder().WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelTypingGame), ButtonStyle.Danger);
-            await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
+            DateTimeOffset startTime = (await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build())).CreatedAt;
 
-            TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
+            TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, startTime));
         }
 
         [Command("영어 타자 연습"), Alias("영타", "entyping")]
@@ -367,9 +367,9 @@ namespace OliveToast.Commands
             }
 
             ComponentBuilder component = new ComponentBuilder().WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelTypingGame), ButtonStyle.Danger);
-            await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build());
+            DateTimeOffset startTime = (await Context.ReplyAsync($"> {string.Join("\u200B", sentence.ToCharArray())}", component: component.Build())).CreatedAt;
 
-            TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, DateTime.Now));
+            TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, startTime));
         }
 
         public static async Task<bool> TypingGame(SocketCommandContext context)
@@ -392,7 +392,7 @@ namespace OliveToast.Commands
                         return true;
                     }
 
-                    int speed = (int)(HangulString.SplitToPhonemes(content).Length / (DateTime.Now - session.LastActiveTime).TotalSeconds * 60);
+                    int speed = (int)(HangulString.SplitToPhonemes(content).Length / (context.Message.CreatedAt - session.LastActiveTime).TotalSeconds * 60);
 
                     double a = content.Length < session.Sentence.Length ?
                         (double)content.Where((c, i) => i < session.Sentence.Length && c == session.Sentence[i]).Count() / session.Sentence.Length :

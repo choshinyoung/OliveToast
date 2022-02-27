@@ -24,11 +24,11 @@ namespace OliveToast.Utilities
     {
         public SocketCommandContext Context;
         public string Sentence;
-        public DateTime LastActiveTime;
+        public DateTimeOffset LastActiveTime;
 
         public static Dictionary<ulong, TypingSession> Sessions = new();
 
-        public TypingSession(SocketCommandContext context, string sentence, DateTime lastActiveTime)
+        public TypingSession(SocketCommandContext context, string sentence, DateTimeOffset lastActiveTime)
         {
             Context = context;
             Sentence = sentence;
