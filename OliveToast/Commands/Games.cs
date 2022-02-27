@@ -329,7 +329,17 @@ namespace OliveToast.Commands
         [Summary("타자 연습을 할 수 있습니다")]
         public async Task StartTypingGame()
         {
-            string sentence = SentenceManager.Sentences[new Random().Next(SentenceManager.Sentences.Count)];
+            Random rand = new();
+
+            string sentence;
+            if (rand.Next(0, 5) == 0)
+            {
+                sentence = string.Join(' ', Enumerable.Range(0, 5).Select(i => WordsManager.Words[rand.Next(0, WordsManager.Words.Count)]));
+            }
+            else
+            {
+                sentence = SentenceManager.Sentences[rand.Next(SentenceManager.Sentences.Count)];
+            }
 
             if (TypingSession.Sessions.ContainsKey(Context.User.Id))
             {
