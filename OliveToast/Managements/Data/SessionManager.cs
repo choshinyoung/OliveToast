@@ -10,6 +10,7 @@ namespace OliveToast.Managements.Data
     {
         public const int ExpireMinute = 5;
         public const int CommandExecuteSessionExpireMinute = 10;
+        public const int ExceptionSessionExpireMinute = 3;
 
         public static async Task CollectExpiredSessions()
         {
@@ -54,6 +55,14 @@ namespace OliveToast.Managements.Data
                         CommandExecuteSession.Sessions.Remove(session.Key);
 
                         await session.Value.Context.Message.AddReactionAsync(new Emoji("⚠️"));
+                    }
+                }
+
+                foreach (var session in CommandEventHandler.ExceptionSessions)
+                {
+                    if ((DateTime.Now - session.Value.occurredTime).TotalMinutes >= ExceptionSessionExpireMinute)
+                    {
+                        CommandEventHandler.ExceptionSessions.Remove(session.Key);
                     }
                 }
             }

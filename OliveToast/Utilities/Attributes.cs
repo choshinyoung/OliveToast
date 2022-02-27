@@ -5,6 +5,7 @@ using OliveToast.Managements.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static OliveToast.Utilities.Exceptions;
 
 namespace OliveToast.Utilities
 {
@@ -140,26 +141,6 @@ namespace OliveToast.Utilities
         public static bool HavePrecondition<T>(this ModuleInfo info)
         {
             return info.Preconditions.Any(p => p.GetType() == typeof(T));
-        }
-    }
-
-    public class RequirePermissionException : Exception
-    {
-        public const string Emoji = "<:PermissionDenied:907628900266434620>";
-
-        public RequirePermissionException(RequirePermission.PermissionType perm) : base($"{Emoji} 이 커맨드를 실행하려면 {RequirePermission.PermissionToString(perm)} 권한이 필요해요")
-        {
-
-        }
-    }
-
-    public class CategoryNotEnabledException : Exception
-    {
-        public const string Emoji = "<:CategoryNotEnabled:907628900564209705>";
-
-        public CategoryNotEnabledException(RequireCategoryEnable.CategoryType cat) : base($"{Emoji} 이 커맨드를 실행하려면 {RequireCategoryEnable.CategoryToString(cat)} 타입의 활성화가 필요해요")
-        {
-
         }
     }
 }

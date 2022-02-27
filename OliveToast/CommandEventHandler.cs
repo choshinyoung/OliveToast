@@ -12,12 +12,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Toast;
+using static OliveToast.Utilities.Exceptions;
 
 namespace OliveToast
 {
     class CommandEventHandler
     {
         public static readonly string prefix = ConfigManager.Get("PREFIX");
+
+        public static readonly Dictionary<(ulong id, string emote), (ulong userId, string reason, DateTime occurredTime)> ExceptionSessions = new();
 
         public static void RegisterEvents(DiscordSocketClient client, CommandService command)
         {
@@ -58,6 +61,8 @@ namespace OliveToast
         public static async Task OnJoinGuild(SocketGuild guild)
         {
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
+
+            await guild.DownloadUsersAsync();
         }
 
         public static async Task OnLeftGuild(SocketGuild arg)
@@ -250,6 +255,20 @@ namespace OliveToast
 
                 await CustomCommandExecutor.OnReactionAdded(reaction);
             });
+
+            var key = (message.Id, reaction.Emote.Name);
+
+            if (ExceptionSessions.ContainsKey(key) && message.Value.Author.Id == reaction.UserId)
+            {
+                var (userId, reason, occurredTime) = ExceptionSessions[key];
+
+                SocketCommandContext ctx = new(Program.Client, message.Value as SocketUserMessage);
+
+                EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: reason);
+                await ctx.ReplyEmbedAsync(emb.Build());
+
+                ExceptionSessions.Remove(key);
+            }
         }
 
         public static async Task OnCommandExecuted(Discord.Optional<CommandInfo> command, ICommandContext context, IResult result)
@@ -262,7 +281,7 @@ namespace OliveToast
 
                     if (Program.IsDebugMode)
                     {
-                        EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: $"{result.Error}: {result.ErrorReason}");
+                        EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: result.ErrorReason);
                         await ctx.ReplyEmbedAsync(emb.Build());
                     }
                     else
@@ -279,6 +298,8 @@ namespace OliveToast
                         }
 
                         await context.Message.AddReactionAsync(emote);
+
+                        ExceptionSessions.Add((context.Message.Id, emote.Name), (context.User.Id, result.ErrorReason, DateTime.Now));
                     }
                 }
                 else
