@@ -332,7 +332,7 @@ namespace OliveToast.Commands
             Random rand = new();
 
             string sentence;
-            if (rand.Next(0, 5) == 0)
+            if (rand.Next(0, 10) == 0)
             {
                 sentence = string.Join(' ', Enumerable.Range(0, 5).Select(i => WordsManager.Words[rand.Next(0, WordsManager.Words.Count)]));
             }
