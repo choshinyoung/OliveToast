@@ -67,7 +67,7 @@ namespace OliveToast.Commands
                 }
                 catch
                 {
-                    output += $"({id})";
+                    output += $"({id})\n";
                 }
             }
 
@@ -76,9 +76,16 @@ namespace OliveToast.Commands
 
         [Command("화이트리스트 추가")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저를 봇 관리자로 만듭니다")]
+        [Summary("해당 유저를 봇 관리자로 만들어요")]
         public async Task AddWhiteList([Name("유저"), Remainder] SocketUser user)
         {
+            if (SpecialListManager.WhiteList.Contains(user.Id))
+            {
+                await Context.ReplyEmbedAsync("해당 유저는 이미 화이트리스트에 있어요");
+
+                return;
+            }
+
             SpecialListManager.WhiteList.Add(user.Id);
             SpecialListManager.Update();
 
@@ -90,6 +97,13 @@ namespace OliveToast.Commands
         [Summary("해당 유저를 봇 관리자 목록에서 제거합니다")]
         public async Task RemoveWhiteList([Name("유저"), Remainder] SocketUser user)
         {
+            if (!SpecialListManager.WhiteList.Contains(user.Id))
+            {
+                await Context.ReplyEmbedAsync("해당 유저가 화이트리스트에 없어요");
+
+                return;
+            }
+
             SpecialListManager.WhiteList.Remove(user.Id);
             SpecialListManager.Update();
 
@@ -111,7 +125,7 @@ namespace OliveToast.Commands
                 }
                 catch
                 {
-                    output += $"({id})";
+                    output += $"({id})\n";
                 }
             }
 
@@ -123,6 +137,13 @@ namespace OliveToast.Commands
         [Summary("해당 유저가 봇을 사용할 수 없게 만듭니다")]
         public async Task AddBlackList([Name("유저"), Remainder] SocketUser user)
         {
+            if (SpecialListManager.BlackList.Contains(user.Id))
+            {
+                await Context.ReplyEmbedAsync("해당 유저는 이미 블랙리스트에 있어요");
+
+                return;
+            }
+
             SpecialListManager.BlackList.Add(user.Id);
             SpecialListManager.Update();
 
@@ -134,6 +155,13 @@ namespace OliveToast.Commands
         [Summary("해당 유저를 블랙리스트에서 제거합니다")]
         public async Task RemoveBlackList([Name("유저"), Remainder] SocketUser user)
         {
+            if (!SpecialListManager.BlackList.Contains(user.Id))
+            {
+                await Context.ReplyEmbedAsync("해당 유저가 블랙리스트에 없어요");
+
+                return;
+            }
+
             SpecialListManager.BlackList.Remove(user.Id);
             SpecialListManager.Update();
 
