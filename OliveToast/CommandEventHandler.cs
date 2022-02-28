@@ -61,8 +61,6 @@ namespace OliveToast
         public static async Task OnJoinGuild(SocketGuild guild)
         {
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
-
-            await guild.DownloadUsersAsync();
         }
 
         public static async Task OnLeftGuild(SocketGuild arg)
