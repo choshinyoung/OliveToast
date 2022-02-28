@@ -20,7 +20,7 @@ namespace OliveToast.Commands
     {
         [Command("안녕")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("올리브토스트와 인사를 할 수 있습니다")]
+        [Summary("올리브토스트와 인사를 해보세요")]
         public async Task Hello()
         {
             await Context.ReplyEmbedAsync("안녕하세요!");
@@ -28,7 +28,7 @@ namespace OliveToast.Commands
         
         [Command("핑")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("봇의 응답 속도를 확인합니다")]
+        [Summary("봇의 응답 속도를 확인할 수 있어요")]
         public async Task Ping()
         {
             await Context.ReplyEmbedAsync($"{Program.Client.Latency}ms");
@@ -36,7 +36,7 @@ namespace OliveToast.Commands
 
         [Command("업타임")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("봇의 업타임을 확인합니다")]
+        [Summary("봇의 업타임을 확인할 수 있어요")]
         public async Task Uptime()
         {
             TimeSpan t = DateTime.Now - Program.Uptime;
@@ -45,7 +45,7 @@ namespace OliveToast.Commands
 
         [Command("봇 초대 링크"), Alias("초대 링크", "초대", "봇 초대")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("올리브토스트를 초대할 수 있는 초대 링크입니다")]
+        [Summary("올리브토스트를 초대할 수 있는 초대 링크예요")]
         public async Task BotInvite()
         {
             await Context.ReplyEmbedAsync($"[올리브토스트 초대 링크]({Utility.GetInvite()})");
@@ -53,7 +53,7 @@ namespace OliveToast.Commands
 
         [Command("인공지능"), Alias("핑퐁", "올토야", "올토님")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("인공지능 올리브토스트와 대화할 수 있습니다")]
+        [Summary("인공지능 올리브토스트와 대화를 해보세요")]
         public async Task PingPong([Remainder, Name("문장")] string text)
         {
             using HttpClient httpClient = new();
@@ -89,7 +89,7 @@ namespace OliveToast.Commands
 
         [Command("계산"), Alias("계산기")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("주어진 수식을 계산합니다")]
+        [Summary("주어진 수식을 계산해주는 커맨드예요")]
         public async Task Calc([Remainder, Name("수식")] string input)
         {
             Expression exp = new(input);
@@ -112,7 +112,7 @@ namespace OliveToast.Commands
 
         [Command("팩토리얼"), Alias("팩")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("주어진 수의 팩토리얼을 계산합니다\n`n`에는 1024 이하의 정수만 입력할 수 있습니다")]
+        [Summary("주어진 수의 팩토리얼을 계산해주는 커맨드예요\n`n`에는 1024 이하의 정수만 입력할 수 있어요")]
         public async Task Factorial(int n)
         {
             if (n > 1024 || n < 0)

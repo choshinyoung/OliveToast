@@ -20,7 +20,7 @@ namespace OliveToast.Commands
     {
         [Command("움짤")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("이미지를 gif로 바꿔줍니다")]
+        [Summary("이미지를 gif로 바꿔주는 커맨드예요")]
         public async Task ToGif([Name("Url")] string url = null)
         {
             using MemoryStream stream = Context.GetFileStream(ref url);
@@ -37,7 +37,7 @@ namespace OliveToast.Commands
 
         [Command("색깔"), Alias("색")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("색을 확인하고 변환할 수 있습니다")]
+        [Summary("색을 확인하거나 변환할 수 있는 커맨드예요")]
         public async Task CheckColor([Name("Hex")] string hex)
         {
             if (!hex.StartsWith("#"))
@@ -52,7 +52,7 @@ namespace OliveToast.Commands
 
         [Command("색깔"), Alias("색")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("색을 확인하고 변환할 수 있습니다")]
+        [Summary("색을 확인하거나 변환할 수 있는 커맨드예요")]
         public async Task CheckColor([Name("Red")] int _r, [Name("Green")] int _g, [Name("Blue")] int _b)
         {
             var color = Color.FromArgb(_r, _g, _b);
@@ -81,7 +81,7 @@ namespace OliveToast.Commands
 
         [Command("팔레트"), Alias("팔레트 추출", "색추출")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("이미지에서 가장 많이 쓰인 색을 추출합니다")]
+        [Summary("이미지에서 가장 많이 쓰인 색들을 확인할 수 있는 커맨드예요")]
         public async Task Palette([Name("Url")] string url = null)
         {
             using MemoryStream stream = Context.GetFileStream(ref url);
@@ -203,7 +203,7 @@ namespace OliveToast.Commands
 
         [Command("이모지 변환")]
         [RequirePermission(PermissionType.SpeakByBot)]
-        [Summary("글자를 이모지로 바꿔줍니다")]
+        [Summary("글자를 이모지로 바꿔주는 커맨드예요")]
         public async Task ToEmoji([Remainder, Name("입력")] string input)
         {
             string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -255,7 +255,7 @@ namespace OliveToast.Commands
 
         [Command("외부이모지")]
         [RequirePermission(PermissionType.SpeakByBot)]
-        [Summary("다른 서버의 이모지를 사용할 수 있습니다\n(올리브토스트가 있는 서버의 이모지만 사용 가능합니다)")]
+        [Summary("올리브토스트가 있는 다른 서버들의 이모지를 사용할 수 있는 커맨드예요")]
         public async Task CustomEmoji([Name("입력")] params string[] input)
         {
             List<GuildEmote> emojis = new();
@@ -287,7 +287,7 @@ namespace OliveToast.Commands
 
         [Command("이모지아이디")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("이모지의 아이디를 얻을 수 있습니다")]
+        [Summary("서버 이모지의 아이디를 확인할 수 있는 커맨드예요")]
         public async Task EmojiID([Name("이름")] string name)
         {
             List<GuildEmote> emojis = Context.Guild.Emotes.Where(e => e.Name == name).ToList();

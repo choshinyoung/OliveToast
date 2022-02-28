@@ -14,7 +14,7 @@ namespace OliveToast.Commands
     {
         [Command("도움"), Alias("도움말")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커맨드 목록을 볼 수 있습니다")]
+        [Summary("커맨드의 목록이에요")]
         public async Task Help()
         {
             int page = 1;
@@ -158,7 +158,7 @@ namespace OliveToast.Commands
 
         [Command("도움"), Alias("도움말")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("특정 카테고리 또는 커맨드의 자세한 정보를 확인합니다")]
+        [Summary("특정 카테고리 또는 커맨드의 자세한 정보를 확인할 수 있는 커맨드예요")]
         public async Task Help([Remainder, Name("카테고리/커맨드")] string name)
         {
             List<ModuleInfo> moduleInfos = Program.Command.Modules.Where(m => m.Name == name).ToList();

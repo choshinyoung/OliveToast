@@ -20,7 +20,7 @@ namespace OliveToast.Commands
     {
         [Command("활성화")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("지정된 카테고리를 활성화합니다\n`일반`, `정보`, `검색`, `게임`, `텍스트`, `이미지`, `커맨드`, `레벨`, `로그`, `설정` 중 하나를 선택할 수 있습니다")]
+        [Summary("지정된 카테고리를 활성화하는 커맨드예요\n`일반`, `정보`, `검색`, `게임`, `텍스트`, `이미지`, `커맨드`, `레벨`, `로그`, `설정` 중 하나를 선택할 수 있어요")]
         public async Task Enable([Name("카테고리")] string category)
         {
             if (!CategoryNames.Contains(category))
@@ -46,7 +46,7 @@ namespace OliveToast.Commands
 
         [Command("비활성화")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("지정된 카테고리를 비활성화합니다")]
+        [Summary("지정된 카테고리를 비활성화하는 커맨드예요")]
         public async Task Disable([Name("카테고리")] string category)
         {
             if (!CategoryNames.Contains(category))
@@ -78,7 +78,7 @@ namespace OliveToast.Commands
 
         [Command("활성화 확인"), Alias("활성화 보기", "활성화"), Priority(1)]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("활성화돼있는 카테고리들을 확인합니다")]
+        [Summary("활성화돼있는 카테고리들을 확인할 수 있는 커맨드에요")]
         public async Task SeeEnabledCategories()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -95,7 +95,7 @@ namespace OliveToast.Commands
 
         [Command("권한 설정"), Alias("권한")]
         [RequirePermission(PermissionType.ServerAdmin)]
-        [Summary("역할별로 봇 사용 권한을 설정합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
+        [Summary("역할별로 봇 사용 권한을 설정하는 커맨드예요\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있어요")]
         public async Task SetPermissionRole([Name("권한")] string permission, [Name("")] string permission2, [Remainder, Name("역할")] SocketRole role)
         {
             permission += $" {permission2}";
@@ -133,7 +133,7 @@ namespace OliveToast.Commands
 
         [Command("권한 확인"), Alias("권한 보기", "권한")]
         [RequirePermission(PermissionType.ServerAdmin)]
-        [Summary("봇 사용 권한을 확인합니다")]
+        [Summary("봇 사용 권한을 확인할 수 있는 커맨드예요")]
         public async Task SeePermissionRole()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -151,7 +151,7 @@ namespace OliveToast.Commands
 
         [Command("권한 제거"), Alias("권한 설정 취소")]
         [RequirePermission(PermissionType.ServerAdmin)]
-        [Summary("봇 사용 권한을 제거합니다\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있습니다")]
+        [Summary("봇 사용 권한을 제거하는 커맨드예요\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있어요")]
         public async Task RemovePermissionRole([Name("권한")] string permission, [Name("")] string permission2)
         {
             permission += $" {permission2}";
@@ -188,7 +188,7 @@ namespace OliveToast.Commands
 
         [Command("입장 메시지 설정"), Alias("입장메시지 설정")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("유저가 입장할 때 보내는 메시지를 설정합니다\n`메시지`는 생략할 수 있습니다")]
+        [Summary("유저가 입장할 때 보내는 메시지를 설정하는 커맨드예요\n`메시지`는 생략할 수 있어요")]
         public async Task SetJoinMessage([Name("메시지"), Remainder] string answer = null)
         {
             if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
@@ -246,7 +246,7 @@ namespace OliveToast.Commands
 
         [Command("입장 메시지 보기"), Alias("입장메시지 보기", "입장 메시지 확인", "입장메시지 확인", "입장메시지")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("입장 메시지를 확인합니다")]
+        [Summary("입장 메시지를 확인할 수 있는 커맨드예요")]
         public async Task CheckJoinMessage()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -268,7 +268,7 @@ namespace OliveToast.Commands
 
         [Command("퇴장 메시지 설정"), Alias("퇴장메시지 설정")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("유저가 서버를 나갔을 때 보내는 메시지를 설정합니다\n`메시지`는 생략할 수 있습니다")]
+        [Summary("유저가 서버를 나갔을 때 보내는 메시지를 설정하는 커맨드예요\n`메시지`는 생략할 수 있어요")]
         public async Task SetLeaveMessage([Name("메시지"), Remainder] string answer = null)
         {
             if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
@@ -327,7 +327,7 @@ namespace OliveToast.Commands
 
         [Command("퇴장 메시지 보기"), Alias("퇴장메시지 보기", "퇴장 메시지 확인", "퇴장메시지 확인", "퇴장메시지")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("퇴장 메시지를 확인합니다")]
+        [Summary("퇴장 메시지를 확인할 수 있는 커맨드예요")]
         public async Task CheckLeaveMessage()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -349,7 +349,7 @@ namespace OliveToast.Commands
 
         [Command("역할 메뉴"), Alias("역할메뉴", "역할 지급", "역할지급")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("자동으로 역할을 지급해주는 메뉴를 생성합니다\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들입니다")]
+        [Summary("자동으로 역할을 지급해주는 메뉴를 생성하는 커맨드예요\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들이에요")]
         public async Task RoleMenu([Name("역할")] params SocketRole[] roles)
         {
             await RoleMenu(roles, false);
@@ -357,7 +357,7 @@ namespace OliveToast.Commands
 
         [Command("단일 역할 메뉴"), Alias("단일역할메뉴", "단일 역할 지급", "단일역할지급")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("주어진 역할 중 선택된 역할 한 개를 제외한 다른 역할을 자동으로 제거해주는 역할 메뉴를 생성합니다\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들입니다")]
+        [Summary("역할을 선택 시 선택된 역할을 제외한 해당 역할 목록의 다른 역할을 자동으로 제거해주는 역할 메뉴를 생성하는 커맨드예요\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들이에요")]
         public async Task SingleRoleMenu([Name("역할")] params SocketRole[] roles)
         {
             await RoleMenu(roles, true);

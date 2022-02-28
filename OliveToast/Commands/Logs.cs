@@ -16,7 +16,7 @@ namespace OliveToast.Commands
     {
         [Command("로그 채널 설정"), Alias("로그 채널")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("로그 채널을 설정합니다")]
+        [Summary("로그 채널을 설정하는 커맨드예요")]
         public async Task SetLogChannel([Remainder, Name("채널")] SocketTextChannel channel)
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -30,7 +30,7 @@ namespace OliveToast.Commands
         
         [Command("로그 채널 확인"), Alias("로그 설정 보기", "로그 채널 보기", "로그 채널")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("설정된 로그 채널을 확인합니다")]
+        [Summary("설정된 로그 채널을 확인할 수 있는 커맨드예요")]
         public async Task SeeLogChannel()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;

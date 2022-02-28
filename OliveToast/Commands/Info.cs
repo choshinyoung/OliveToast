@@ -18,7 +18,7 @@ namespace OliveToast.Commands
     {
         [Command("서버 정보"), Alias("서버정보", "서버")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("서버의 정보를 확인합니다")]
+        [Summary("서버의 정보를 확인할 수 있는 커맨드예요")]
         public async Task ServerInfo()
         {
             SocketGuild g = Context.Guild;
@@ -69,7 +69,7 @@ namespace OliveToast.Commands
 
         [Command("채널 정보"), Alias("채널정보", "채널")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("채널의 정보를 확인합니다\n`채널`은 생략할 수 있습니다")]
+        [Summary("채널의 정보를 확인할 수 있는 커맨드예요\n`채널`을 생략할 수 있어요")]
         public async Task ChannerInfo([Name("채널"), Remainder] SocketTextChannel c = null)
         {
             if (c == null)
@@ -94,7 +94,7 @@ namespace OliveToast.Commands
 
         [Command("역할 정보"), Alias("역할정보", "역할")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("역할의 정보를 확인합니다")]
+        [Summary("역할의 정보를 확인할 수 있는 커맨드예요")]
         public async Task RoleInfo([Name("역할"), Remainder] SocketRole r)
         {
             EmbedBuilder emb = Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color, thumbnailUrl: r.GetIconUrl());
@@ -155,7 +155,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
 
         [Command("유저 정보"), Alias("유저정보", "유저")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("유저의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
+        [Summary("유저의 정보를 확인할 수 있는 커맨드예요\n`유저`를 생략할 수 있어요")]
         public async Task UserInfo([Name("유저"), Remainder] SocketGuildUser u = null)
         {
             if (u == null)
@@ -181,7 +181,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
 
         [Command("유저 정보"), Alias("유저정보", "유저")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.DM | ContextType.Group)]
-        [Summary("유저의 정보를 확인합니다\n`유저`는 생략할 수 있습니다")]
+        [Summary("유저의 정보를 확인할 수 있는 커맨드예요\n`유저`는 생략할 수 있어요")]
         public async Task UserInfo([Name("유저"), Remainder] SocketUser u = null)
         {
             if (u == null)
@@ -206,7 +206,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
 
         [Command("봇 정보"), Alias("봇정보", "봇")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("봇의 정보를 확인합니다")]
+        [Summary("봇의 정보를 확인할 수 있는 커맨드예요")]
         public async Task BotInfo()
         {
             EmbedBuilder emb = Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: Program.Client.CurrentUser.GetAvatar());

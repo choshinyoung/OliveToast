@@ -18,7 +18,7 @@ namespace OliveToast.Commands
     {
         [Command("레벨 확인"), Alias("레벨 보기", "레벨")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("레벨을 확인합니다\n`유저`는 생략할 수 있습니다")]
+        [Summary("해당 유저의 레벨을 확인할 수 있는 커맨드예요\n`유저`는 생략할 수 있어요")]
         public async Task SeeLevel([Remainder, Name("유저")] SocketGuildUser user = null)
         {
             if (user == null)
@@ -49,7 +49,7 @@ namespace OliveToast.Commands
 
         [Command("순위")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("서버 유저들의 레벨 순위를 확인합니다")]
+        [Summary("서버 유저들의 레벨 순위를 확인할 수 있는 커맨드예요")]
         public async Task Rank()
         {
             OliveGuild guild = OliveGuild.Get(Context.Guild.Id);
@@ -83,7 +83,7 @@ namespace OliveToast.Commands
 
         [Command("레벨 역할 추가"), Alias("레벨 역할 설정", "레벨 역할")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("특정 레벨에 도달하면 얻을 수 있는 역할을 설정합니다")]
+        [Summary("특정 레벨에 도달하면 얻을 수 있는 역할을 설정하는 커맨드예요")]
         public async Task AddLevelRole([Name("레벨")] int level, [Remainder, Name("역할")] SocketRole role)
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -102,7 +102,7 @@ namespace OliveToast.Commands
 
         [Command("레벨 역할 제거"), Alias("레벨 역할 삭제")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("해당 레벨의 역할을 제거합니다")]
+        [Summary("해당 레벨의 역할을 제거하는 커맨드예요")]
         public async Task RemoveLevelRole([Name("레벨")] int level)
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -121,7 +121,7 @@ namespace OliveToast.Commands
 
         [Command("레벨업 채널 설정"), Alias("레벨업 채널")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("레벨업 메시지를 보내는 채널을 설정합니다")]
+        [Summary("레벨업 메시지를 보내는 채널을 설정하는 커맨드예요")]
         public async Task SetLevelUpChannel([Remainder, Name("채널")] SocketTextChannel channel)
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -134,7 +134,7 @@ namespace OliveToast.Commands
 
         [Command("레벨업 채널 초기화"), Alias("레벨업 채널 제거", "레벨업 채널 삭제")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("설정된 레벨업 채널을 초기화합니다")]
+        [Summary("설정된 레벨업 채널을 초기화하는 커맨드예요")]
         public async Task ResetLevelUpChannel()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -153,7 +153,7 @@ namespace OliveToast.Commands
 
         [Command("레벨업 불가 채널 추가"), Alias("레벨업 불가 채널 설정", "레벨업 불가 채널")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("xp가 오르지 않는 채널을 설정합니다")]
+        [Summary("xp가 오르지 않는 채널을 설정하는 커맨드예요")]
         public async Task AddNonXpChannel([Name("채널")] SocketTextChannel channel)
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -172,7 +172,7 @@ namespace OliveToast.Commands
 
         [Command("레벨업 불가 채널 제거"), Alias("레벨업 불가 채널 삭제")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("설정된 레벨업 불가 채널을 제거합니다")]
+        [Summary("설정된 레벨업 불가 채널을 제거하는 커맨드예요")]
         public async Task RemoveNonXpChannel([Name("채널")] SocketTextChannel channel)
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;
@@ -191,7 +191,7 @@ namespace OliveToast.Commands
 
         [Command("레벨 설정 확인"), Alias("레벨 설정 보기", "레벨업 채널 확인", "레벨업 채널 보기", "레벨업 채널", "레벨 역할 확인", "레벨 역할 보기", "레벨 역할", "레벨업 불가 채널 확인", "레벨업 불가 채널 보기", "레벨업 불가 채널")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("레벨 설정을 확인합니다")]
+        [Summary("레벨 설정을 확인하는 커맨드예요")]
         public async Task SeeLevelUpChannel()
         {
             OliveGuild.GuildSetting setting = OliveGuild.Get(Context.Guild.Id).Setting;

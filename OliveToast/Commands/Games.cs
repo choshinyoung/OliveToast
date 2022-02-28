@@ -26,7 +26,7 @@ namespace OliveToast.Commands
     {
         [Command("주사위"), Alias("주사위 굴리기")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("주사위를 굴립니다\n`면 수`는 생략할 수 있습니다")]
+        [Summary("주사위를 굴릴 수 있는 커맨드예요\n`면 수`는 생략할 수 있어요")]
         public async Task Dice([Name("면 수")] int count = 6)
         {
             await Context.ReplyEmbedAsync($"{new Random().Next(1, count + 1)}!");
@@ -35,7 +35,7 @@ namespace OliveToast.Commands
         public enum Rcp { 가위, 바위, 보 }
         [Command("가위바위보")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("가위바위보입니다\n`가위`, `바위`, `보` 중 하나를 입력할 수 있습니다")]
+        [Summary("올리브토스트와 가위바위보를 해보세요\n`가위`, `바위`, `보` 중 하나를 입력할 수 있어요")]
         public async Task RockScissorsPaper([Name("입력")] Rcp input)
         {
             switch (new Random().Next(3))
@@ -54,7 +54,7 @@ namespace OliveToast.Commands
 
         [Command("끝말잇기")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("올리브토스트와 끝말잇기를 할 수 있습니다\n`단어`는 생략할 수 있습니다")]
+        [Summary("올리브토스트와 끝말잇기를 해보세요\n`단어`는 생략할 수 있어요")]
         public async Task StartWordRelay([Name("단어")] string word = null)
         {
             if (!WordSession.Sessions.ContainsKey(Context.User.Id))
@@ -151,7 +151,7 @@ namespace OliveToast.Commands
 
         [Command("추첨")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("주어진 유저들 중 한명을 랜덤으로 선택합니다\n`유저`를 생략하면 서버의 모든 유저 중 한명을 선택합니다")]
+        [Summary("주어진 유저들 중 한명을 랜덤으로 추첨하는 커맨드예요\n`유저`를 입력하지 않으면 서버의 모든 유저 중 한 명을 선택해요")]
         public async Task Rot([Name("유저")] params SocketGuildUser[] users)
         {
             if (users.Length == 0)
@@ -169,7 +169,7 @@ namespace OliveToast.Commands
 
         [Command("추첨")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
-        [Summary("주어진 역할을 가진 유저들 중 한명을 랜덤으로 선택합니다")]
+        [Summary("주어진 역할을 가진 유저들 중 한명을 랜덤으로 추첨하는 커맨드예요")]
         public async Task Rot([Remainder, Name("역할")] SocketRole role)
         {
             SocketGuildUser[] users = Context.Guild.Users.Where(u => u.Roles.Any(r => r.Id == role.Id)).ToArray();
@@ -185,7 +185,7 @@ namespace OliveToast.Commands
 
         [Command("룰렛"), Alias("돌림판")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("를렛을 돌립니다")]
+        [Summary("를렛을 돌릴 수 있는 커맨드예요")]
         public async Task Roulette([Name("항목")] params string[] items)
         {
             if (items.Length is < 2 or > 30)
@@ -326,7 +326,7 @@ namespace OliveToast.Commands
 
         [Command("타자 연습"), Alias("타자", "타자연습")]
         [RequirePermission(PermissionType.UseBot), RequireBotPermission(ChannelPermission.AttachFiles)]
-        [Summary("타자 연습을 할 수 있습니다")]
+        [Summary("타자 연습을 할 수 있는 커맨드예요")]
         public async Task StartTypingGame()
         {
             Random rand = new();
@@ -355,7 +355,7 @@ namespace OliveToast.Commands
 
         [Command("영어 타자 연습"), Alias("영타", "entyping")]
         [RequirePermission(PermissionType.UseBot), RequireBotPermission(ChannelPermission.AttachFiles)]
-        [Summary("타자 연습을 할 수 있습니다")]
+        [Summary("영어로 타자 연습을 할 수 있는 커맨드예요")]
         public async Task StartEnTypingGame()
         {
             string sentence = SentenceManager.EnSentences[new Random().Next(SentenceManager.EnSentences.Count)];

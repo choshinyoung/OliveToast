@@ -18,7 +18,7 @@ namespace OliveToast.Commands
     {
         [Command("말하기")]
         [RequirePermission(PermissionType.SpeakByBot)]
-        [Summary("올리브토스트로 말을 할 수 있습니다\n`말`은 500자 이하여야 합니다")]
+        [Summary("올리브토스트로 말을 할 수 있는 커맨드예요\n`말`은 500자 이하여야 돼요")]
         public async Task Say([Remainder, Name("말")] string input)
         {
             if (input.Length > 500)
@@ -37,7 +37,7 @@ namespace OliveToast.Commands
 
         [Command("거꾸로"), Alias("로꾸거")]
         [RequirePermission(PermissionType.SpeakByBot)]
-        [Summary("말을 거꾸로 합니다\n`말`은 500자 이하여야 합니다")]
+        [Summary("주어진 말을 거꾸로 말해주는 커맨드예요\n`말`은 500자 이하여야 돼요")]
         public async Task Reverse([Remainder, Name("말")] string input)
         {
             if (input.Length > 500)
@@ -51,7 +51,7 @@ namespace OliveToast.Commands
 
         [Command("안드로어"), Alias("안", "dksemfhdj", "dks")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("영어 키보드로 입력된 글을 한글로 바꿔줍니다")]
+        [Summary("영어 키보드로 입력된 글을 한글로 바꿔주는 커맨드예요")]
         public async Task AndroLang([Remainder, Name("말")] string input)
         {
             char[] en = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
@@ -203,7 +203,7 @@ namespace OliveToast.Commands
 
         [Command("역안드로어"), Alias("역안", "durdksemfhdj", "durdks")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("한글 키보드로 입력된 글을 영어로 바꿔줍니다")]
+        [Summary("한글 키보드로 입력된 글을 영어로 바꿔주는 커맨드예요")]
         public async Task RvsAndroLang([Remainder, Name("말")] string input)
         {
             string[] ko = { "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "ㅃ", "ㅉ", "ㄸ", "ㄲ", "ㅆ", "ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ", "ㅐ", "ㅔ", "ㅒ", "ㅖ",
@@ -222,7 +222,7 @@ namespace OliveToast.Commands
 
         [Command("인코딩"), Alias("Base64")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("주어진 글을 Base64로 변환합니다")]
+        [Summary("주어진 글을 Base64로 변환해주는 커맨드예요")]
         public async Task Encode([Remainder, Name("입력")] string input)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(input);
@@ -233,7 +233,7 @@ namespace OliveToast.Commands
 
         [Command("디코딩")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("Base64로 인코딩된 글을 디코딩합니다")]
+        [Summary("Base64로 인코딩된 글을 디코딩해주는 커맨드예요")]
         public async Task Decode([Remainder, Name("입력")] string input)
         {
             try
@@ -252,7 +252,7 @@ namespace OliveToast.Commands
 
         [Command("진법 변환"), Alias("진수 변환", "진법", "진수")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("`from`진수 `수`를 `to`진수로 변환합니다\n0-9, a-z를 사용해 36진수까지 표현할 수 있습니다")]
+        [Summary("`from`진수 `수`를 `to`진수로 변환해주는 커맨드예요\n0-9, a-z를 사용해 36진수까지 표현할 수 있어요")]
         public async Task BaseConvert(int from, int to, [Remainder, Name("수")] string num)
         {
             if (from > 36 || to > 36 || from < 2 || to < 2)

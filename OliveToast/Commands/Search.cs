@@ -20,7 +20,7 @@ namespace OliveToast.Commands
     {
         [Command("디코봇"), Alias("코리안봇", "디스코드봇")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("[한국 디스코드 봇 리스트](https://koreanbots.dev/)에서 봇을 검색합니다")]
+        [Summary("[한국 디스코드 봇 리스트](https://koreanbots.dev/)에서 봇을 검색할 수 있는 커맨드예요")]
         public async Task DiscordBot([Remainder, Name("봇")] string name)
         {
             using WebClient wc = new();
@@ -100,7 +100,7 @@ namespace OliveToast.Commands
 
         [Command("스크래치 유저")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("스크래치에서 해당 유저를 검색합니다")]
+        [Summary("스크래치에서 해당 유저를 검색할 수 있는 커맨드예요")]
         public async Task ScratchUser([Name("유저네임")] string name)
         {
             using WebClient wc = new();
@@ -144,7 +144,7 @@ namespace OliveToast.Commands
 
         [Command("스크래치 프로젝트")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("스크래치에서 해당 프로젝트를 검색합니다")]
+        [Summary("스크래치에서 해당 프로젝트를 검색할 수 있는 커맨드예요")]
         public async Task ScratchProject([Remainder, Name("검색어")] string keyword)
         {
             using WebClient wc = new();
@@ -179,7 +179,7 @@ namespace OliveToast.Commands
 
         [Command("마크 유저"), Alias("마인크래프트 유저", "마인크래프트", "마크", "마크 정보")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("마인크래프트 유저를 검색합니다")]
+        [Summary("마인크래프트 유저를 검색할 수 있는 커맨드예요")]
         public async Task MinecraftUser([Name("유저")] string name)
         {
             using WebClient wc = new();

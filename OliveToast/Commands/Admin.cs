@@ -20,7 +20,7 @@ namespace OliveToast.Commands
 
         [Command("실행"), Alias("이발", "eval")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("C# 코드를 실행합니다")]
+        [Summary("C# 코드를 실행할 수 있는 커맨드예요")]
         public async Task Eval([Name("코드"), Remainder] string code)
         {
             code = code.Trim();
@@ -54,7 +54,7 @@ namespace OliveToast.Commands
 
         [Command("화이트리스트")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("화이트리스트의 목록입니다")]
+        [Summary("화이트리스트의 목록이에요")]
         public async Task WhiteList()
         {
             string output = "";
@@ -76,7 +76,7 @@ namespace OliveToast.Commands
 
         [Command("화이트리스트 추가")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저를 봇 관리자로 만들어요")]
+        [Summary("해당 유저를 봇 관리자로 만드는 커맨드예요")]
         public async Task AddWhiteList([Name("유저"), Remainder] SocketUser user)
         {
             if (SpecialListManager.WhiteList.Contains(user.Id))
@@ -94,7 +94,7 @@ namespace OliveToast.Commands
 
         [Command("화이트리스트 제거")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저를 봇 관리자 목록에서 제거합니다")]
+        [Summary("해당 유저를 봇 관리자 목록에서 제거하는 커맨드예요")]
         public async Task RemoveWhiteList([Name("유저"), Remainder] SocketUser user)
         {
             if (!SpecialListManager.WhiteList.Contains(user.Id))
@@ -112,7 +112,7 @@ namespace OliveToast.Commands
 
         [Command("블랙리스트")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("블랙리스트의 목록입니다")]
+        [Summary("블랙리스트의 목록이에요")]
         public async Task BlackList()
         {
             string output = "";
@@ -134,7 +134,7 @@ namespace OliveToast.Commands
 
         [Command("블랙리스트 추가")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저가 봇을 사용할 수 없게 만듭니다")]
+        [Summary("해당 유저가 봇을 사용할 수 없게 만드는 커맨드예요")]
         public async Task AddBlackList([Name("유저"), Remainder] SocketUser user)
         {
             if (SpecialListManager.BlackList.Contains(user.Id))
@@ -152,7 +152,7 @@ namespace OliveToast.Commands
 
         [Command("블랙리스트 제거")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저를 블랙리스트에서 제거합니다")]
+        [Summary("해당 유저를 블랙리스트에서 제거하는 커맨드예요")]
         public async Task RemoveBlackList([Name("유저"), Remainder] SocketUser user)
         {
             if (!SpecialListManager.BlackList.Contains(user.Id))
@@ -170,7 +170,7 @@ namespace OliveToast.Commands
 
         [Command("메시지")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 채널에 메시지를 보냅니다")]
+        [Summary("특정 채널에 메시지를 보내는 커맨드예요")]
         public async Task SendMessage([Name("채널")] SocketTextChannel channel, [Name("메시지"), Remainder] string msg)
         {
             using (channel.EnterTypingState())
@@ -184,7 +184,7 @@ namespace OliveToast.Commands
 
         [Command("메시지")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 채널에 메시지를 보냅니다")]
+        [Summary("특정 채널에 메시지를 보내는 커맨드예요")]
         public async Task SendMessage([Name("채널")] ulong id, [Name("메시지"), Remainder] string msg)
         {
             var channel = Program.Client.GetChannel(id) as SocketTextChannel;
@@ -200,7 +200,7 @@ namespace OliveToast.Commands
 
         [Command("메시지")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저에게 메시지를 보냅니다")]
+        [Summary("특정 유저에게 메시지를 보내는 커맨드예요")]
         public async Task SendMessage([Name("유저")] SocketUser user, [Name("메시지"), Remainder] string msg)
         {
             var channel = await user.CreateDMChannelAsync();
@@ -216,7 +216,7 @@ namespace OliveToast.Commands
 
         [Command("통계")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커맨드 사용 통계를 확인합니다")]
+        [Summary("커맨드 사용 커맨드예요")]
         public async Task CheckStat()
         {
             var sorted = CommandStats.ToList();
@@ -231,7 +231,7 @@ namespace OliveToast.Commands
 
         [Command("투표확인"), Alias("투표 확인")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저가 올리브토스트를 투표했는지 확인합니다")]
+        [Summary("해당 유저가 올리브토스트를 투표했는지 확인하는 커맨드예요")]
         public async Task CheckIsVoted([Remainder, Name("유저")]SocketUser user)
         {
             await CheckIsVoted(user.Id);
@@ -239,7 +239,7 @@ namespace OliveToast.Commands
 
         [Command("투표확인"), Alias("투표 확인")]
         [RequirePermission(PermissionType.BotAdmin)]
-        [Summary("해당 유저가 올리브토스트를 투표했는지 확인합니다")]
+        [Summary("해당 유저가 올리브토스트를 투표했는지 확인하는 커맨드예요")]
         public async Task CheckIsVoted([Remainder, Name("유저")]ulong id)
         {
             var data = (await KoreanBots.GetVotedData(id)).data;

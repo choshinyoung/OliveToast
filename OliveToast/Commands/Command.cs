@@ -26,7 +26,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 만들기"), Alias("커맨드 생성")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 생성합니다")]
+        [Summary("커스텀 커맨드를 생성하는 커맨드예요")]
         public async Task CreateCommand([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -51,7 +51,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 만들기"), Alias("커맨드 생성")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("고급 설정을 사용해 커맨드를 생성합니다")]
+        [Summary("고급 설정을 사용해 커맨드를 생성하는 커맨드예요")]
         public async Task CreatCommand()
         {
             if (CommandCreateSession.Sessions.ContainsKey(Context.User.Id))
@@ -83,7 +83,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 삭제"), Alias("커맨드 제거"), Priority(1)]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 제거합니다")]
+        [Summary("커스텀 커맨드를 제거하는 커맨드예요")]
         public async Task DeleteCommandByIndex([Name("번호")] int index)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -101,7 +101,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 삭제"), Alias("커맨드 제거"), Priority(-1)]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 제거합니다")]
+        [Summary("커스텀 커맨드를 제거하는 커맨드예요")]
         public async Task DeleteCommand([Name("커맨드"), Remainder] string command)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -125,7 +125,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 제거합니다")]
+        [Summary("커스텀 커맨드를 제거하는 커맨드예요")]
         public async Task DeleteCommand([Name("번호"), Remainder] int index)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -143,7 +143,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 제거합니다")]
+        [Summary("커스텀 커맨드를 제거하는 커맨드예요")]
         public async Task DeleteCommand([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -167,7 +167,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 제거합니다")]
+        [Summary("커스텀 커맨드를 제거하는 커맨드예요")]
         public async Task DeleteCommand([Name("커맨드 번호")] int cIndex, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -191,7 +191,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 제거합니다")]
+        [Summary("커스텀 커맨드를 제거하는 커맨드예요")]
         public async Task DeleteCommand([Name("커맨드")] string command, [Name("응답 번호"), Remainder] int aIndex)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -207,7 +207,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 삭제"), Alias("커맨드 제거")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("커스텀 커맨드를 제거합니다")]
+        [Summary("커스텀 커맨드를 제거하는 커맨드예요")]
         public async Task DeleteCommand([Name("커맨드 번호")] int cIndex, [Name("응답 번호"), Remainder] int aIndex)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -262,7 +262,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 목록")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 목록을 확인합니다")]
+        [Summary("커스텀 커맨드의 목록이에요")]
         public async Task CommandList()
         {
             List<string> commands = OliveGuild.Get(Context.Guild.Id).Commands.Keys.ToList();
@@ -345,7 +345,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 목록"), Alias("응답 목록")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
+        [Summary("커스텀 커맨드의 응답 목록이에요")]
         public async Task AnswerList([Name("커맨드"), Remainder] string command)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -361,7 +361,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 목록"), Alias("응답 목록"), Priority(1)]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답 목록을 확인합니다")]
+        [Summary("커스텀 커맨드의 응답 목록이에요")]
         public async Task AnswerList([Name("번호")] int index)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -461,7 +461,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 정보"), Alias("응답 정보")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인할 수 있는 커맨드예요")]
         public async Task CommandInfo([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -477,7 +477,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 정보"), Alias("응답 정보")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인할 수 있는 커맨드예요")]
         public async Task CommandInfo([Name("커맨드 번호")] int cIndex, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -501,7 +501,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 정보"), Alias("응답 정보")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인할 수 있는 커맨드예요")]
         public async Task CommandInfo([Name("커맨드")] string command, [Name("응답 번호")] int aIndex)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -517,7 +517,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 정보"), Alias("응답 목록"), Priority(1)]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 응답의 정보를 확인합니다")]
+        [Summary("커스텀 커맨드의 응답의 정보를 확인할 수 있는 커맨드예요")]
         public async Task CommandInfo([Name("커맨드 번호")] int cIndex, [Name("응답 번호")] int aIndex)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -593,7 +593,7 @@ namespace OliveToast.Commands
 
         [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드 할 수 있는 커맨드예요")]
         public async Task DownloadToastCommand([Name("커맨드")] string command, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -609,7 +609,7 @@ namespace OliveToast.Commands
 
         [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드 할 수 있는 커맨드예요")]
         public async Task DownloadToastCommand([Name("커맨드 번호")] int cIndex, [Name("응답"), Remainder] string answer)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -633,7 +633,7 @@ namespace OliveToast.Commands
 
         [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드 할 수 있는 커맨드예요")]
         public async Task DownloadToastCommand([Name("커맨드")] string command, [Name("응답 번호")] int aIndex)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -649,7 +649,7 @@ namespace OliveToast.Commands
 
         [Command("토스트 커맨드 다운로드"), Alias("커맨드 다운로드"), Priority(1)]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드합니다")]
+        [Summary("커스텀 커맨드의 토스트 커맨드를 다운로드 할 수 있는 커맨드예요")]
         public async Task DownloadToastCommand([Name("커맨드 번호")] int cIndex, [Name("응답 번호")] int aIndex)
         {
             var commands = OliveGuild.Get(Context.Guild.Id).Commands;
@@ -687,7 +687,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 검색")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("`메시지`를 보냈을 때 어떤 커맨드가 실행될지 확인할 수 있습니다")]
+        [Summary("`메시지`를 보냈을 때 어떤 커맨드가 실행되는지 확인할 수 있는 커맨드예요")]
         public async Task SearchCommand([Name("메시지"), Remainder] string content)
         {
             EmbedBuilder emb = Context.CreateEmbed(title: "커맨드 검색");
@@ -773,7 +773,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 사용 중지")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("자신의 메시지에 커스텀 커맨드가 실행되지 않게 만듭니다")]
+        [Summary("자신의 메시지에 커스텀 커맨드가 실행되지 않게 만드는 커맨드예요")]
         public async Task DoNotUseCommand()
         {
             OliveUser user = OliveUser.Get(Context.User.Id);
@@ -792,7 +792,7 @@ namespace OliveToast.Commands
 
         [Command("커맨드 사용")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("자신의 메시지에 커스텀 커맨드가 다시 실행되게 만듭니다")]
+        [Summary("자신의 메시지에 커스텀 커맨드가 다시 실행되게 만드는 커맨드예요")]
         public async Task UseCommand()
         {
             OliveUser user = OliveUser.Get(Context.User.Id);
@@ -811,7 +811,7 @@ namespace OliveToast.Commands
 
         [Command("토스트")]
         [RequirePermission(PermissionType.ManageCommand)]
-        [Summary("토스트 커맨드를 실행합니다\n커맨드 라인은 줄바꿈 두 개로 구분됩니다")]
+        [Summary("토스트 커맨드를 실행하는 커맨드예요\n커맨드 라인은 줄바꿈 두 개로 구분돼요")]
         public async Task ExecuteToast([Name("입력"), Remainder] string lines)
         {
             if (CommandExecuteSession.Sessions.ContainsKey(Context.User.Id))
