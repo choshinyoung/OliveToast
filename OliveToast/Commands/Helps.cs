@@ -146,7 +146,7 @@ namespace OliveToast.Commands
                 }
                 permission = permission != null ? $"\n - 이 커맨드를 실행하려면 `<{permission}>` 권한이 필요해요" : "";
 
-                emb.AddField($"{CommandEventHandler.prefix}{info.Name} {param}", $"{aliases}\n{info.Summary}{permission}");
+                emb.AddField($"{CommandEventHandler.prefix}{info.Name} {param}", $"{aliases}\n{info.Summary}{permission}\n​");
             }
 
             await msg.ModifyAsync(m =>
@@ -233,7 +233,7 @@ namespace OliveToast.Commands
                         }
                         permission = permission != null ? $"\n - 이 커맨드를 실행하려면 `<{permission}>` 권한이 필요해요" : "";
 
-                        emb.AddField($"{CommandEventHandler.prefix}{info.Name} {param}", $"{aliases}\n{info.Summary}{permission}");
+                        emb.AddField($"{CommandEventHandler.prefix}{info.Name} {param}", $"{aliases}\n{info.Summary}{permission}\n​");
                     }
 
                     await Context.ReplyEmbedAsync(emb.Build());
