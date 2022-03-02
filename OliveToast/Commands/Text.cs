@@ -77,13 +77,13 @@ namespace OliveToast.Commands
             string result = "";
             for(int i = 0; i < kInput.Length; i++)
             {
-                if (kInput.Length > i + 4 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(new string(kInput[i + 1], kInput[i + 2])) && combinableJong.Contains(new string(kInput[i + 3], kInput[i + 4])) && (kInput.Length == i + 5 || !new HangulChar(kInput[i + 5]).IsNucleus()))
+                if (kInput.Length > i + 4 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(string.Concat(kInput[i + 1], kInput[i + 2])) && combinableJong.Contains(string.Concat(kInput[i + 3], kInput[i + 4])) && (kInput.Length == i + 5 || !new HangulChar(kInput[i + 5]).IsNucleus()))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[] 
                     {
                         kInput[i],
-                        combinedJoong[Array.IndexOf(combinableJoong, new string(kInput[i + 1], kInput[i + 2]))], 
-                        combinedJong[Array.IndexOf(combinableJong, new string(kInput[i + 3], kInput[i + 4]))] 
+                        combinedJoong[Array.IndexOf(combinableJoong, string.Concat(kInput[i + 1], kInput[i + 2]))], 
+                        combinedJong[Array.IndexOf(combinableJong, string.Concat(kInput[i + 3], kInput[i + 4]))] 
                     }, out char res);
                      
                     if (isSuccess)
@@ -96,13 +96,13 @@ namespace OliveToast.Commands
                         result += kInput[i];
                     }
                 }
-                else if(kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && new HangulChar(kInput[i + 1]).IsNucleus() && combinableJong.Contains(new string(kInput[i + 2], kInput[i + 3])) && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
+                else if(kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && new HangulChar(kInput[i + 1]).IsNucleus() && combinableJong.Contains(string.Concat(kInput[i + 2], kInput[i + 3])) && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[]
                     {
                         kInput[i],
                         kInput[i + 1],
-                        combinedJong[Array.IndexOf(combinableJong, new string(kInput[i + 2], kInput[i + 3]))]
+                        combinedJong[Array.IndexOf(combinableJong, string.Concat(kInput[i + 2], kInput[i + 3]))]
                     }, out char res);
 
                     if (isSuccess)
@@ -115,12 +115,12 @@ namespace OliveToast.Commands
                         result += kInput[i];
                     }
                 }
-                else if (kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(new string(kInput[i + 1], kInput[i + 2])) && new HangulChar(kInput[i + 3]).IsCoda() && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
+                else if (kInput.Length > i + 3 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(string.Concat(kInput[i + 1], kInput[i + 2])) && new HangulChar(kInput[i + 3]).IsCoda() && (kInput.Length == i + 4 || !new HangulChar(kInput[i + 4]).IsNucleus()))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[]
                     {
                         kInput[i],
-                        combinedJoong[Array.IndexOf(combinableJoong, new string(kInput[i + 1], kInput[i + 2]))],
+                        combinedJoong[Array.IndexOf(combinableJoong, string.Concat(kInput[i + 1], kInput[i + 2]))],
                         kInput[i + 3]
                     }, out char res);
 
@@ -134,12 +134,12 @@ namespace OliveToast.Commands
                         result += kInput[i];
                     }
                 }
-                else if (kInput.Length > i + 2 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(new string(kInput[i + 1], kInput[i + 2])))
+                else if (kInput.Length > i + 2 && new HangulChar(kInput[i]).IsOnset() && combinableJoong.Contains(string.Concat(kInput[i + 1], kInput[i + 2])))
                 {
                     bool isSuccess = HangulChar.TryJoinToSyllable(new char[]
                     {
                         kInput[i],
-                        combinedJoong[Array.IndexOf(combinableJoong, new string(kInput[i + 1], kInput[i + 2]))],
+                        combinedJoong[Array.IndexOf(combinableJoong, string.Concat(kInput[i + 1], kInput[i + 2]))],
                         '\u0000'
                     }, out char res);
 
