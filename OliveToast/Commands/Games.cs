@@ -93,9 +93,10 @@ namespace OliveToast.Commands
                         await context.ReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
                         return true;
                     }
+
                     List<string> usedWords = WordSession.Sessions[context.User.Id].Words;
 
-                    if (usedWords.Count != 0 && !word.StartsWith(usedWords.Last().Last()))
+                    if (usedWords.Count != 0 && !getEndableLetters(usedWords.Last().Last()).Contains(word.First()))
                     {
                         await context.ReplyEmbedAsync($"'{usedWords.Last().Last().ToString().으로("'")} 시작해야돼요");
                         return true;
@@ -106,9 +107,11 @@ namespace OliveToast.Commands
                         await context.ReplyEmbedAsync($"{word.은는()} 이미 사용한 단어에요");
                         return true;
                     }
+
                     usedWords.Add(word);
 
-                    List<string> wordList = WordsManager.Words.Where(w => w.StartsWith(word.Last())).ToList();
+                    char[] endableLetters = getEndableLetters(word.Last());
+                    List<string> wordList = WordsManager.Words.Where(w => endableLetters.Contains(w.First())).ToList();
                     if (wordList.Count == 0)
                     {
                         await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
@@ -135,7 +138,8 @@ namespace OliveToast.Commands
 
                     await context.ReplyAsync(nextWord);
 
-                    wordList = WordsManager.Words.Where(w => w.StartsWith(nextWord.Last())).ToList();
+                    endableLetters = getEndableLetters(nextWord.Last());
+                    wordList = WordsManager.Words.Where(w => endableLetters.Contains(w.First())).ToList();
                     if (wordList.Count == 0)
                     {
                         await context.ReplyEmbedAsync($"{Program.Client.CurrentUser.Username} 승리!\n게임이 종료됐어요");
@@ -147,6 +151,29 @@ namespace OliveToast.Commands
             }
 
             return false;
+
+            static char[] getEndableLetters(char endLetter)
+            {
+                List<char> endableLetters = new()
+                {
+                    endLetter
+                };
+                char[] syllables = new HangulChar(endLetter).SplitSyllable();
+                if (syllables[0] == 'ㄹ')
+                {
+                    syllables[0] = 'ㄴ';
+                    endableLetters.Add(HangulChar.JoinToSyllable(syllables));
+                }
+                if (syllables[0] == 'ㄴ' && "ㅣㅑㅕㅛㅠㅒㅖ".Contains(syllables[1]))
+                {
+                    syllables[0] = 'ㅇ';
+                    endableLetters.Add(HangulChar.JoinToSyllable(syllables));
+                }
+
+                Console.WriteLine(string.Join(", ", endableLetters));
+
+                return endableLetters.ToArray();
+            }
         }
 
         [Command("추첨")]
