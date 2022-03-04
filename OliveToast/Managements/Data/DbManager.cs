@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using static OliveToast.Utilities.RequireCategoryEnable;
 
-namespace OliveToast.Managements.data
+namespace OliveToast.Managements.Data
 {
     public class DbManager
     {

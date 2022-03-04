@@ -1,6 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using OliveToast.Managements.data;
+using OliveToast.Managements.Data;
 using OliveToast.Managements.Data;
 using System;
 using System.Linq;

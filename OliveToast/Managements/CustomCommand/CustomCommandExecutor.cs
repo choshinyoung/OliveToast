@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using OliveToast.Commands;
-using OliveToast.Managements.data;
+using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
