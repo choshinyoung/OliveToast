@@ -216,7 +216,7 @@ namespace OliveToast.Commands
 
         [Command("통계")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("커맨드 사용 커맨드예요")]
+        [Summary("커맨드 사용량을 확인하는 커맨드예요")]
         public async Task CheckStat()
         {
             var sorted = CommandStats.ToList();
@@ -224,7 +224,9 @@ namespace OliveToast.Commands
 
             var str = sorted.Select(p => $"`{CommandEventHandler.prefix}{p.Key}`: {p.Value.Count}\n");
 
-            EmbedBuilder emb = Context.CreateEmbed(string.Concat(str), $"지난 {(int)(DateTime.Now - Program.Uptime).TotalHours}시간 동안 사용된 커맨드 통계");
+            var t = DateTime.Now - Program.Uptime;
+
+            EmbedBuilder emb = Context.CreateEmbed(string.Concat(str), $"지난 {t.Days}일 {t.Hours}시간 동안 사용된 커맨드 통계");
 
             await Context.ReplyEmbedAsync(emb.Build());
         }
