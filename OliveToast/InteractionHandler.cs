@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using OliveToast.Commands;
+using OliveToast.Managements;
 using OliveToast.Managements.CustomCommand;
 using OliveToast.Managements.data;
 using OliveToast.Utilities;
@@ -24,7 +25,8 @@ namespace OliveToast
             CommandList, CommandAnswerList, CommandSearchList,
             CommandListSelectMenu, CommandAnswerListSelectMenu,
             RoleMenu,
-            HelpCommandListSelectMenu
+            HelpCommandListSelectMenu,
+            JoinWordGame, StartWordGame,
         }
 
         public struct InteractionData
@@ -65,13 +67,19 @@ namespace OliveToast
             { InteractionType.CommandListSelectMenu, CommandListSelctMenu },
             { InteractionType.CommandAnswerListSelectMenu, CommandAnswerListSelectMenu },
             { InteractionType.RoleMenu, RoleMenu },
+            { InteractionType.JoinWordGame, JoinWordGame },
+            { InteractionType.StartWordGame, StartWordGame },
         };
 
         public static async Task OnInteractionCreated(SocketMessageComponent component)
         {
             InteractionData data = new(component.Data.CustomId);
 
-            if (component.User.Id != data.UserId && data.Type != InteractionType.RoleMenu) return;
+            if (component.User.Id != data.UserId &&
+                data.Type is not InteractionType.RoleMenu and not InteractionType.JoinWordGame and not InteractionType.StartWordGame and not InteractionType.CancelWordGame)
+            {
+                return;
+            }
 
             await Functions[data.Type](data, component);
         }
@@ -106,15 +114,83 @@ namespace OliveToast
 
         public static async Task CancelWordGame(InteractionData data, SocketMessageComponent component)
         {
-            if (!WordSession.Sessions.ContainsKey(data.UserId))
+            if (!WordSession.Sessions.ContainsKey(component.Message.Id))
             {
                 return;
             }
 
-            SocketCommandContext context = WordSession.Sessions[data.UserId].Context;
+            var session = WordSession.Sessions[component.Message.Id];
 
-            WordSession.Sessions.Remove(data.UserId);
-            await context.ReplyEmbedAsync("게임이 취소됐어요");
+            if (session.Context.User.Id != component.User.Id)
+            {
+                await component.RespondAsync("주최자만 게임을 취소할 수 있어요", ephemeral: true);
+
+                return;
+            }
+
+            if (WordSession.Sessions.Any(s => s.Value.Context.User.Id == data.UserId))
+            {
+                await session.Context.ReplyEmbedAsync("게임이 취소됐어요");
+                WordSession.Sessions.Remove(component.Message.Id);
+            }
+
+            await component.DeferAsync();
+        }
+
+        public static async Task JoinWordGame(InteractionData data, SocketMessageComponent component)
+        {
+            if (!WordSession.Sessions.ContainsKey(component.Message.Id))
+            {
+                return;
+            }
+
+            var session = WordSession.Sessions[component.Message.Id];
+
+            if (session.Players.Contains(component.User.Id))
+            {
+                if (session.Context.User.Id == component.User.Id)
+                {
+                    await component.RespondAsync("주최자는 게임 참가를 취소할 수 없어요", ephemeral: true);
+
+                    return;
+                }
+
+                session.Players.Remove(component.User.Id);
+
+                await component.RespondAsync("게임 참가를 취소했어요", ephemeral: true);
+            }
+            else
+            {
+                session.Players.Add(component.User.Id);
+
+                await component.RespondAsync("게임에 참가했어요", ephemeral: true);
+            }
+
+            EmbedBuilder emb = session.JoinMessage.Embeds.First().ToEmbedBuilder();
+            emb.Description = $"현재 참가자: {string.Join(" ", session.Players.Select(p => session.Context.Guild.GetUser(p).Mention))}";
+
+            await session.JoinMessage.ModifyAsync(m => m.Embed = emb.Build());
+
+            await component.DeferAsync();
+        }
+
+        public static async Task StartWordGame(InteractionData data, SocketMessageComponent component)
+        {
+            if (!WordSession.Sessions.ContainsKey(component.Message.Id))
+            {
+                return;
+            }
+
+            var session = WordSession.Sessions[component.Message.Id];
+
+            if (session.Context.User.Id != component.User.Id)
+            {
+                await component.RespondAsync("주최자만 게임을 시작할 수 있어요", ephemeral: true);
+
+                return;
+            }
+
+            await Games.StartWordGame(session);
 
             await component.DeferAsync();
         }

@@ -1,10 +1,13 @@
 ﻿using Discord;
+using OliveToast.Commands;
+using OliveToast.Managements;
 using OliveToast.Managements.CustomCommand;
 using OliveToast.Utilities;
 using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace OliveToast.Managements.Data
+namespace OliveToast.Data
 {
     class SessionManager
     {
@@ -12,21 +15,14 @@ namespace OliveToast.Managements.Data
         public const int CommandExecuteSessionExpireMinute = 10;
         public const int ExceptionSessionExpireMinute = 3;
 
+        public const int WordGameStartWaitingSecond = 60;
+        public const int WordGameOverSecond = 15;
+
         public static async Task CollectExpiredSessions()
         {
             while (true)
             {
-                await Task.Delay(1000 * 15);
-
-                foreach (var session in WordSession.Sessions)
-                {
-                    if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
-                    {
-                        WordSession.Sessions.Remove(session.Key);
-
-                        await session.Value.Context.ReplyEmbedAsync("게임이 자동으로 중단됐어요");
-                    }
-                }
+                await Task.Delay(1000 * 10);
 
                 foreach (var session in TypingSession.Sessions)
                 {
@@ -63,6 +59,32 @@ namespace OliveToast.Managements.Data
                     if ((DateTime.Now - session.Value.occurredTime).TotalMinutes >= ExceptionSessionExpireMinute)
                     {
                         CommandEventHandler.ExceptionSessions.Remove(session.Key);
+                    }
+                }
+            }
+        }
+
+        public static async Task CollectExpiredWordGameSessions()
+        {
+            while (true)
+            {
+                await Task.Delay(1000);
+
+                foreach (var session in WordSession.Sessions)
+                {
+                    if (session.Value.IsStarted)
+                    {
+                        if ((DateTime.Now - session.Value.LastActiveTime).TotalSeconds >= WordGameOverSecond)
+                        {
+                            await Games.GameOverUserInWordGame(session.Value);
+                        }
+                    }
+                    else
+                    {
+                        if ((DateTime.Now - session.Value.LastActiveTime).TotalSeconds >= WordGameStartWaitingSecond)
+                        {
+                            await Games.StartWordGame(session.Value);
+                        }
                     }
                 }
             }

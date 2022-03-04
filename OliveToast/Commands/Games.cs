@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using HPark.Hangul;
+using OliveToast.Managements;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using System;
@@ -54,97 +55,185 @@ namespace OliveToast.Commands
 
         [Command("끝말잇기")]
         [RequirePermission(PermissionType.UseBot)]
-        [Summary("올리브토스트와 끝말잇기를 해보세요\n`단어`는 생략할 수 있어요")]
-        public async Task StartWordRelay([Name("단어")] string word = null)
+        [Summary("다른 유저들과 끝말잇기를 해보세요")]
+        public async Task ReadyWordGame()
         {
-            if (!WordSession.Sessions.ContainsKey(Context.User.Id))
+            if (!WordSession.Sessions.Any(s => s.Value.Players.Contains(Context.User.Id)))
             {
-                WordSession.Sessions.Add(Context.User.Id, new(Context, new List<string>(), DateTime.Now));
+                ComponentBuilder component = new ComponentBuilder()
+                    .WithButton("참가하기", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.JoinWordGame), ButtonStyle.Primary)
+                    .WithButton("게임 시작", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.StartWordGame), ButtonStyle.Success)
+                    .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelWordGame), ButtonStyle.Danger);
+                EmbedBuilder emb = Context.CreateEmbed($"현재 참가자: {Context.User.Mention}", "참가자를 모집중이에요");
 
-                ComponentBuilder component = new ComponentBuilder().WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelWordGame), ButtonStyle.Danger);
-                await Context.ReplyEmbedAsync("끝말잇기 시작!", component: component.Build());
+                var joinMessage = await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+                WordSession session = new(Context, joinMessage, DateTime.Now);
+                session.Players.Add(Context.User.Id);
 
-                if (word != null)
-                {
-                    await WordRelay(Context, word);
-                }
+                WordSession.Sessions.Add(joinMessage.Id, session);
             }
             else
             {
-                await Context.ReplyEmbedAsync("게임이 이미 진행중이에요");
+                await Context.ReplyEmbedAsync("이미 다른 게임에 참가중이에요");
             }
         }
 
-        public static async Task<bool> WordRelay(SocketCommandContext context, string word = null)
+        public static async Task StartWordGame(WordSession session)
         {
-            if (WordSession.Sessions.ContainsKey(context.User.Id))
+            session.IsStarted = true;
+            session.CurrentTurn = session.Players[0];
+            session.LastActiveTime = DateTime.Now;
+            session.Words.Add(WordsManager.Words[new Random().Next(0, WordsManager.Words.Count)]);
+
+            if (session.Players.Count == 1)
             {
-                if (word == null)
+                session.Players.Add(Program.Client.CurrentUser.Id);
+            }
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("취소", InteractionHandler.GenerateCustomId(session.Context.User.Id, InteractionHandler.InteractionType.CancelWordGame), ButtonStyle.Danger);
+
+            EmbedBuilder emb = session.JoinMessage.Embeds.First().ToEmbedBuilder()
+                .WithTitle(null)
+                .WithDescription($"게임이 시작됐어요\n현재 참가자: {string.Join(" ", session.Players.Select(p => session.Context.Guild.GetUser(p).Mention))}");
+
+            try
+            {
+                await session.JoinMessage.ModifyAsync(m =>
                 {
-                    word = context.Message.Content;
+                    m.Components = component.Build();
+                    m.Embed = emb.Build();
+                });
+            }
+            catch { }
+
+            await NextTurn(session);
+        }
+
+        public static async Task GameOverUserInWordGame(WordSession session)
+        {
+            ulong gameOveredPlayer = session.CurrentTurn;
+
+            if (session.Players.Last() == gameOveredPlayer)
+            {
+                session.CurrentTurn = session.Players[0];
+            }
+            else
+            {
+                session.CurrentTurn = session.Players[session.Players.IndexOf(gameOveredPlayer) + 1];
+            }
+
+            session.Players.Remove(gameOveredPlayer);
+
+            EmbedBuilder emb = session.Context.CreateEmbed($"{session.Context.Guild.GetUser(gameOveredPlayer).Mention} 탈락!", "시간 초과");
+            await session.Context.ReplyEmbedAsync(emb.Build());
+
+            if (session.Players.Count <= 1)
+            {
+                await session.Context.ReplyEmbedAsync($"{session.Context.Guild.GetUser(session.Players[0]).Username} 승리!\n게임이 종료됐어요");
+                WordSession.Sessions.Remove(session.JoinMessage.Id);
+
+                return;
+            }
+
+            session.Words.Add(WordsManager.Words[new Random().Next(0, WordsManager.Words.Count)]);
+
+            session.LastActiveTime = DateTime.Now;
+
+            await NextTurn(session);
+        }
+
+        public static async Task<bool> WordGame(SocketCommandContext context)
+        {
+            if (WordSession.Sessions.Any(w => w.Value.CurrentTurn == context.User.Id))
+            {
+                string word = context.Message.Content;
+
+                WordSession session = WordSession.Sessions.Where(w => w.Value.CurrentTurn == context.User.Id).First().Value;
+
+                if (!session.IsStarted)
+                {
+                    return false;
                 }
 
-                if (WordSession.Sessions[context.User.Id].Context.Channel.Id == context.Channel.Id)
+                if (session.Context.Channel.Id == context.Channel.Id)
                 {
-                    WordSession.Sessions[context.User.Id].LastActiveTime = DateTime.Now;
-
                     if (!WordsManager.Words.Contains(word))
                     {
                         await context.ReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
+
                         return true;
                     }
 
-                    List<string> usedWords = WordSession.Sessions[context.User.Id].Words;
-
-                    if (usedWords.Count != 0 && !getEndableLetters(usedWords.Last().Last()).Contains(word.First()))
+                    if (!getEndableLetters(session.Words.Last().Last()).Contains(word.First()))
                     {
-                        await context.ReplyEmbedAsync($"'{usedWords.Last().Last().ToString().으로("'")} 시작해야돼요");
+                        await context.ReplyEmbedAsync($"'{session.Words.Last().Last().ToString().으로("'")} 시작해야돼요");
+
                         return true;
                     }
 
-                    if (usedWords.Contains(word))
+                    if (session.Words.Contains(word))
                     {
-                        await context.ReplyEmbedAsync($"{word.은는()} 이미 사용한 단어에요");
+                        await context.ReplyEmbedAsync($"{word.은는()} 이미 사용한 단어예요");
+
                         return true;
                     }
 
-                    usedWords.Add(word);
-
-                    char[] endableLetters = getEndableLetters(word.Last());
-                    List<string> wordList = WordsManager.Words.Where(w => endableLetters.Contains(w.First())).ToList();
-                    if (wordList.Count == 0)
+                    if (!WordsManager.Words.Any(w => w.StartsWith(word.Last()))) 
                     {
-                        await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
-                        WordSession.Sessions.Remove(context.User.Id);
+                        await context.ReplyEmbedAsync($"{word.은는()} 한방단어예요\n다른 단어를 사용해주세요");
+
                         return true;
                     }
 
-                    string nextWord;
-                    do
+                    session.LastActiveTime = DateTime.Now;
+
+                    session.Words.Add(word);
+
+                    if (session.Players.Last() == session.CurrentTurn)
                     {
+                        session.CurrentTurn = session.Players[0];
+                    }
+                    else
+                    {
+                        session.CurrentTurn = session.Players[session.Players.IndexOf(session.CurrentTurn) + 1];
+                    }
+
+                    if (session.CurrentTurn == Program.Client.CurrentUser.Id)
+                    {
+                        List<string> wordList = WordsManager.Words.Where(w => w.StartsWith(word.Last())).ToList();
                         if (wordList.Count == 0)
                         {
-                            await context.ReplyEmbedAsync($"{Program.Client.CurrentUser.Username} 승리!\n게임이 종료됐어요");
+                            await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
                             WordSession.Sessions.Remove(context.User.Id);
+
                             return true;
                         }
 
-                        nextWord = wordList[new Random().Next(wordList.Count)];
-                        wordList.Remove(nextWord);
+                        string nextWord;
+                        do
+                        {
+                            if (wordList.Count == 0)
+                            {
+                                await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
+                                WordSession.Sessions.Remove(context.User.Id);
+
+                                return true;
+                            }
+
+                            nextWord = wordList[new Random().Next(wordList.Count)];
+                            wordList.Remove(nextWord);
+                        }
+                        while (session.Words.Contains(nextWord) || !WordsManager.Words.Any(w => w.StartsWith(word.Last())));
+
+                        session.Words.Add(nextWord);
+
+                        await context.ReplyAsync(nextWord);
+
+                        session.CurrentTurn = session.Players[0];
                     }
-                    while (usedWords.Contains(nextWord));
 
-                    usedWords.Add(nextWord);
-
-                    await context.ReplyAsync(nextWord);
-
-                    endableLetters = getEndableLetters(nextWord.Last());
-                    wordList = WordsManager.Words.Where(w => endableLetters.Contains(w.First())).ToList();
-                    if (wordList.Count == 0)
-                    {
-                        await context.ReplyEmbedAsync($"{Program.Client.CurrentUser.Username} 승리!\n게임이 종료됐어요");
-                        WordSession.Sessions.Remove(context.User.Id);
-                    }
+                    await NextTurn(session);
 
                     return true;
                 }
@@ -170,10 +259,22 @@ namespace OliveToast.Commands
                     endableLetters.Add(HangulChar.JoinToSyllable(syllables));
                 }
 
-                Console.WriteLine(string.Join(", ", endableLetters));
-
                 return endableLetters.ToArray();
             }
+        }
+
+        public static async Task NextTurn(WordSession session)
+        {
+            if (session.LastBotMessage != 0)
+            {
+                try
+                {
+                    await session.Context.Channel.DeleteMessageAsync(session.LastBotMessage);
+                }
+                catch { }
+            }
+
+            session.LastBotMessage = (await session.Context.Channel.SendMessageAsync($"{session.Context.Guild.GetUser(session.CurrentTurn).Mention}님의 차례예요\n다음 단어를 이어주세요: `{session.Words.Last()}`")).Id;
         }
 
         [Command("추첨")]

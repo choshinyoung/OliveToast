@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using MongoDB.Driver;
 using OliveToast.Commands;
+using OliveToast.Data;
 using OliveToast.Managements.CustomCommand;
 using OliveToast.Managements.data;
 using OliveToast.Managements.Data;
@@ -73,6 +74,7 @@ namespace OliveToast
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
 
             await Task.Factory.StartNew(SessionManager.CollectExpiredSessions);
+            await Task.Factory.StartNew(SessionManager.CollectExpiredWordGameSessions);
         }
 
         public static async Task OnUserJoined(SocketGuildUser arg)
@@ -150,7 +152,7 @@ namespace OliveToast
 
                 SocketCommandContext context = new(Program.Client, userMsg);
 
-                if (await Games.WordRelay(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content) || await CustomCommandExecutor.OnMessageReceived(context))
+                if (await Games.WordGame(context) || await Games.TypingGame(context) || await CommandCreateSession.MessageResponse(context.User.Id, context.Channel.Id, context.Message.Content) || await CustomCommandExecutor.OnMessageReceived(context))
                 {
                     return;
                 }
