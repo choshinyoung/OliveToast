@@ -205,7 +205,7 @@ namespace OliveToast.Commands
                         if (wordList.Count == 0)
                         {
                             await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
-                            WordSession.Sessions.Remove(context.User.Id);
+                            WordSession.Sessions.Remove(session.JoinMessage.Id);
 
                             return true;
                         }
@@ -216,7 +216,7 @@ namespace OliveToast.Commands
                             if (wordList.Count == 0)
                             {
                                 await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
-                                WordSession.Sessions.Remove(context.User.Id);
+                                WordSession.Sessions.Remove(session.JoinMessage.Id);
 
                                 return true;
                             }
