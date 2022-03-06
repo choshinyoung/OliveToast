@@ -58,24 +58,63 @@ namespace OliveToast.Commands
         [Summary("다른 유저들과 끝말잇기를 해보세요")]
         public async Task ReadyWordGame()
         {
-            if (!WordSession.Sessions.Any(s => s.Value.Players.Contains(Context.User.Id)))
-            {
-                ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("참가하기", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.JoinWordGame), ButtonStyle.Primary)
-                    .WithButton("게임 시작", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.StartWordGame), ButtonStyle.Success)
-                    .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelWordGame), ButtonStyle.Danger);
-                EmbedBuilder emb = Context.CreateEmbed($"현재 참가자: {Context.User.Mention}", "참가자를 모집중이에요");
-
-                var joinMessage = await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
-                WordSession session = new(Context, joinMessage, DateTime.Now);
-                session.Players.Add(Context.User.Id);
-
-                WordSession.Sessions.Add(joinMessage.Id, session);
-            }
-            else
+            if (WordSession.Sessions.Any(s => s.Value.Players.Contains(Context.User.Id)))
             {
                 await Context.ReplyEmbedAsync("이미 다른 게임에 참가중이에요");
+
+                return;
             }
+
+            if (WordSession.Sessions.Any(s => s.Value.Context.Channel.Id == Context.Channel.Id))
+            {
+                await Context.ReplyEmbedAsync("이 채널에서 진행중인 게임이 있어요\n다른 채널을 사용해주세요");
+
+                return;
+            }
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("참가하기", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.JoinWordGame), ButtonStyle.Primary)
+                .WithButton("게임 시작", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.StartWordGame), ButtonStyle.Success)
+                .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelWordGame), ButtonStyle.Danger);
+            EmbedBuilder emb = Context.CreateEmbed($"현재 참가자: {Context.User.Mention}", "참가자를 모집중이에요");
+
+            var joinMessage = await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+            WordSession session = new(Context, true, joinMessage, DateTime.Now);
+            session.Players.Add(Context.User.Id);
+
+            WordSession.Sessions.Add(joinMessage.Id, session);
+        }
+
+        [Command("영어끝말잇기"), Alias("영어 끝말잇기")]
+        [RequirePermission(PermissionType.UseBot)]
+        [Summary("다른 유저들과 영어로 끝말잇기를 해보세요")]
+        public async Task ReadyEnWordGame()
+        {
+            if (WordSession.Sessions.Any(s => s.Value.Players.Contains(Context.User.Id)))
+            {
+                await Context.ReplyEmbedAsync("이미 다른 게임에 참가중이에요");
+
+                return;
+            }
+
+            if (WordSession.Sessions.Any(s => s.Value.Context.Channel.Id == Context.Channel.Id))
+            {
+                await Context.ReplyEmbedAsync("이 채널에서 진행중인 게임이 있어요\n다른 채널을 사용해주세요");
+
+                return;
+            }
+
+            ComponentBuilder component = new ComponentBuilder()
+                .WithButton("참가하기", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.JoinWordGame), ButtonStyle.Primary)
+                .WithButton("게임 시작", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.StartWordGame), ButtonStyle.Success)
+                .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CancelWordGame), ButtonStyle.Danger);
+            EmbedBuilder emb = Context.CreateEmbed($"현재 참가자: {Context.User.Mention}", "참가자를 모집중이에요");
+
+            var joinMessage = await Context.ReplyEmbedAsync(emb.Build(), component: component.Build());
+            WordSession session = new(Context, false, joinMessage, DateTime.Now);
+            session.Players.Add(Context.User.Id);
+
+            WordSession.Sessions.Add(joinMessage.Id, session);
         }
 
         public static async Task StartWordGame(WordSession session)
@@ -83,7 +122,14 @@ namespace OliveToast.Commands
             session.IsStarted = true;
             session.CurrentTurn = session.Players[0];
             session.LastActiveTime = DateTime.Now;
-            session.Words.Add(WordsManager.Words[new Random().Next(0, WordsManager.Words.Count)]);
+            if (session.IsKorean)
+            {
+                session.Words.Add(WordsManager.Words[new Random().Next(0, WordsManager.Words.Count)]);
+            }
+            else
+            {
+                session.Words.Add(WordsManager.WordsEn[new Random().Next(0, WordsManager.WordsEn.Count)]);
+            }
 
             if (session.Players.Count == 1)
             {
@@ -136,7 +182,14 @@ namespace OliveToast.Commands
                 return;
             }
 
-            session.Words.Add(WordsManager.Words[new Random().Next(0, WordsManager.Words.Count)]);
+            if (session.IsKorean)
+            {
+                session.Words.Add(WordsManager.Words[new Random().Next(0, WordsManager.Words.Count)]);
+            }
+            else
+            {
+                session.Words.Add(WordsManager.WordsEn[new Random().Next(0, WordsManager.WordsEn.Count)]);
+            }
 
             session.LastActiveTime = DateTime.Now;
 
@@ -147,7 +200,7 @@ namespace OliveToast.Commands
         {
             if (WordSession.Sessions.Any(w => w.Value.CurrentTurn == context.User.Id))
             {
-                string word = context.Message.Content;
+                string word = context.Message.Content.ToLower();
 
                 WordSession session = WordSession.Sessions.Where(w => w.Value.CurrentTurn == context.User.Id).First().Value;
 
@@ -158,30 +211,63 @@ namespace OliveToast.Commands
 
                 if (session.Context.Channel.Id == context.Channel.Id)
                 {
-                    if (!WordsManager.Words.Contains(word))
+                    if (session.IsKorean)
                     {
-                        await context.ReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
+                        if (!WordsManager.Words.Contains(word))
+                        {
+                            await context.ReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
 
-                        return true;
+                            return true;
+                        }
+
+                        if (!getEndableLetters(session.Words.Last().Last()).Contains(word.First()))
+                        {
+                            await context.ReplyEmbedAsync($"'{session.Words.Last().Last().ToString().으로("'")} 시작해야돼요");
+
+                            return true;
+                        }
+
+                        if (!WordsManager.Words.Any(w => w.StartsWith(word.Last())))
+                        {
+                            await context.ReplyEmbedAsync($"{word.은는()} 한방단어예요\n다른 단어를 사용해주세요");
+
+                            return true;
+                        }
                     }
-
-                    if (!getEndableLetters(session.Words.Last().Last()).Contains(word.First()))
+                    else
                     {
-                        await context.ReplyEmbedAsync($"'{session.Words.Last().Last().ToString().으로("'")} 시작해야돼요");
+                        if (word.Length < session.letterLength + 1)
+                        {
+                            await context.ReplyEmbedAsync($"{session.letterLength + 1}글자 이상의 단어를 사용해야돼요");
 
-                        return true;
+                            return true;
+                        }
+
+                        if (!WordsManager.WordsEn.Contains(word))
+                        {
+                            await context.ReplyEmbedAsync($"제 사전에 '{word.이("'")}란 없네요");
+
+                            return true;
+                        }
+
+                        if (session.Words.Last()[^session.letterLength..] != word[..session.letterLength])
+                        {
+                            await context.ReplyEmbedAsync($"'{session.Words.Last()[^session.letterLength..]}'으로 시작해야돼요");
+
+                            return true;
+                        }
+
+                        if (!WordsManager.WordsEn.Any(w => w.StartsWith(word[^session.letterLength..])))
+                        {
+                            await context.ReplyEmbedAsync($"{word.은는()} 한방단어예요\n다른 단어를 사용해주세요");
+
+                            return true;
+                        }
                     }
 
                     if (session.Words.Contains(word))
                     {
                         await context.ReplyEmbedAsync($"{word.은는()} 이미 사용한 단어예요");
-
-                        return true;
-                    }
-
-                    if (!WordsManager.Words.Any(w => w.StartsWith(word.Last()))) 
-                    {
-                        await context.ReplyEmbedAsync($"{word.은는()} 한방단어예요\n다른 단어를 사용해주세요");
 
                         return true;
                     }
@@ -201,7 +287,7 @@ namespace OliveToast.Commands
 
                     if (session.CurrentTurn == Program.Client.CurrentUser.Id)
                     {
-                        List<string> wordList = WordsManager.Words.Where(w => w.StartsWith(word.Last())).ToList();
+                        List<string> wordList = session.IsKorean ? WordsManager.Words.Where(w => w.StartsWith(word.Last())).ToList() : WordsManager.WordsEn.Where(w => w[..session.letterLength] == word[^session.letterLength..]).ToList();
                         if (wordList.Count == 0)
                         {
                             await context.ReplyEmbedAsync($"{context.User.Username} 승리!\n게임이 종료됐어요");
@@ -224,7 +310,7 @@ namespace OliveToast.Commands
                             nextWord = wordList[new Random().Next(wordList.Count)];
                             wordList.Remove(nextWord);
                         }
-                        while (session.Words.Contains(nextWord) || !WordsManager.Words.Any(w => w.StartsWith(word.Last())));
+                        while (session.Words.Contains(nextWord) || session.IsKorean ? !WordsManager.Words.Any(w => w.StartsWith(nextWord.Last())) : !WordsManager.WordsEn.Any(w => w[..session.letterLength] == nextWord[^session.letterLength..]));
 
                         session.Words.Add(nextWord);
 
@@ -274,7 +360,14 @@ namespace OliveToast.Commands
                 catch { }
             }
 
-            session.LastBotMessage = (await session.Context.Channel.SendMessageAsync($"{session.Context.Guild.GetUser(session.CurrentTurn).Mention}님의 차례예요\n다음 단어를 이어주세요: `{session.Words.Last()}`")).Id;
+            if (session.IsKorean)
+            {
+                session.LastBotMessage = (await session.Context.Channel.SendMessageAsync($"{session.Context.Guild.GetUser(session.CurrentTurn).Mention}님의 차례예요\n다음 단어를 이어주세요: {session.Words.Last()[0..^1]}__{session.Words.Last().Last()}__")).Id;
+            }
+            else
+            {
+                session.LastBotMessage = (await session.Context.Channel.SendMessageAsync($"{session.Context.Guild.GetUser(session.CurrentTurn).Mention}님의 차례예요\n다음 단어를 이어주세요: {session.Words.Last()[0..^session.letterLength]}__{session.Words.Last()[^session.letterLength..]}__")).Id;
+            }
         }
 
         [Command("추첨")]
@@ -481,7 +574,7 @@ namespace OliveToast.Commands
             TypingSession.Sessions.Add(Context.User.Id, new(Context, sentence, startTime));
         }
 
-        [Command("영어 타자 연습"), Alias("영타", "entyping")]
+        [Command("영어 타자 연습"), Alias("영타", "entyping", "영어 타자연습")]
         [RequirePermission(PermissionType.UseBot), RequireBotPermission(ChannelPermission.AttachFiles)]
         [Summary("영어로 타자 연습을 할 수 있는 커맨드예요")]
         public async Task StartEnTypingGame()

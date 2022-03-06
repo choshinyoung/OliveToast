@@ -7,12 +7,15 @@ namespace OliveToast.Managements.Data
     public class WordsManager
     {
         public static readonly List<string> Words;
+        public static readonly List<string> WordsEn;
 
         static WordsManager()
         {
             string content = File.ReadAllText("Configs/words.json");
-
             Words = JsonConvert.DeserializeObject<List<string>>(content);
+
+            content = File.ReadAllText("Configs/wordsEn.json");
+            WordsEn = JsonConvert.DeserializeObject<List<string>>(content);
         }
     }
 

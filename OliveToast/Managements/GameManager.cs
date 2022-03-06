@@ -9,6 +9,9 @@ namespace OliveToast.Managements
     {
         public SocketCommandContext Context;
 
+        public bool IsKorean;
+        public int letterLength = 2;
+
         public bool IsStarted = false;
 
         public List<string> Words = new();
@@ -23,8 +26,9 @@ namespace OliveToast.Managements
 
         public static Dictionary<ulong, WordSession> Sessions = new();
 
-        public WordSession(SocketCommandContext context, RestUserMessage joinMessage, DateTime lastActiveTime)
+        public WordSession(SocketCommandContext context, bool isKorean, RestUserMessage joinMessage, DateTime lastActiveTime)
         {
+            IsKorean = isKorean;
             Context = context;
             LastActiveTime = lastActiveTime;
             JoinMessage = joinMessage;

@@ -37,7 +37,7 @@ namespace OliveToast.Commands
                     "Discord", "Discord.Commands", "Discord.WebSocket", "Discord.Rest", "Discord.Net",
                     "Newtonsoft.Json", "HPark.Hangul", "Toast", "Toast.Nodes",
                     "OliveToast", "OliveToast.Managements", "OliveToast.Commands", "OliveToast.Utilities", 
-                    "OliveToast.Managements.CustomCommand", "OliveToast.Managements.Data", "OliveToast.Managements.data"
+                    "OliveToast.Managements.CustomCommand", "OliveToast.Managements.Data"
                     ), this);
 
                 if (result is not null)
