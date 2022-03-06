@@ -4,7 +4,6 @@ using OliveToast.Managements;
 using OliveToast.Managements.CustomCommand;
 using OliveToast.Utilities;
 using System;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace OliveToast.Data
@@ -56,7 +55,7 @@ namespace OliveToast.Data
 
                 foreach (var session in CommandDeleteSession.Sessions)
                 {
-                    if ((DateTime.Now - session.Value.OccuredTime).TotalMinutes >= ExceptionSessionExpireMinute)
+                    if ((DateTime.Now - session.Value.StartTime).TotalMinutes >= ExpireMinute)
                     {
                         CommandDeleteSession.Sessions.Remove(session.Key);
                     }
