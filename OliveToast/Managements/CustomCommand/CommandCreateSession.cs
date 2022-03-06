@@ -339,6 +339,8 @@ namespace OliveToast.Managements.CustomCommand
         public string Command;
         public string Answer;
 
+        public DateTime OccuredTime = DateTime.Now;
+
         public CommandDeleteSession(SocketCommandContext context, int cIndex, int aIndex)
         {
             Context = context;

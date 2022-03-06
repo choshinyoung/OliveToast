@@ -143,15 +143,12 @@ namespace OliveToast.Commands
                 .WithTitle(null)
                 .WithDescription($"게임이 시작됐어요\n현재 참가자: {string.Join(" ", session.Players.Select(p => session.Context.Guild.GetUser(p).Mention))}");
 
-            try
+
+            await session.JoinMessage.ModifyAsync(m =>
             {
-                await session.JoinMessage.ModifyAsync(m =>
-                {
-                    m.Components = component.Build();
-                    m.Embed = emb.Build();
-                });
-            }
-            catch { }
+                m.Components = component.Build();
+                m.Embed = emb.Build();
+            });
 
             await NextTurn(session);
         }

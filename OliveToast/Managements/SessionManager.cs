@@ -54,6 +54,14 @@ namespace OliveToast.Data
                     }
                 }
 
+                foreach (var session in CommandDeleteSession.Sessions)
+                {
+                    if ((DateTime.Now - session.Value.OccuredTime).TotalMinutes >= ExceptionSessionExpireMinute)
+                    {
+                        CommandDeleteSession.Sessions.Remove(session.Key);
+                    }
+                }
+
                 foreach (var session in CommandEventHandler.ExceptionSessions)
                 {
                     if ((DateTime.Now - session.Value.occurredTime).TotalMinutes >= ExceptionSessionExpireMinute)
