@@ -29,11 +29,13 @@ namespace OliveToast.Managements.Data
             content = File.ReadAllText("Configs/sentencesEn.json");
             EnSentences = JsonConvert.DeserializeObject<List<string>>(content);
 
-            Sentences.Sort();
-            File.WriteAllText("Configs/sentences.json", JsonConvert.SerializeObject(Sentences));
+            /*
+                Sentences.Sort();
+                File.WriteAllText("Configs/sentences.json", JsonConvert.SerializeObject(Sentences));
 
-            EnSentences.Sort();
-            File.WriteAllText("Configs/sentencesEn.json", JsonConvert.SerializeObject(EnSentences));
+                EnSentences.Sort();
+                File.WriteAllText("Configs/sentencesEn.json", JsonConvert.SerializeObject(EnSentences));
+            */
         }
     }
 }
