@@ -307,7 +307,7 @@ namespace OliveToast.Commands
                             nextWord = wordList[new Random().Next(wordList.Count)];
                             wordList.Remove(nextWord);
                         }
-                        while (session.Words.Contains(nextWord) || session.IsKorean ? !WordsManager.Words.Any(w => w.StartsWith(nextWord.Last())) : !WordsManager.WordsEn.Any(w => w[..session.letterLength] == nextWord[^session.letterLength..]));
+                        while (session.Words.Contains(nextWord) || (session.IsKorean ? !WordsManager.Words.Any(w => w.StartsWith(nextWord.Last())) : !WordsManager.WordsEn.Any(w => w[..session.letterLength] == nextWord[^session.letterLength..])));
 
                         session.Words.Add(nextWord);
 
