@@ -614,7 +614,7 @@ namespace OliveToast.Commands
 
                     float accuracy = GetAccuracy(session.Sentence, content);
 
-                    emb.Description = $"타수: {speed}\n정확도: {accuracy:.00}%";
+                    emb.Description = $"타수: {speed}\n정확도: {accuracy:0.00}%";
                     await context.ReplyEmbedAsync(emb.Build());
 
                     TypingSession.Sessions.Remove(context.User.Id);
