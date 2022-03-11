@@ -612,12 +612,9 @@ namespace OliveToast.Commands
 
                     int speed = (int)(HangulString.SplitToPhonemes(content).Length / (context.Message.CreatedAt - session.LastActiveTime).TotalSeconds * 60);
 
-                    double a = content.Length < session.Sentence.Length ?
-                        (double)content.Where((c, i) => i < session.Sentence.Length && c == session.Sentence[i]).Count() / session.Sentence.Length :
-                        (double)session.Sentence.Where((c, i) => i < content.Length && c == content[i]).Count() / content.Length;
-                    int accuracy = (int)(a * 100);
+                    float accuracy = GetAccuracy(session.Sentence, content);
 
-                    emb.Description = $"타수: {speed}\n정확도: {accuracy}%";
+                    emb.Description = $"타수: {speed}\n정확도: {accuracy:.00}%";
                     await context.ReplyEmbedAsync(emb.Build());
 
                     TypingSession.Sessions.Remove(context.User.Id);
@@ -627,6 +624,40 @@ namespace OliveToast.Commands
             }
 
             return false;
+        }
+
+        public static float GetAccuracy(string s1, string s2)
+        {
+            int[,] map = new int[s1.Length + 1, s2.Length + 1];
+            int lcs = 0;
+
+            for (int i = 0; i <= s1.Length; i++)
+            {
+                map[i, 0] = 0;
+            }
+            for (int i = 0; i <= s2.Length; i++)
+            {
+                map[0, i] = 0;
+            }
+
+            for (int i = 1; i <= s1.Length; i++)
+            {
+                for (int j = 1; j <= s2.Length; j++)
+                {
+                    if (s1[i - 1] == s2[j - 1])
+                    {
+                        map[i, j] = map[i - 1, j - 1] + 1;
+                    }
+                    else
+                    {
+                        map[i, j] = Math.Max(map[i - 1, j], map[i, j - 1]);
+                    }
+
+                    lcs = Math.Max(lcs, map[i, j]);
+                }
+            }
+
+            return (float)lcs / Math.Max(s1.Length, s2.Length) * 100;
         }
     }
 }
