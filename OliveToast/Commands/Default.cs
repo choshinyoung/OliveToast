@@ -58,9 +58,9 @@ namespace OliveToast.Commands
         {
             using HttpClient httpClient = new();
             using HttpRequestMessage request = new(new HttpMethod("POST"), $"https://builder.pingpong.us/api/builder/60a1d801e4b091a94bc5294d/integration/v0.2/custom/{Context.User.Id}");
-
+            
             request.Headers.TryAddWithoutValidation("Authorization", ConfigManager.Get("PINGPONG_TOKEN"));
-            request.Content = new StringContent("{\"request\": {\"query\": \"" + text + "\"}}");
+            request.Content = new StringContent("{\"request\": {\"query\": \"" + text.Replace("\"", "\\\"") + "\"}}");
             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
             using var response = await httpClient.SendAsync(request);
