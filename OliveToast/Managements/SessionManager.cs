@@ -23,51 +23,55 @@ namespace OliveToast.Data
             {
                 await Task.Delay(1000 * 10);
 
-                foreach (var session in TypingSession.Sessions)
+                try
                 {
-                    if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
+                    foreach (var session in TypingSession.Sessions)
                     {
-                        TypingSession.Sessions.Remove(session.Key);
+                        if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
+                        {
+                            TypingSession.Sessions.Remove(session.Key);
 
-                        await session.Value.Context.ReplyEmbedAsync("게임이 자동으로 종료됐어요");
+                            await session.Value.Context.ReplyEmbedAsync("게임이 자동으로 종료됐어요");
+                        }
+                    }
+
+                    foreach (var session in CommandCreateSession.Sessions)
+                    {
+                        if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
+                        {
+                            CommandCreateSession.Sessions.Remove(session.Key);
+
+                            await session.Value.UserMessageContext.ReplyEmbedAsync("커맨드 생성이 자동으로 종료됐어요");
+                        }
+                    }
+
+                    foreach (var session in CommandExecuteSession.Sessions)
+                    {
+                        if ((DateTime.Now - session.Value.StartTime).TotalMinutes >= CommandExecuteSessionExpireMinute)
+                        {
+                            CommandExecuteSession.Sessions.Remove(session.Key);
+
+                            await session.Value.Context.Message.AddReactionAsync(new Emoji("⚠️"));
+                        }
+                    }
+
+                    foreach (var session in CommandDeleteSession.Sessions)
+                    {
+                        if ((DateTime.Now - session.Value.StartTime).TotalMinutes >= ExpireMinute)
+                        {
+                            CommandDeleteSession.Sessions.Remove(session.Key);
+                        }
+                    }
+
+                    foreach (var session in CommandEventHandler.ExceptionSessions)
+                    {
+                        if ((DateTime.Now - session.Value.occurredTime).TotalMinutes >= ExceptionSessionExpireMinute)
+                        {
+                            CommandEventHandler.ExceptionSessions.Remove(session.Key);
+                        }
                     }
                 }
-
-                foreach (var session in CommandCreateSession.Sessions)
-                {
-                    if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)
-                    {
-                        CommandCreateSession.Sessions.Remove(session.Key);
-
-                        await session.Value.UserMessageContext.ReplyEmbedAsync("커맨드 생성이 자동으로 종료됐어요");
-                    }
-                }
-
-                foreach (var session in CommandExecuteSession.Sessions)
-                {
-                    if ((DateTime.Now - session.Value.StartTime).TotalMinutes >= CommandExecuteSessionExpireMinute)
-                    {
-                        CommandExecuteSession.Sessions.Remove(session.Key);
-
-                        await session.Value.Context.Message.AddReactionAsync(new Emoji("⚠️"));
-                    }
-                }
-
-                foreach (var session in CommandDeleteSession.Sessions)
-                {
-                    if ((DateTime.Now - session.Value.StartTime).TotalMinutes >= ExpireMinute)
-                    {
-                        CommandDeleteSession.Sessions.Remove(session.Key);
-                    }
-                }
-
-                foreach (var session in CommandEventHandler.ExceptionSessions)
-                {
-                    if ((DateTime.Now - session.Value.occurredTime).TotalMinutes >= ExceptionSessionExpireMinute)
-                    {
-                        CommandEventHandler.ExceptionSessions.Remove(session.Key);
-                    }
-                }
+                catch { }
             }
         }
 
@@ -77,23 +81,27 @@ namespace OliveToast.Data
             {
                 await Task.Delay(1000);
 
-                foreach (var session in WordSession.Sessions)
+                try
                 {
-                    if (session.Value.IsStarted)
+                    foreach (var session in WordSession.Sessions)
                     {
-                        if ((DateTime.Now - session.Value.LastActiveTime).TotalSeconds >= WordGameOverSecond)
+                        if (session.Value.IsStarted)
                         {
-                            await Games.GameOverUserInWordGame(session.Value);
+                            if ((DateTime.Now - session.Value.LastActiveTime).TotalSeconds >= WordGameOverSecond)
+                            {
+                                await Games.GameOverUserInWordGame(session.Value);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if ((DateTime.Now - session.Value.LastActiveTime).TotalSeconds >= WordGameStartWaitingSecond)
+                        else
                         {
-                            await Games.StartWordGame(session.Value);
+                            if ((DateTime.Now - session.Value.LastActiveTime).TotalSeconds >= WordGameStartWaitingSecond)
+                            {
+                                await Games.StartWordGame(session.Value);
+                            }
                         }
                     }
                 }
+                catch { }
             }
         }
     }
