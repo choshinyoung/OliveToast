@@ -227,7 +227,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             emb.AddField("버전", ConfigManager.Get("VERSION"));
 
             emb.AddField(":mailbox_with_mail:", $"· [봇 초대 링크]({Utility.GetInvite()})\n· [OliveToast 서포트 서버](https://discord.gg/5eq44Xtx3k)", true);
-            emb.AddField(":page_facing_up:", $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)", true);
+            emb.AddField(":page_facing_up:", $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)\n· [개인정보 처리방침](https://olivetoast.shinyou.ng/privacy.html)", true);
             
             emb.AddField("크레딧", "제작: <@396163884005851137>\n\n도움: <@410260925795270656> <@404891182423080960> <@310247242546151434>\n\n프로필 일러스트: <@679641309010853895>");
 
