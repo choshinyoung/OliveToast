@@ -114,7 +114,7 @@ namespace OliveToast.Commands
             }
             catch (WebException)
             {
-                emb = Context.CreateEmbed(title: "검색 실패", description: "404. 오 이런! 올리브토스트가 머리를 스크래칭하고 있군요");
+                emb = Context.CreateEmbed(title: "해당 유저를 찾을 수 없어요", description: "404. 오 이런! 올리브토스트가 머리를 스크래칭하고 있군요");
                 await Context.ReplyEmbedAsync(emb.Build());
                 return;
             }
@@ -128,13 +128,13 @@ namespace OliveToast.Commands
             emb.AddField("가입일", ((DateTimeOffset)dbResult.joined).ToShortKSTString(), true);
             emb.AddField("국가", dbResult.country, true);
 
-            emb.AddField("팔로잉", $"{dbResult.statistics.following}명", true);
-            emb.AddField("팔로워", $"{dbResult.statistics.followers}명", true);
-            emb.AddField("팔로워 순위", $"{dbResult.statistics.ranks.country.followers}위", true);
+            emb.AddField("팔로잉", $"{dbResult.statistics?.following.ToString() ?? "?"}명", true);
+            emb.AddField("팔로워", $"{dbResult.statistics?.followers.ToString() ?? "?"}명", true);
+            emb.AddField("팔로워 순위", $"{dbResult.statistics?.ranks.country.followers.ToString() ?? "?"}위", true);
 
-            emb.AddField("전체 조회수", $"{dbResult.statistics.views}번", true);
-            emb.AddField("전체 :heart:", $"{dbResult.statistics.loves}개", true);
-            emb.AddField("전체 :star:", $"{dbResult.statistics.favorites}개", true);
+            emb.AddField("전체 조회수", $"{dbResult.statistics?.views.ToString() ?? "?"}번", true);
+            emb.AddField("전체 :heart:", $"{dbResult.statistics?.loves.ToString() ?? "?"}개", true);
+            emb.AddField("전체 :star:", $"{dbResult.statistics?.favorites.ToString() ?? "?"}개", true);
 
             emb.AddField("내 소개", $"```\n{apiResult.profile.bio}```");
             emb.AddField("내가 하고 있는 일", $"```\n{apiResult.profile.status}```");
