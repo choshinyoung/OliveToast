@@ -542,7 +542,7 @@ namespace OliveToast.Commands
             });
         }
 
-        [Command("타자 연습"), Alias("타자", "타자연습")]
+        [Command("타자 연습"), Alias("타자", "타자연습", "탖")]
         [RequirePermission(PermissionType.UseBot), RequireBotPermission(ChannelPermission.AttachFiles)]
         [Summary("타자 연습을 할 수 있는 커맨드예요")]
         public async Task StartTypingGame()
