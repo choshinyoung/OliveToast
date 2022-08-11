@@ -74,7 +74,7 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botLastMessage", (ctx) => ctx.BotLastMessage),
 
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.Guild.Users.Select(u => (object)u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.Guild.GetUser(ctx.User.Id)),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketUser>("user", (ctx) => ctx.User),
 
             ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.Channel),
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.Guild.TextChannels.Select(u => (object)u).ToArray()),
