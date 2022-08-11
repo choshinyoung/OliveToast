@@ -74,7 +74,7 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botLastMessage", (ctx) => ctx.BotLastMessage),
 
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.Guild.Users.Select(u => (object)u).ToArray()),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.User),
+            ToastCommand.CreateFunc<CustomCommandContext, SocketGuildUser>("user", (ctx) => ctx.Guild.GetUser(ctx.User.Id)),
 
             ToastCommand.CreateFunc<CustomCommandContext, SocketTextChannel>("channel", (ctx) => ctx.Channel),
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("channels", (ctx) => ctx.Guild.TextChannels.Select(u => (object)u).ToArray()),
@@ -230,7 +230,7 @@ namespace OliveToast.Managements.CustomCommand
 
                 return y switch
                 {
-                    SocketGuildUser user => x.Name switch
+                    SocketUser user => x.Name switch
                     {
                         "name" => user.Username,
                         "id" => user.Id,
@@ -357,7 +357,7 @@ namespace OliveToast.Managements.CustomCommand
 
                 if (db.ContainsKey(x))
                 {
-                    if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.User.GuildPermissions.Administrator)
+                    if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.Guild.GetUser(ctx.User.Id).GuildPermissions.Administrator)
                     {
                         throw new Exception("이 항목에 접근할 권한이 없어요");
                     }
@@ -382,7 +382,7 @@ namespace OliveToast.Managements.CustomCommand
 
                 if (db.ContainsKey(x))
                 {
-                    if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.User.GuildPermissions.Administrator)
+                    if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.Guild.GetUser(ctx.User.Id).GuildPermissions.Administrator)
                     {
                         throw new Exception("이 항목에 접근할 권한이 없어요");
                     }
@@ -405,7 +405,7 @@ namespace OliveToast.Managements.CustomCommand
             {
                 Dictionary<string, OliveGuild.DbValue> db = OliveGuild.Get(ctx.Guild.Id).CommandDb;
 
-                if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.User.GuildPermissions.Administrator)
+                if (db[x].OwnerId != 0 && ctx.CommandCreator != db[x].OwnerId && !ctx.Guild.GetUser(ctx.User.Id).GuildPermissions.Administrator)
                 {
                     throw new Exception("이 항목에 접근할 권한이 없어요");
                 }

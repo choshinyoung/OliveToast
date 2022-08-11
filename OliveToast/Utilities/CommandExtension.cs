@@ -17,11 +17,11 @@ namespace OliveToast.Utilities
             if (await context.Channel.GetMessageAsync(context.Message.Id) is not null)
             {
                 MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
-                return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+                return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, components: component);
             }
             else
             {
-                return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, component: component);
+                return await context.Channel.SendMessageAsync(text: content.ToString(), allowedMentions: disalbeMention ? AllowedMentions.None : null, components: component);
             }
         }
 
@@ -31,12 +31,12 @@ namespace OliveToast.Utilities
             {
                 Embed emb = context.CreateEmbed(content.ToString()).Build();
                 MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
-                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, components: component);
             }
             else
             {
                 Embed emb = context.CreateEmbed(content.ToString()).Build();
-                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, component: component);
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, components: component);
             }
         }
 
@@ -45,11 +45,11 @@ namespace OliveToast.Utilities
             if (await context.Channel.GetMessageAsync(context.Message.Id) is not null)
             {
                 MessageReference reference = new(context.Message.Id, context.Channel.Id, context.Guild?.Id);
-                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, component: component);
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, messageReference: reference, components: component);
             }
             else
             {
-                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, component: component);
+                return await context.Channel.SendMessageAsync(embed: emb, allowedMentions: disalbeMention ? AllowedMentions.None : null, components: component);
             }
         }
 

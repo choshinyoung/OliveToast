@@ -265,7 +265,7 @@ namespace OliveToast.Managements.CustomCommand
         public readonly SocketGuild Guild;
         public readonly SocketTextChannel Channel;
         public readonly SocketUserMessage Message;
-        public readonly SocketGuildUser User;
+        public readonly SocketUser User;
 
         public readonly string[] Groups;
 
@@ -286,7 +286,7 @@ namespace OliveToast.Managements.CustomCommand
 
         public ulong CommandCreator;
 
-        public CustomCommandContext(SocketGuild guild, SocketTextChannel channel, SocketUserMessage message, SocketGuildUser user, ulong commandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
+        public CustomCommandContext(SocketGuild guild, SocketTextChannel channel, SocketUserMessage message, SocketUser user, ulong commandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
         {
             Guild = guild;
             Channel = channel;

@@ -109,19 +109,17 @@ namespace OliveToast
             });
         }
 
-        public static async Task OnUserLeft(SocketGuildUser arg)
+        public static async Task OnUserLeft(SocketGuild guild, SocketUser user)
         {
             await Task.Factory.StartNew(async () =>
             {
-                SocketGuild guild = arg.Guild;
-
                 OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
 
                 string leaveMessage = setting.LeaveMessage;
                 List<string> toastLines = setting.LeaveMessageToastLines;
 
                 Toaster toaster = CustomCommandExecutor.GetToaster();
-                CustomCommandContext context = new(arg.Guild, guild.SystemChannel, null, arg, arg.Guild.OwnerId, Array.Empty<string>(), true, true, true);
+                CustomCommandContext context = new(guild, guild.SystemChannel, null, user, guild.OwnerId, Array.Empty<string>(), true, true, true);
                 string output = (string)toaster.Execute($"\"{leaveMessage}\"", context);
 
                 if (output is not null and not "")
@@ -213,10 +211,14 @@ namespace OliveToast
                             await context.ReplyEmbedAsync($"{context.User.Mention}님, {lv}레벨이 되신걸 축하해요! :tada:", disalbeMention: false);
                         }
 
-                        if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
+                        try
                         {
-                            await (context.User as SocketGuildUser).AddRoleAsync(context.Guild.GetRole(guild.Setting.LevelRoles[lv]));
+                            if (guild.Setting.LevelRoles.ContainsKey(lv) && context.Guild.Roles.Any(r => r.Id == guild.Setting.LevelRoles[lv]))
+                            {
+                                await (context.User as SocketGuildUser).AddRoleAsync(guild.Setting.LevelRoles[lv]);
+                            }
                         }
+                        catch { }
                     }
                 }
                 else

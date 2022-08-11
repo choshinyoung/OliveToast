@@ -394,7 +394,7 @@ namespace OliveToast.Commands
 
             component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.RoleMenu, Context.Guild.Id, isSingle ? 1 : 0), options, "역할 선택하기");
 
-            await Context.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: null, component: component.Build());
+            await Context.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: null, components: component.Build());
         }
     }
 }

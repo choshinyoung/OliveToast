@@ -9,7 +9,6 @@ using OliveToast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OliveToast
@@ -333,7 +332,7 @@ namespace OliveToast
         public static async Task RoleMenu(InteractionData data, SocketMessageComponent component)
         {
             SocketGuild guild = Program.Client.GetGuild(ulong.Parse(data.Args[0]));
-            SocketGuildUser user = guild.GetUser(component.User.Id);            
+            SocketGuildUser user = guild.GetUser(component.User.Id);
             SocketRole role = guild.GetRole(ulong.Parse(component.Data.Values.ToArray()[0]));
             bool isSingle = data.Args[1] == "1";
 
@@ -362,7 +361,7 @@ namespace OliveToast
                     await user.RemoveRolesAsync(removedRoles);
                 }
 
-                await user.AddRoleAsync(role);
+                await user.AddRoleAsync(ulong.Parse(component.Data.Values.ToArray()[0]));
 
                 string removedRoleMessage = removedRoles.Any() ? $"{string.Join(", ", removedRoles.Select(r => r.Mention))} 역할을 제거하고 " : "";
                 await component.RespondAsync($"{removedRoleMessage}{role.Mention} 역할을 추가했어요", ephemeral: true, allowedMentions: AllowedMentions.None);
