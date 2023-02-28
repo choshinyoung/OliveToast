@@ -20,12 +20,14 @@ namespace OliveToast.Commands
     {
         [Command("활성화")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("지정된 카테고리를 활성화하는 커맨드예요\n`일반`, `정보`, `검색`, `게임`, `텍스트`, `이미지`, `커맨드`, `레벨`, `로그`, `설정` 중 하나를 선택할 수 있어요")]
+        [Summary(
+            "지정된 카테고리를 활성화하는 커맨드예요\n`일반`, `정보`, `검색`, `게임`, `텍스트`, `이미지`, `커맨드`, `레벨`, `로그`, `설정` 중 하나를 선택할 수 있어요")]
         public async Task Enable([Name("카테고리")] string category)
         {
             if (!CategoryNames.Contains(category))
             {
-                await Context.ReplyEmbedAsync($"알 수 없는 카테고리에요\n{string.Join(", ", CategoryNames.Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
+                await Context.ReplyEmbedAsync(
+                    $"알 수 없는 카테고리에요\n{string.Join(", ", CategoryNames.Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
                 return;
             }
 
@@ -51,7 +53,8 @@ namespace OliveToast.Commands
         {
             if (!CategoryNames.Contains(category))
             {
-                await Context.ReplyEmbedAsync($"알 수 없는 카테고리에요\n{string.Join(", ", CategoryNames.Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
+                await Context.ReplyEmbedAsync(
+                    $"알 수 없는 카테고리에요\n{string.Join(", ", CategoryNames.Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
                 return;
             }
 
@@ -85,7 +88,7 @@ namespace OliveToast.Commands
 
             EmbedBuilder emb = Context.CreateEmbed(title: "카테고리 활성화 확인");
 
-            foreach(CategoryType cat in Enum.GetValues(typeof(CategoryType)))
+            foreach (CategoryType cat in Enum.GetValues(typeof(CategoryType)))
             {
                 emb.AddField(CategoryToString(cat), setting.EnabledCategories.Contains(cat).ToEmoji(), true);
             }
@@ -96,13 +99,15 @@ namespace OliveToast.Commands
         [Command("권한 설정"), Alias("권한")]
         [RequirePermission(PermissionType.ServerAdmin)]
         [Summary("역할별로 봇 사용 권한을 설정하는 커맨드예요\n`봇 사용`, `커맨드 관리`, `설정 관리`, `봇으로 말하기` 중 하나를 선택할 수 있어요")]
-        public async Task SetPermissionRole([Name("권한")] string permission, [Name("")] string permission2, [Remainder, Name("역할")] SocketRole role)
+        public async Task SetPermissionRole([Name("권한")] string permission, [Name("")] string permission2,
+            [Remainder, Name("역할")] SocketRole role)
         {
             permission += $" {permission2}";
 
             if (!PermissionNames.Contains(permission))
             {
-                await Context.ReplyEmbedAsync($"알 수 없는 권한이에요\n{string.Join(", ", PermissionNames[..(PermissionNames.Length - 2)].Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
+                await Context.ReplyEmbedAsync(
+                    $"알 수 없는 권한이에요\n{string.Join(", ", PermissionNames[..(PermissionNames.Length - 2)].Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
                 return;
             }
 
@@ -128,7 +133,8 @@ namespace OliveToast.Commands
 
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
 
-            await Context.ReplyEmbedAsync($"{permission} 권한을 설정했어요\n이제 {role.Mention.이()}나 그 위의 역할이 있는 유저는 {permission} 권한이 필요한 커맨드를 사용할 수 있어요");
+            await Context.ReplyEmbedAsync(
+                $"{permission} 권한을 설정했어요\n이제 {role.Mention.이()}나 그 위의 역할이 있는 유저는 {permission} 권한이 필요한 커맨드를 사용할 수 있어요");
         }
 
         [Command("권한 확인"), Alias("권한 보기", "권한")]
@@ -140,10 +146,13 @@ namespace OliveToast.Commands
 
             EmbedBuilder emb = Context.CreateEmbed(title: "권한 확인");
 
-            foreach (PermissionType perm in ((PermissionType[])Enum.GetValues(typeof(PermissionType)))[..(PermissionNames.Length - 2)])
+            foreach (PermissionType perm in ((PermissionType[])Enum.GetValues(typeof(PermissionType)))[
+                         ..(PermissionNames.Length - 2)])
             {
-                bool roleExist = setting.PermissionRoles.ContainsKey(perm.ToString()) && Context.Guild.Roles.Any(r => r.Id == setting.PermissionRoles[perm.ToString()]);
-                emb.AddField(PermissionToString(perm), roleExist ? Context.Guild.GetRole(setting.PermissionRoles[perm.ToString()]).Mention : "기본값", true);
+                bool roleExist = setting.PermissionRoles.ContainsKey(perm.ToString()) &&
+                                 Context.Guild.Roles.Any(r => r.Id == setting.PermissionRoles[perm.ToString()]);
+                emb.AddField(PermissionToString(perm),
+                    roleExist ? Context.Guild.GetRole(setting.PermissionRoles[perm.ToString()]).Mention : "기본값", true);
             }
 
             await Context.ReplyEmbedAsync(emb.Build());
@@ -158,7 +167,8 @@ namespace OliveToast.Commands
 
             if (!PermissionNames.Contains(permission))
             {
-                await Context.ReplyEmbedAsync($"알 수 없는 권한이에요\n{string.Join(", ", PermissionNames[..(PermissionNames.Length - 2)].Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
+                await Context.ReplyEmbedAsync(
+                    $"알 수 없는 권한이에요\n{string.Join(", ", PermissionNames[..(PermissionNames.Length - 2)].Select(c => $"`{c}`"))} 중 하나를 선택할 수 있어요");
                 return;
             }
 
@@ -198,14 +208,21 @@ namespace OliveToast.Commands
                 return;
             }
 
-            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions);
+            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id,
+                (Context.User as SocketGuildUser).GuildPermissions);
             RestUserMessage msg;
 
             if (answer is null)
             {
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("응답 없이 계속하기", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.ContinueWithoutAnswer))
-                    .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger)
+                    .WithButton("응답 없이 계속하기",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.ContinueWithoutAnswer))
+                    .WithButton("취소",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger)
                     .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                 msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
@@ -225,8 +242,14 @@ namespace OliveToast.Commands
                 command.Answer = answer;
 
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("완료", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.Complete), ButtonStyle.Success)
-                    .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger);
+                    .WithButton("완료",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.Complete), ButtonStyle.Success)
+                    .WithButton("취소",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger);
 
                 EmbedBuilder emb = Context.CreateEmbed("토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요");
                 emb.AddField("응답", answer, true);
@@ -278,14 +301,21 @@ namespace OliveToast.Commands
                 return;
             }
 
-            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id, (Context.User as SocketGuildUser).GuildPermissions);
+            OliveGuild.CustomCommand command = new(null, false, new(), Context.User.Id,
+                (Context.User as SocketGuildUser).GuildPermissions);
             RestUserMessage msg;
 
             if (answer is null)
             {
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("응답 없이 계속하기", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.ContinueWithoutAnswer))
-                    .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger)
+                    .WithButton("응답 없이 계속하기",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.ContinueWithoutAnswer))
+                    .WithButton("취소",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger)
                     .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                 msg = await Context.ReplyEmbedAsync("응답을 입력해주세요", component: component.Build());
@@ -305,8 +335,14 @@ namespace OliveToast.Commands
                 command.Answer = answer;
 
                 ComponentBuilder component = new ComponentBuilder()
-                    .WithButton("완료", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.Complete), ButtonStyle.Success)
-                    .WithButton("취소", InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.CreateCommand, (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger)
+                    .WithButton("완료",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.Complete), ButtonStyle.Success)
+                    .WithButton("취소",
+                        InteractionHandler.GenerateCustomId(Context.User.Id,
+                            InteractionHandler.InteractionType.CreateCommand,
+                            (int)CommandCreateSession.ResponseType.Cancel), ButtonStyle.Danger)
                     .WithButton("커맨드 사용 방법", style: ButtonStyle.Link, url: "https://olivetoast.shinyou.ng/");
 
                 EmbedBuilder emb = Context.CreateEmbed("토스트 커맨드를 한 줄씩 입력하고 `완료` 버튼을 눌러주세요");
@@ -347,7 +383,7 @@ namespace OliveToast.Commands
             await Context.ReplyEmbedAsync(emb.Build());
         }
 
-        [Command("역할 메뉴"), Alias("역할메뉴", "역할 지급", "역할지급")]
+        [Command("역할 메뉴"), Alias("역할메뉴", "역할 지급", "역할지급"), Priority(1)]
         [RequirePermission(PermissionType.ManageBotSetting)]
         [Summary("자동으로 역할을 지급해주는 메뉴를 생성하는 커맨드예요\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들이에요")]
         public async Task RoleMenu([Name("역할")] params SocketRole[] roles)
@@ -357,7 +393,8 @@ namespace OliveToast.Commands
 
         [Command("단일 역할 메뉴"), Alias("단일역할메뉴", "단일 역할 지급", "단일역할지급")]
         [RequirePermission(PermissionType.ManageBotSetting)]
-        [Summary("역할을 선택 시 선택된 역할을 제외한 해당 역할 목록의 다른 역할을 자동으로 제거해주는 역할 메뉴를 생성하는 커맨드예요\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들이에요")]
+        [Summary(
+            "역할을 선택 시 선택된 역할을 제외한 해당 역할 목록의 다른 역할을 자동으로 제거해주는 역할 메뉴를 생성하는 커맨드예요\n`역할`은 타 유저가 셀렉트 메뉴에서 선택해 추가할 수 있는 역할들이에요")]
         public async Task SingleRoleMenu([Name("역할")] params SocketRole[] roles)
         {
             await RoleMenu(roles, true);
@@ -379,7 +416,8 @@ namespace OliveToast.Commands
                 return;
             }
 
-            EmbedBuilder emb = Context.CreateEmbed($"셀렉트 메뉴에서 원하는 역할을 추가하세요{(isSingle ? "\n아래 역할 중 한 개만 사용할 수 있어요" : "")}", "역할 메뉴");
+            EmbedBuilder emb =
+                Context.CreateEmbed($"셀렉트 메뉴에서 원하는 역할을 추가하세요{(isSingle ? "\n아래 역할 중 한 개만 사용할 수 있어요" : "")}", "역할 메뉴");
             emb.Footer = null;
 
             ComponentBuilder component = new();
@@ -392,9 +430,12 @@ namespace OliveToast.Commands
                 options.Add(new(role.Name, role.Id.ToString()));
             }
 
-            component.WithSelectMenu(InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.RoleMenu, Context.Guild.Id, isSingle ? 1 : 0), options, "역할 선택하기");
+            component.WithSelectMenu(
+                InteractionHandler.GenerateCustomId(Context.User.Id, InteractionHandler.InteractionType.RoleMenu,
+                    Context.Guild.Id, isSingle ? 1 : 0), options, "역할 선택하기");
 
-            await Context.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: null, components: component.Build());
+            await Context.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: null,
+                components: component.Build());
         }
     }
 }

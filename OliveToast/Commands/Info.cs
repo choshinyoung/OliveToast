@@ -48,7 +48,8 @@ namespace OliveToast.Commands
             emb.AddField("레벨", $"레벨 {(int)g.PremiumTier}", true);
             emb.AddField("서버 이모티콘 개수", g.Emotes.Count, true);
 
-            emb.AddField("보안 수준", g.VerificationLevel switch {
+            emb.AddField("보안 수준", g.VerificationLevel switch
+            {
                 VerificationLevel.None => "없음",
                 VerificationLevel.Low => "낮음",
                 VerificationLevel.Medium => "중간",
@@ -56,7 +57,8 @@ namespace OliveToast.Commands
                 VerificationLevel.Extreme => "매우 높음",
                 _ => "-"
             }, true);
-            emb.AddField("유해 미디어 콘텐츠 필터", g.ExplicitContentFilter switch {
+            emb.AddField("유해 미디어 콘텐츠 필터", g.ExplicitContentFilter switch
+            {
                 ExplicitContentFilterLevel.Disabled => "비활성화",
                 ExplicitContentFilterLevel.MembersWithoutRoles => "역할 없는 맴버만",
                 ExplicitContentFilterLevel.AllMembers => "모든 맴버",
@@ -92,12 +94,13 @@ namespace OliveToast.Commands
             await Context.ReplyEmbedAsync(emb.Build());
         }
 
-        [Command("역할 정보"), Alias("역할정보", "역할")]
+        [Command("역할 정보"), Alias("역할정보")]
         [RequirePermission(PermissionType.UseBot), RequireContext(ContextType.Guild)]
         [Summary("역할의 정보를 확인할 수 있는 커맨드예요")]
         public async Task RoleInfo([Name("역할"), Remainder] SocketRole r)
         {
-            EmbedBuilder emb = Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color, thumbnailUrl: r.GetIconUrl());
+            EmbedBuilder emb =
+                Context.CreateEmbed(title: $"{r.Name}의 정보", color: r.Color, thumbnailUrl: r.GetIconUrl());
 
             emb.AddField("ID", r.Id, true);
             emb.AddField("생성일", r.CreatedAt.ToKSTString(), true);
@@ -209,14 +212,16 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
         [Summary("봇의 정보를 확인할 수 있는 커맨드예요")]
         public async Task BotInfo()
         {
-            EmbedBuilder emb = Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: Program.Client.CurrentUser.GetAvatar());
+            EmbedBuilder emb =
+                Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: Program.Client.CurrentUser.GetAvatar());
 
             emb.AddField("서버 수", $"{Program.Client.Guilds.Count}곳", true);
             List<ulong> users = new();
-            foreach(SocketGuild guild in Program.Client.Guilds)
+            foreach (SocketGuild guild in Program.Client.Guilds)
             {
                 users.AddRange(guild.Users.Select(u => u.Id).Where(u => !users.Contains(u)));
             }
+
             emb.AddField("유저 수", $"{users.Count}명", true);
             emb.AddEmptyField();
 
@@ -226,10 +231,14 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
 
             emb.AddField("버전", ConfigManager.Get("VERSION"));
 
-            emb.AddField(":mailbox_with_mail:", $"· [봇 초대 링크]({Utility.GetInvite()})\n· [OliveToast 서포트 서버](https://discord.gg/5eq44Xtx3k)", true);
-            emb.AddField(":page_facing_up:", $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)\n· [개인정보 처리방침](https://olivetoast.shinyou.ng/privacy.html)", true);
-            
-            emb.AddField("크레딧", "제작: <@396163884005851137>\n\n도움: <@410260925795270656> <@404891182423080960> <@310247242546151434>\n\n프로필 일러스트: <@679641309010853895>");
+            emb.AddField(":mailbox_with_mail:",
+                $"· [봇 초대 링크]({Utility.GetInvite()})\n· [OliveToast 서포트 서버](https://discord.gg/5eq44Xtx3k)", true);
+            emb.AddField(":page_facing_up:",
+                $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)\n· [개인정보 처리방침](https://olivetoast.shinyou.ng/privacy.html)",
+                true);
+
+            emb.AddField("크레딧",
+                "제작: <@396163884005851137>\n\n도움: <@410260925795270656> <@404891182423080960> <@310247242546151434>\n\n프로필 일러스트: <@679641309010853895>");
 
             await Context.ReplyEmbedAsync(emb.Build());
         }
