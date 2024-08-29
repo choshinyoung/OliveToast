@@ -145,6 +145,11 @@ namespace OliveToast
 
             var session = WordSession.Sessions[component.Message.Id];
 
+            if (session.IsStarted)
+            {
+                return;
+            }
+
             if (session.Players.Contains(component.User.Id))
             {
                 if (session.Context.User.Id == component.User.Id)
