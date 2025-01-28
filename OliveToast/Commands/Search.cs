@@ -184,7 +184,7 @@ namespace OliveToast.Commands
             using WebClient wc = new();
 
             MinecraftUuidResult uuid;
-            List<MinecraftNameResult> names;
+            // List<MinecraftNameResult> names;
             MinecraftProfileResult profile;
             MinecraftSkinResult skin;
 
@@ -193,7 +193,7 @@ namespace OliveToast.Commands
             try
             {
                 uuid = JsonConvert.DeserializeObject<MinecraftUuidResult>(wc.DownloadString($"https://api.mojang.com/users/profiles/minecraft/{name}"));
-                names = JsonConvert.DeserializeObject<List<MinecraftNameResult>>(wc.DownloadString($"https://api.mojang.com/user/profiles/{uuid.id}/names"));
+                // names = JsonConvert.DeserializeObject<List<MinecraftNameResult>>(wc.DownloadString($"https://api.mojang.com/user/profiles/{uuid.id}/names"));
                 profile = JsonConvert.DeserializeObject<MinecraftProfileResult>(wc.DownloadString($"https://sessionserver.mojang.com/session/minecraft/profile/{uuid.id}"));
                 skin = JsonConvert.DeserializeObject<MinecraftSkinResult>(Encoding.UTF8.GetString(Convert.FromBase64String(profile.properties.First().value)));
             }
@@ -211,7 +211,7 @@ namespace OliveToast.Commands
             emb.AddField("UUIDMost", Convert.ToInt64(uuid.id[..16], 16), true);
             emb.AddField("UUIDLeast", Convert.ToInt64(uuid.id[16..], 16), true);
 
-            emb.AddField("닉네임 변경 역사", string.Join('\n', names.Select(n => $"`{n.name}`: {(n.changedToAt != null ? DateTimeOffset.FromUnixTimeMilliseconds(n.changedToAt.Value).ToShortKSTString() : "?")}")));
+            // emb.AddField("닉네임 변경 역사", string.Join('\n', names.Select(n => $"`{n.name}`: {(n.changedToAt != null ? DateTimeOffset.FromUnixTimeMilliseconds(n.changedToAt.Value).ToShortKSTString() : "?")}")));
 
             await Context.ReplyEmbedAsync(emb.Build());
         }
