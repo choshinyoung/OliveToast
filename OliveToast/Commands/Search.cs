@@ -124,8 +124,6 @@ namespace OliveToast.Commands
             emb = Context.CreateEmbed(title: apiResult.username, url: $"https://scratch.mit.edu/users/{name}", thumbnailUrl: $"https://cdn2.scratch.mit.edu/get_image/user/{apiResult.id}_90x90.png");
 
             // emb.AddField("스크래쳐", (dbResult.status == "Scratcher").ToEmoji(), true);
-            Console.WriteLine(apiResponse);
-            Console.WriteLine(apiResult.history.joined);
             emb.AddField("가입일", ((DateTimeOffset)apiResult.history.joined).ToShortKSTString(), true);
             emb.AddField("국가", apiResult.profile.country, true);
 
