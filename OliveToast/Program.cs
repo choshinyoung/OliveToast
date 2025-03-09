@@ -24,7 +24,7 @@ namespace OliveToast
             LogLevel = IsDebugMode ? LogSeverity.Debug : LogSeverity.Info,
             MessageCacheSize = 100000,
             AlwaysDownloadUsers = true,
-            GatewayIntents = GatewayIntents.GuildMembers | GatewayIntents.AllUnprivileged
+            GatewayIntents = GatewayIntents.All & ~GatewayIntents.GuildPresences & ~GatewayIntents.GuildScheduledEvents & ~GatewayIntents.GuildInvites,
         };
         private static readonly CommandServiceConfig commandConfig = new()
         {
