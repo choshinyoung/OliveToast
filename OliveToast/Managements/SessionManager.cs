@@ -25,6 +25,8 @@ namespace OliveToast.Data
 
                 try
                 {
+                    LogMessageCache.RemoveExpired();
+
                     foreach (var session in TypingSession.Sessions)
                     {
                         if ((DateTime.Now - session.Value.LastActiveTime).TotalMinutes >= ExpireMinute)

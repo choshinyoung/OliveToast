@@ -1,12 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
-using Newtonsoft.Json;
-using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using org.mariuszgromada.math.mxparser;
 using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Numerics;
 using System.Threading.Tasks;
 using static OliveToast.Utilities.RequireCategoryEnable;
@@ -49,42 +45,6 @@ namespace OliveToast.Commands
         public async Task BotInvite()
         {
             await Context.ReplyEmbedAsync($"[올리브토스트 초대 링크]({Utility.GetInvite()})");
-        }
-
-        [Command("인공지능"), Alias("핑퐁", "올토야", "올토님")]
-        [RequirePermission(PermissionType.UseBot)]
-        [Summary("인공지능 올리브토스트와 대화를 해보세요")]
-        public async Task PingPong([Remainder, Name("문장")] string text)
-        {
-            using HttpClient httpClient = new();
-            using HttpRequestMessage request = new(new HttpMethod("POST"), $"https://builder.pingpong.us/api/builder/60a1d801e4b091a94bc5294d/integration/v0.2/custom/{Context.User.Id}");
-            
-            request.Headers.TryAddWithoutValidation("Authorization", ConfigManager.Get("PINGPONG_TOKEN"));
-            request.Content = new StringContent("{\"request\": {\"query\": \"" + text.Replace("\"", "\\\"") + "\"}}");
-            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-
-            using var response = await httpClient.SendAsync(request);
-            PingPongResult result = JsonConvert.DeserializeObject<PingPongResult>(await response.Content.ReadAsStringAsync());
-
-            string resTxt = null;
-            string resImg = null;
-
-            foreach (var reply in result.response.replies)
-            {
-                switch (reply.type)
-                {
-                    case "text":
-                        if (resTxt == null)
-                            resTxt = reply.text;
-                        break;
-                    case "image":
-                        if (resImg == null)
-                            resImg = reply.image.url;
-                        break;
-                }
-            }
-
-            await Context.ReplyEmbedAsync(Context.CreateEmbed(description: resTxt, imgUrl: resImg).Build());
         }
 
         [Command("계산"), Alias("계산기")]

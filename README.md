@@ -6,7 +6,7 @@
 
 디스코드 봇 올리브토스트 v6의 소스코드입니다
 
-[초대하기](https://discord.com/oauth2/authorize?client_id=495209098929766400&scope=bot&permissions=2416241734)
+[초대하기](https://discord.com/oauth2/authorize?client_id=495209098929766400&scope=bot&permissions=2416241734) · [개인정보처리방침](PRIVACY.md)
 
 ## Initialize
 

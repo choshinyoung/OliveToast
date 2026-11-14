@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using MongoDB.Driver;
 using OliveToast.Commands;
 using OliveToast.Data;
+using OliveToast.Managements;
 using OliveToast.Managements.CustomCommand;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
@@ -20,7 +21,7 @@ namespace OliveToast
     {
         public static readonly string prefix = ConfigManager.Get("PREFIX");
 
-        public static readonly Dictionary<(ulong id, string emote), (ulong userId, string reason, DateTime occurredTime)> ExceptionSessions = new();
+        public static readonly Dictionary<(ulong id, string emote), (SocketCommandContext context, string reason, DateTime occurredTime)> ExceptionSessions = new();
 
         public static void RegisterEvents(DiscordSocketClient client, CommandService command)
         {
@@ -65,6 +66,9 @@ namespace OliveToast
 
         public static async Task OnLeftGuild(SocketGuild arg)
         {
+            OliveGuild.Delete(arg.Id);
+            LogMessageCache.Clear(arg.Id);
+
             await KoreanBots.UpdateServerCountAsync(Program.Client.Guilds.Count);
         }
 
@@ -259,14 +263,10 @@ namespace OliveToast
 
             var key = (message.Id, reaction.Emote.Name);
 
-            if (ExceptionSessions.ContainsKey(key) && message.Value.Author.Id == reaction.UserId)
+            if (ExceptionSessions.TryGetValue(key, out var session) && session.context.User.Id == reaction.UserId)
             {
-                var (userId, reason, occurredTime) = ExceptionSessions[key];
-
-                SocketCommandContext ctx = new(Program.Client, message.Value as SocketUserMessage);
-
-                EmbedBuilder emb = ctx.CreateEmbed(title: "오류 발생!", description: reason);
-                await ctx.ReplyEmbedAsync(emb.Build());
+                EmbedBuilder emb = session.context.CreateEmbed(title: "오류 발생!", description: session.reason);
+                await session.context.ReplyEmbedAsync(emb.Build());
 
                 ExceptionSessions.Remove(key);
             }
@@ -300,7 +300,7 @@ namespace OliveToast
 
                         await context.Message.AddReactionAsync(emote);
 
-                        ExceptionSessions.Add((context.Message.Id, emote.Name), (context.User.Id, result.ErrorReason, DateTime.Now));
+                        ExceptionSessions.Add((context.Message.Id, emote.Name), (ctx, result.ErrorReason, DateTime.Now));
                     }
                 }
                 else

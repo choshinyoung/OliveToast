@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
@@ -22,9 +23,9 @@ namespace OliveToast.Managements.CustomCommand
                 {
                     return ((SocketTextChannel)x).Id == ((SocketTextChannel)y).Id;
                 }
-                if (x.GetType() == typeof(SocketUserMessage) && y.GetType() == typeof(SocketUserMessage))
+                if (x is IUserMessage xMessage && y is IUserMessage yMessage)
                 {
-                    return ((SocketUserMessage)x).Id == ((SocketUserMessage)y).Id;
+                    return xMessage.Id == yMessage.Id;
                 }
                 if (x.GetType() == typeof(SocketGuildUser) && y.GetType() == typeof(SocketGuildUser))
                 {
@@ -69,9 +70,9 @@ namespace OliveToast.Managements.CustomCommand
             ToastCommand.CreateFunc<CustomCommandContext, long>("currentTime", (ctx) => DateTimeOffset.Now.ToUnixTimeSeconds()),
 
             ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userMessage", (ctx) => ctx.Message),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botMessage", (ctx) => ctx.BotMessage),
+            ToastCommand.CreateFunc<CustomCommandContext, IUserMessage>("botMessage", (ctx) => ctx.BotMessage),
             ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("userLastMessage", (ctx) => ctx.UserLastMessage),
-            ToastCommand.CreateFunc<CustomCommandContext, SocketUserMessage>("botLastMessage", (ctx) => ctx.BotLastMessage),
+            ToastCommand.CreateFunc<CustomCommandContext, IUserMessage>("botLastMessage", (ctx) => ctx.BotLastMessage),
 
             ToastCommand.CreateFunc<CustomCommandContext, object[]>("users", (ctx) => ctx.Guild.Users.Select(u => (object)u).ToArray()),
             ToastCommand.CreateFunc<CustomCommandContext, SocketUser>("user", (ctx) => ctx.User),
@@ -127,19 +128,19 @@ namespace OliveToast.Managements.CustomCommand
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId;
+                IUserMessage message;
                 if (x is EmbedBuilder emb)
                 {
-                    msgId = ctx.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                    message = ctx.Channel.SendMessageAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult();
                 }
                 else
                 {
-                    msgId = ctx.Channel.SendMessageAsync(ctx.Toaster.ExecuteConverter<string>(x, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                    message = ctx.Channel.SendMessageAsync(ctx.Toaster.ExecuteConverter<string>(x, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult();
                 }
                 ctx.SendCount++;
 
-                ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
-                ctx.ContextMessages.Add(msgId);
+                ctx.BotLastMessage = message;
+                ctx.ContextMessages.Add(message.Id);
             }, -1),
             ToastCommand.CreateAction<CustomCommandContext, SocketTextChannel, object>("sendTo", (ctx, x, y) =>
             {
@@ -148,21 +149,21 @@ namespace OliveToast.Managements.CustomCommand
                     throw new Exception("메시지를 너무 많이 보내고있어요!");
                 }
 
-                ulong msgId;
+                IUserMessage message;
                 if (y is EmbedBuilder emb)
                 {
-                    msgId = x.SendMessageAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                    message = x.SendMessageAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult();
                 }
                 else
                 {
-                    msgId = x.SendMessageAsync(ctx.Toaster.ExecuteConverter<string>(y, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                    message = x.SendMessageAsync(ctx.Toaster.ExecuteConverter<string>(y, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult();
                 }
                 ctx.SendCount++;
 
-                ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
-                ctx.ContextMessages.Add(msgId);
+                ctx.BotLastMessage = message;
+                ctx.ContextMessages.Add(message.Id);
             }, -1),
-            ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, object>("reply", (ctx, x, y) =>
+            ToastCommand.CreateAction<CustomCommandContext, IUserMessage, object>("reply", (ctx, x, y) =>
             {
                 if (ctx.SendCount >= 5)
                 {
@@ -174,22 +175,22 @@ namespace OliveToast.Managements.CustomCommand
                     throw new Exception("메시지를 찾을 수 없어요");
                 }
 
-                ulong msgId;
+                IUserMessage message;
 
                 if (y is EmbedBuilder emb)
                 {
-                    msgId = x.ReplyAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                    message = x.ReplyAsync(embed: emb.Build(), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult();
                 }
                 else
                 {
-                    msgId = x.ReplyAsync(ctx.Toaster.ExecuteConverter<string>(y, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult().Id;
+                    message = x.ReplyAsync(ctx.Toaster.ExecuteConverter<string>(y, ctx), allowedMentions: AllowedMentions.None).GetAwaiter().GetResult();
                 }
                 ctx.SendCount++;
 
-                ctx.BotLastMessage = ctx.Channel.GetMessageAsync(msgId).GetAwaiter().GetResult() as SocketUserMessage;
-                ctx.ContextMessages.Add(msgId);
+                ctx.BotLastMessage = message;
+                ctx.ContextMessages.Add(message.Id);
             }, -1),
-            ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("edit", (ctx, x, y) =>
+            ToastCommand.CreateAction<CustomCommandContext, IUserMessage, string>("edit", (ctx, x, y) =>
             {
                 if (x.Author.Id != Program.Client.CurrentUser.Id)
                 {
@@ -198,8 +199,8 @@ namespace OliveToast.Managements.CustomCommand
 
                 x.ModifyAsync(msg => msg.Content = y).Wait();
             }),
-            ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage>("delete", (ctx, x) => x.DeleteAsync().Wait()),
-            ToastCommand.CreateAction<CustomCommandContext, SocketUserMessage, string>("react", (ctx, x, y)
+            ToastCommand.CreateAction<CustomCommandContext, IUserMessage>("delete", (ctx, x) => x.DeleteAsync().Wait()),
+            ToastCommand.CreateAction<CustomCommandContext, IUserMessage, string>("react", (ctx, x, y)
                 => x.AddReactionAsync(Emote.TryParse(y, out var result) ? result : new Emoji(y)).Wait(), -1),
 
             ToastCommand.CreateFunc<VariableNode, CustomCommandContext, object, object>("of", (x, ctx, y) =>
@@ -425,6 +426,9 @@ namespace OliveToast.Managements.CustomCommand
 
         public static readonly List<ToastConverter> Converters = new()
         {
+            ToastConverter.Create<SocketUserMessage, IUserMessage>((ctx, x) => x),
+            ToastConverter.Create<RestUserMessage, IUserMessage>((ctx, x) => x),
+
             ToastConverter.Create<string, SocketGuildUser>((_ctx, x) =>
             {
                 CustomCommandContext ctx = (CustomCommandContext)_ctx;

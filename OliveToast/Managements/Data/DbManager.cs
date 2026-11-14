@@ -63,6 +63,11 @@ namespace OliveToast.Managements.Data
             DbManager.Guilds.UpdateOne(g => g.GuildId == id, Builders<OliveGuild>.Update.Set(field, value));
         }
 
+        public static void Delete(ulong id)
+        {
+            DbManager.Guilds.DeleteOne(g => g.GuildId == id);
+        }
+
         public class UserLevel
         {
             public int Level;

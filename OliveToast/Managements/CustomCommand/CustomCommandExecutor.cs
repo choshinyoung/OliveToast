@@ -68,10 +68,10 @@ namespace OliveToast.Managements.CustomCommand
                     Admin.CommandStats.Add(key, new() { (context.User.Id, context.Guild.Id) });
                 }
 
-                SocketUserMessage botMessage = null;
+                IUserMessage botMessage = null;
                 if (command.command.Answer is not null)
                 {
-                    botMessage = await context.Channel.GetMessageAsync((await context.ReplyAsync(command.command.Answer)).Id) as SocketUserMessage;
+                    botMessage = await context.ReplyAsync(command.command.Answer);
                 }
 
                 Toaster toaster = GetToaster();
@@ -228,7 +228,7 @@ namespace OliveToast.Managements.CustomCommand
             try {
                 session.Context.Toaster.ExecuteFunction(session.Context.OnReactionAdded,
                     new object[] {
-                        reaction.Message,
+                        await reaction.Channel.GetMessageAsync(reaction.MessageId),
                         (reaction.Channel as SocketTextChannel).Guild.GetUser(reaction.UserId),
                         reaction.Emote.Name
                     }, session.Context);
@@ -269,9 +269,9 @@ namespace OliveToast.Managements.CustomCommand
 
         public readonly string[] Groups;
 
-        public readonly SocketUserMessage BotMessage;
+        public readonly IUserMessage BotMessage;
         public SocketUserMessage UserLastMessage;
-        public SocketUserMessage BotLastMessage;
+        public IUserMessage BotLastMessage;
 
         public int SendCount;
 
@@ -286,7 +286,7 @@ namespace OliveToast.Managements.CustomCommand
 
         public ulong CommandCreator;
 
-        public CustomCommandContext(SocketGuild guild, SocketTextChannel channel, SocketUserMessage message, SocketUser user, ulong commandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
+        public CustomCommandContext(SocketGuild guild, SocketTextChannel channel, SocketUserMessage message, SocketUser user, ulong commandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, IUserMessage botMessage = null)
         {
             Guild = guild;
             Channel = channel;
@@ -318,7 +318,7 @@ namespace OliveToast.Managements.CustomCommand
             }
         }
 
-        public CustomCommandContext(SocketCommandContext context, ulong CommandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, SocketUserMessage botMessage = null)
+        public CustomCommandContext(SocketCommandContext context, ulong CommandCreator, string[] groups, bool canKickUser = false, bool canBanUser = false, bool canManageeRole = false, IUserMessage botMessage = null)
             : this(context.Guild, context.Channel as SocketTextChannel, context.Message, context.User as SocketGuildUser, CommandCreator, groups, canKickUser, canBanUser, canManageeRole, botMessage)
         {
 

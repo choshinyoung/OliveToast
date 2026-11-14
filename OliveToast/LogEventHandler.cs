@@ -1,8 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using MongoDB.Driver;
+using OliveToast.Managements;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OliveToast
@@ -11,26 +13,53 @@ namespace OliveToast
     {
         public static void RegisterEvents(DiscordSocketClient client)
         {
+            client.MessageReceived += OnMessageReceived;
             client.MessageUpdated += OnMessageUpdated;
             client.MessageDeleted += OnMessageDeleted;
+            client.MessagesBulkDeleted += OnMessagesBulkDeleted;
+        }
+
+        private static bool TryGetLogChannel(SocketGuild guild, out SocketTextChannel logChannel)
+        {
+            OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
+            if (!setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Log) || !setting.LogChannelId.HasValue)
+            {
+                logChannel = null;
+                return false;
+            }
+
+            logChannel = guild.GetTextChannel(setting.LogChannelId.Value);
+            return logChannel is not null;
+        }
+
+        public static async Task OnMessageReceived(SocketMessage msg)
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                if (msg.Channel is not SocketTextChannel channel || !TryGetLogChannel(channel.Guild, out _))
+                {
+                    return;
+                }
+
+                LogMessageCache.Store(channel.Guild.Id, msg);
+            });
         }
 
         public static async Task OnMessageUpdated(Cacheable<IMessage, ulong> cache, SocketMessage msg, ISocketMessageChannel channel)
         {
             await Task.Factory.StartNew(async () =>
             {
-                if (channel.GetType() != typeof(SocketTextChannel))
+                if (channel is not SocketTextChannel textChannel || !TryGetLogChannel(textChannel.Guild, out SocketTextChannel c))
                 {
                     return;
                 }
 
-                SocketGuild guild = ((SocketTextChannel)channel).Guild;
-                OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
-                if (!setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Log) || !setting.LogChannelId.HasValue)
+                LoggedMessage before = LogMessageCache.Store(textChannel.Guild.Id, msg);
+
+                if (channel.GetType() != typeof(SocketTextChannel))
                 {
                     return;
                 }
-                SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
 
                 EmbedBuilder emb = new()
                 {
@@ -38,22 +67,22 @@ namespace OliveToast
                     Color = new Color(255, 255, 0),
                     Description = $"<#{channel.Id}> 채널에서 [메시지]({msg.GetJumpUrl()})가 수정됐어요\n",
                 };
-                emb.WithAuthor($"{cache.Value.Author.Username}#{cache.Value.Author.Discriminator} ({cache.Value.Author.Id})", cache.Value.Author.GetAvatar());
+                emb.WithAuthor($"{msg.Author.Username}#{msg.Author.Discriminator} ({msg.Author.Id})", msg.Author.GetAvatar());
 
-                if (cache.HasValue)
+                if (before is not null)
                 {
-                    if (cache.Value.Content == msg.Content)
+                    if (before.Content == msg.Content)
                     {
                         return;
                     }
 
-                    if (string.IsNullOrWhiteSpace(cache.Value.Content))
+                    if (string.IsNullOrWhiteSpace(before.Content))
                     {
                         emb.Description += "\n수정 전 내용이 비어있어요";
                     }
                     else
                     {
-                        emb.AddField("수정 전 내용", cache.Value.Content.Slice(512, out bool isApplied), true);
+                        emb.AddField("수정 전 내용", before.Content.Slice(512, out bool isApplied), true);
                         if (isApplied)
                         {
                             await c.SendFileAsync(msg.Content.ToStream(), "before.txt", "");
@@ -86,18 +115,17 @@ namespace OliveToast
         {
             await Task.Factory.StartNew(async () =>
             {
-                if (!cache.HasValue && !channel.HasValue)
+                if (channel.Value is not SocketTextChannel textChannel)
                 {
                     return;
                 }
 
-                SocketGuild guild = ((SocketTextChannel)channel.Value).Guild;
-                OliveGuild.GuildSetting setting = OliveGuild.Get(guild.Id).Setting;
-                if (!setting.EnabledCategories.Contains(RequireCategoryEnable.CategoryType.Log) || !setting.LogChannelId.HasValue)
+                LoggedMessage deleted = LogMessageCache.Remove(textChannel.Guild.Id, cache.Id);
+
+                if (!TryGetLogChannel(textChannel.Guild, out SocketTextChannel c))
                 {
                     return;
                 }
-                SocketTextChannel c = guild.GetTextChannel(setting.LogChannelId.Value);
 
                 EmbedBuilder emb = new()
                 {
@@ -106,30 +134,30 @@ namespace OliveToast
                     Description = $"<#{channel.Id}> 채널에서 메시지({cache.Id})가 삭제됐어요\n",
                 };
 
-                if (cache.HasValue)
+                if (deleted is not null)
                 {
-                    emb.WithAuthor($"{cache.Value.Author.Username}#{cache.Value.Author.Discriminator} ({cache.Value.Author.Id})", cache.Value.Author.GetAvatar());
+                    emb.WithAuthor($"{deleted.Author.Username}#{deleted.Author.Discriminator} ({deleted.Author.Id})", deleted.Author.GetAvatar());
 
-                    if (string.IsNullOrWhiteSpace(cache.Value.Content))
+                    if (string.IsNullOrWhiteSpace(deleted.Content))
                     {
                         emb.Description += "\n내용이 비어있어요";
                     }
                     else
                     {
-                        emb.AddField("내용", cache.Value.Content.Slice(512, out bool isApplied), true);
+                        emb.AddField("내용", deleted.Content.Slice(512, out bool isApplied), true);
                         if (isApplied)
                         {
-                            await c.SendFileAsync(cache.Value.Content.ToStream(), "before.txt", "");
+                            await c.SendFileAsync(deleted.Content.ToStream(), "before.txt", "");
                         }
                     }
 
-                    if (cache.Value.Attachments.Count != 0)
+                    if (deleted.AttachmentUrls.Count != 0)
                     {
                         string urls = "";
 
-                        foreach (var att in cache.Value.Attachments)
+                        foreach (string url in deleted.AttachmentUrls)
                         {
-                            urls += $"{att.ProxyUrl}\n";
+                            urls += $"{url}\n";
                         }
 
                         emb.AddField("파일", urls, true);
@@ -144,6 +172,19 @@ namespace OliveToast
 
                 await c.SendMessageAsync(embed: emb.Build());
             });
+        }
+
+        private static Task OnMessagesBulkDeleted(IReadOnlyCollection<Cacheable<IMessage, ulong>> messages, Cacheable<IMessageChannel, ulong> channel)
+        {
+            if (channel.Value is SocketTextChannel textChannel)
+            {
+                foreach (var message in messages)
+                {
+                    LogMessageCache.Remove(textChannel.Guild.Id, message.Id);
+                }
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

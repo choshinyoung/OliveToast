@@ -22,7 +22,6 @@ namespace OliveToast
         private static readonly DiscordSocketConfig clientConfig = new()
         {
             LogLevel = IsDebugMode ? LogSeverity.Debug : LogSeverity.Info,
-            MessageCacheSize = 100000,
             AlwaysDownloadUsers = true,
             GatewayIntents = GatewayIntents.All & ~GatewayIntents.GuildPresences & ~GatewayIntents.GuildScheduledEvents & ~GatewayIntents.GuildInvites,
         };

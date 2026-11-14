@@ -4,7 +4,6 @@ using Discord.WebSocket;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static OliveToast.Utilities.RequireCategoryEnable;
@@ -216,13 +215,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
                 Context.CreateEmbed(title: "올리브토스트의 정보", thumbnailUrl: Program.Client.CurrentUser.GetAvatar());
 
             emb.AddField("서버 수", $"{Program.Client.Guilds.Count}곳", true);
-            List<ulong> users = new();
-            foreach (SocketGuild guild in Program.Client.Guilds)
-            {
-                users.AddRange(guild.Users.Select(u => u.Id).Where(u => !users.Contains(u)));
-            }
-
-            emb.AddField("유저 수", $"{users.Count}명", true);
+            emb.AddField("유저 수", $"{Program.Client.Guilds.Sum(g => g.MemberCount)}명", true);
             emb.AddEmptyField();
 
             emb.AddField("핑", $"{Program.Client.Latency}ms", true);
@@ -234,7 +227,7 @@ TTS 메시지 전송: {r.Permissions.SendTTSMessages.ToEmoji()}
             emb.AddField(":mailbox_with_mail:",
                 $"· [봇 초대 링크]({Utility.GetInvite()})\n· [OliveToast 서포트 서버](https://discord.gg/5eq44Xtx3k)", true);
             emb.AddField(":page_facing_up:",
-                $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)\n· [개인정보 처리방침](https://olivetoast.shinyou.ng/privacy.html)",
+                $"· [소스코드](https://github.com/choshinyoung/OliveToast/)\n· [버그 제보](https://github.com/choshinyoung/OliveToast/issues)\n· [개인정보 처리방침](https://github.com/choshinyoung/OliveToast/blob/master/PRIVACY.md)",
                 true);
 
             emb.AddField("크레딧",

@@ -4,38 +4,6 @@ using System.Collections.Generic;
 namespace OliveToast.Utilities
 {
 #pragma warning disable IDE1006 // 명명 스타일
-    public class PingPongResult
-    {
-        public Response response { get; set; }
-        public string version { get; set; }
-
-        public class From
-        {
-            public double score { get; set; }
-            public string name { get; set; }
-            public string link { get; set; }
-            public string from { get; set; }
-        }
-
-        public class Image
-        {
-            public string url { get; set; }
-        }
-
-        public class Reply
-        {
-            public From from { get; set; }
-            public string type { get; set; }
-            public string text { get; set; }
-            public Image image { get; set; }
-        }
-
-        public class Response
-        {
-            public List<Reply> replies { get; set; }
-        }
-    }
-
     public class KoreanBotsResult
     {
         public int code { get; set; }

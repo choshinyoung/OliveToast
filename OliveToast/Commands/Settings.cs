@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using OliveToast.Managements;
 using OliveToast.Managements.CustomCommand;
 using OliveToast.Managements.Data;
 using OliveToast.Utilities;
@@ -75,6 +76,11 @@ namespace OliveToast.Commands
 
             setting.EnabledCategories.Remove(cat);
             OliveGuild.Set(Context.Guild.Id, g => g.Setting, setting);
+
+            if (cat == CategoryType.Log)
+            {
+                LogMessageCache.Clear(Context.Guild.Id);
+            }
 
             await Context.ReplyEmbedAsync($"{category} 카테고리를 비활성화했어요");
         }
