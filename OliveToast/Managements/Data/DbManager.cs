@@ -1,10 +1,10 @@
-﻿using Discord;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Discord;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using static OliveToast.Utilities.RequireCategoryEnable;
 
 namespace OliveToast.Managements.Data
@@ -60,7 +60,10 @@ namespace OliveToast.Managements.Data
 
         public static void Set(ulong id, Expression<Func<OliveGuild, object>> field, object value)
         {
-            DbManager.Guilds.UpdateOne(g => g.GuildId == id, Builders<OliveGuild>.Update.Set(field, value));
+            DbManager.Guilds.UpdateOne(
+                g => g.GuildId == id,
+                Builders<OliveGuild>.Update.Set(field, value)
+            );
         }
 
         public static void Delete(ulong id)
@@ -98,7 +101,16 @@ namespace OliveToast.Managements.Data
             public GuildSetting()
             {
                 LogChannelId = null;
-                EnabledCategories = new List<CategoryType>() { CategoryType.Default, CategoryType.Info, CategoryType.Search, CategoryType.Game, CategoryType.Text, CategoryType.Image, CategoryType.Setting };
+                EnabledCategories = new List<CategoryType>()
+                {
+                    CategoryType.Default,
+                    CategoryType.Info,
+                    CategoryType.Search,
+                    CategoryType.Game,
+                    CategoryType.Text,
+                    CategoryType.Image,
+                    CategoryType.Setting,
+                };
                 PermissionRoles = new Dictionary<string, ulong>();
 
                 LevelUpChannelId = null;
@@ -125,7 +137,13 @@ namespace OliveToast.Managements.Data
             public bool CanBanUser;
             public bool CanManageRole;
 
-            public CustomCommand(string answer, bool isRegex, List<string> lines, ulong createdBy, GuildPermissions acceptedPermissions)
+            public CustomCommand(
+                string answer,
+                bool isRegex,
+                List<string> lines,
+                ulong createdBy,
+                GuildPermissions acceptedPermissions
+            )
             {
                 Answer = answer;
                 IsRegex = isRegex;
@@ -190,7 +208,10 @@ namespace OliveToast.Managements.Data
 
         public static void Set(ulong id, Expression<Func<OliveUser, object>> field, object value)
         {
-            DbManager.Users.UpdateOne(u => u.UserId == id, Builders<OliveUser>.Update.Set(field, value));
+            DbManager.Users.UpdateOne(
+                u => u.UserId == id,
+                Builders<OliveUser>.Update.Set(field, value)
+            );
         }
     }
 }
